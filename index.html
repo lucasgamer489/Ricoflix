@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ricoflix — Dublado PT-BR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+        body {
+            background: #000000;
+            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 20% 30%, rgba(0, 229, 255, 0.03) 0%, transparent 60%),
+                              radial-gradient(circle at 80% 70%, rgba(180, 0, 255, 0.04) 0%, transparent 50%);
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0a; }
+        ::-webkit-scrollbar-thumb { background: #00E5FF; border-radius: 20px; box-shadow: 0 0 15px rgba(0, 229, 255, 0.3); }
+
+        .tab-neon {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 40px;
+            padding: 0.5rem 1.2rem;
+            font-weight: 500;
+            color: #8899aa;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            font-size: 0.9rem;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-neon::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 40px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0), rgba(180, 0, 255, 0));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            transition: 0.4s;
+        }
+        .tab-neon.active {
+            background: rgba(0, 229, 255, 0.08);
+            border-color: #00E5FF;
+            color: #00E5FF;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.08), inset 0 0 30px rgba(0, 229, 255, 0.03);
+        }
+        .tab-neon.active::before { background: linear-gradient(135deg, #00E5FF, #b000ff); }
+        .tab-neon:hover:not(.active) {
+            border-color: rgba(0, 229, 255, 0.25);
+            color: #c0d0e0;
+            transform: translateY(-1px);
+        }
+
+        .search-cyber {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 60px;
+            padding: 0.5rem 1.2rem 0.5rem 2.8rem;
+            color: #f0f0f0;
+            width: 260px;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            letter-spacing: 0.2px;
+        }
+        .search-cyber:focus {
+            outline: none;
+            border-color: #00E5FF;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.06), inset 0 0 30px rgba(0, 229, 255, 0.02);
+            background: rgba(0, 0, 0, 0.9);
+        }
+        .search-cyber::placeholder { color: #556677; font-weight: 300; }
+
+        .card-cyber {
+            width: 200px;
+            background: #080808;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .card-cyber::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 24px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0), rgba(180, 0, 255, 0));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            transition: 0.4s;
+        }
+        .card-cyber:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(0, 229, 255, 0.2);
+            box-shadow: 0 12px 50px rgba(0, 229, 255, 0.06), 0 0 80px rgba(0, 229, 255, 0.02);
+        }
+        .card-cyber:hover::after { background: linear-gradient(135deg, #00E5FF, #b000ff); opacity: 0.5; }
+        .card-cyber .poster-wrapper {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: #0a0a0a;
+            overflow: hidden;
+        }
+        .card-cyber .poster-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .card-cyber .info {
+            padding: 0.9rem 0.9rem 1.1rem;
+            background: linear-gradient(180deg, rgba(0,0,0,0) 0%, #080808 30%);
+        }
+        .card-cyber .info h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #eef4ff;
+            letter-spacing: -0.2px;
+        }
+        .card-cyber .info .year {
+            font-size: 0.75rem;
+            color: #6688aa;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+        .card-cyber .badge-type {
+            font-size: 0.6rem;
+            background: rgba(0, 229, 255, 0.06);
+            border: 1px solid rgba(0, 229, 255, 0.08);
+            padding: 0.15rem 0.7rem;
+            border-radius: 40px;
+            color: #88ccff;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .scroll-neon {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 1.2rem;
+            padding: 0.8rem 0.2rem 2rem 0.2rem;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        .scroll-neon > * { flex: 0 0 auto; scroll-snap-align: start; }
+
+        #player-container {
+            background: #0a0a0a;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 229, 255, 0.08);
+            box-shadow: 0 0 60px rgba(0, 229, 255, 0.02), inset 0 0 60px rgba(0, 229, 255, 0.01);
+            position: relative;
+            min-height: 420px;
+        }
+        #player-container::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 28px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(180, 0, 255, 0.05));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+        #player-container iframe {
+            width: 100%;
+            height: 420px;
+            border: none;
+            background: #000;
+            display: block;
+        }
+        @media (min-width: 768px) { #player-container iframe { height: 540px; } }
+
+        .loader-neon {
+            border: 2px solid rgba(0, 229, 255, 0.05);
+            border-top: 2px solid #00E5FF;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.9s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.05);
+            margin: 2rem auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .logo-glitch {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00E5FF 0%, #b000ff 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+            text-shadow: 0 0 40px rgba(0, 229, 255, 0.08);
+        }
+
+        .btn-neon {
+            background: rgba(0, 229, 255, 0.04);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            color: #00E5FF;
+            padding: 0.5rem 1.4rem;
+            border-radius: 60px;
+            font-weight: 500;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+        }
+        .btn-neon:hover {
+            background: rgba(0, 229, 255, 0.08);
+            border-color: #00E5FF;
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.06);
+            transform: scale(1.02);
+        }
+
+        .source-selector {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 40px;
+            padding: 0.4rem 1rem;
+            color: #aabbdd;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 180px;
+        }
+        .source-selector:hover { border-color: rgba(0, 229, 255, 0.3); }
+        .source-selector option { background: #0a0a0a; color: #e0e0e0; padding: 0.3rem; }
+
+        .player-title {
+            color: #aabbdd;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        .player-title strong { color: #00E5FF; font-weight: 600; }
+
+        .language-selector {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            border-radius: 40px;
+            padding: 0.3rem 0.8rem;
+            color: #aabbdd;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 120px;
+        }
+        .language-selector:hover { border-color: rgba(0, 229, 255, 0.3); }
+        .language-selector option { background: #0a0a0a; color: #e0e0e0; }
+
+        #episodes-wrapper {
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 229, 255, 0.06);
+            border-radius: 20px;
+            padding: 1.2rem;
+            margin-top: 1rem;
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        #episodes-wrapper.active { display: block; }
+        #episodes-wrapper .episode-title {
+            color: #00E5FF;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .episode-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+        .episode-btn {
+            background: rgba(0, 229, 255, 0.04);
+            border: 1px solid rgba(0, 229, 255, 0.08);
+            border-radius: 30px;
+            padding: 0.4rem 1rem;
+            color: #aabbdd;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        .episode-btn:hover {
+            background: rgba(0, 229, 255, 0.08);
+            border-color: #00E5FF;
+            color: #00E5FF;
+            transform: scale(1.05);
+        }
+        .episode-btn.active {
+            background: rgba(0, 229, 255, 0.12);
+            border-color: #00E5FF;
+            color: #00E5FF;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.05);
+        }
+
+        .player-error {
+            display: none;
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1rem;
+            color: #ff6b6b;
+        }
+        .player-error.visible { display: block; }
+        .player-error i { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+
+        .player-loading {
+            display: none;
+            background: rgba(0, 229, 255, 0.03);
+            border: 1px solid rgba(0, 229, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: 1rem;
+            color: #00E5FF;
+        }
+        .player-loading.visible { display: block; }
+        .player-loading i { font-size: 2rem; margin-bottom: 0.5rem; display: block; animation: spin 1s linear infinite; }
+
+        .player-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.2rem;
+        }
+        .player-controls .label {
+            font-size: 0.7rem;
+            color: #445566;
+            letter-spacing: 0.3px;
+        }
+
+        @media (max-width: 640px) {
+            .card-cyber { width: 160px; }
+            .card-cyber .poster-wrapper { height: 220px; }
+            .search-cyber { width: 180px; padding-left: 2.2rem; }
+            .logo-glitch { font-size: 1.5rem; }
+            .source-selector { min-width: 140px; font-size: 0.7rem; }
+            .language-selector { min-width: 100px; font-size: 0.7rem; }
+            .player-controls { gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body class="antialiased p-4 md:p-6 max-w-7xl mx-auto">
+
+    <!-- HEADER -->
+    <header class="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-3">
+            <span class="logo-glitch">Ricoflix</span>
+            <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10 backdrop-blur-sm">
+                <i class="fas fa-language text-[#00E5FF] mr-1"></i> Dublado PT-BR
+            </span>
+        </div>
+        <div class="flex items-center gap-3 flex-wrap">
+            <div class="relative">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[#445566] text-sm"></i>
+                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search-cyber pl-10 pr-4 py-2" />
+            </div>
+            <button id="searchBtn" class="btn-neon"><i class="fas fa-arrow-right mr-1"></i> Ir</button>
+        </div>
+    </header>
+
+    <!-- TABS -->
+    <div class="flex flex-wrap items-center gap-3 mb-6 border-b border-[#00E5FF]/5 pb-3">
+        <span class="tab-neon active" data-filter="all">📡 Tudo</span>
+        <span class="tab-neon" data-filter="movie">🎬 Filmes</span>
+        <span class="tab-neon" data-filter="tv">📺 Séries</span>
+        <span class="tab-neon" data-filter="continue">⏳ Continuar</span>
+        <span class="ml-auto text-[10px] text-[#445566] tracking-widest">
+            <i class="fas fa-circle text-[#00E5FF] text-[5px] align-middle mr-1"></i> 4K · HDR · NEON
+        </span>
+    </div>
+
+    <!-- GRADE -->
+    <section class="mb-6">
+        <div id="movieGrid" class="scroll-neon"></div>
+        <div id="loaderGrid" class="flex justify-center py-8">
+            <div class="loader-neon"></div>
+        </div>
+        <p id="noResults" class="text-center text-[#445566] py-6 hidden">Nenhum título encontrado.</p>
+    </section>
+
+    <!-- PLAYER -->
+    <section id="player-section" class="mt-6">
+        <div id="player-container" class="relative">
+            <iframe id="main-player"
+                    src="about:blank"
+                    class="w-full h-full border-0"
+                    allowfullscreen="true"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    loading="lazy"></iframe>
+        </div>
+        
+        <div id="playerLoading" class="player-loading">
+            <i class="fas fa-spinner"></i>
+            <span>Carregando player...</span>
+        </div>
+        
+        <div id="playerError" class="player-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Nenhum provedor disponível. Tente outro servidor abaixo.</span>
+        </div>
+        
+        <div class="player-controls">
+            <div class="flex flex-wrap items-center gap-3">
+                <span id="movieTitlePlayer" class="player-title text-sm"><i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 ml-auto">
+                <span class="label"><i class="fas fa-language mr-1"></i>Áudio:</span>
+                <select id="languageSelector" class="language-selector">
+                    <option value="pt-BR">🇧🇷 Português</option>
+                    <option value="en">🇺🇸 Inglês</option>
+                    <option value="es">🇪🇸 Espanhol</option>
+                </select>
+                <span class="label"><i class="fas fa-plug mr-1"></i>Fonte:</span>
+                <select id="sourceSelector" class="source-selector">
+                    <option value="auto">🤖 Auto</option>
+                    <option value="nontongo">🟠 NontonGo</option>
+                    <option value="vidsrc">🟢 VidSrc</option>
+                    <option value="2embed">🔵 2Embed</option>
+                    <option value="autoembed">🟣 AutoEmbed</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- EPISODES -->
+        <div id="episodes-wrapper">
+            <div class="episode-title">
+                <i class="fas fa-list-ul"></i> 📅 Episódios
+                <span id="seasonDisplay" class="text-[#445566] text-xs ml-2">Temporada 1</span>
+            </div>
+            <div id="episodeGrid" class="episode-grid"></div>
+            <div id="episodeLoader" class="flex justify-center py-4" style="display:none;">
+                <div class="loader-neon" style="display:block;width:24px;height:24px;"></div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ================================================================
+        //  CATÁLOGO LOCAL
+        // ================================================================
+        const CATALOG = [
+            // FILMES
+            { id: 939243, title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie' },
+            { id: 533535, title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie' },
+            { id: 1022789, title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie' },
+            { id: 872585, title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie' },
+            { id: 693134, title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie' },
+            { id: 603692, title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie' },
+            { id: 245891, title: 'John Wick', year: '2014', poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', type: 'movie' },
+            { id: 324852, title: 'John Wick 2', year: '2017', poster: 'https://image.tmdb.org/t/p/w342/3bN7V5X9nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
+            { id: 458576, title: 'John Wick 3', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie' },
+            { id: 123456, title: 'Godzilla x Kong', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', type: 'movie' },
+            { id: 151667, title: 'Aranhaverso', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/xD1l6vW0V8K9W6X8p8A0zJ2fL.jpg', type: 'movie' },
+            { id: 234567, title: 'Furiosa', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/iDdF3vF0nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
+            
+            // SÉRIES
+            { id: 100088, title: 'The Last of Us', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', type: 'tv' },
+            { id: 115713, title: 'The Bear', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/7H8Hk2W0U8V4K9W6X8p8A0zJ2fL.jpg', type: 'tv' },
+            { id: 76479, title: 'The Boys', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', type: 'tv' },
+            { id: 67744, title: 'Succession', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/7rTllR2Tx2UMj17HwDfB9TZ67jM.jpg', type: 'tv' },
+            { id: 66732, title: 'Stranger Things', year: '2016', poster: 'https://image.tmdb.org/t/p/w342/49WJfeN0E1p5R0Y2Q8yN1z3X9fA.jpg', type: 'tv' }
+        ];
+
+        // ================================================================
+        //  PROVIDERS COM SUPORTE A DUBLAGEM PT-BR
+        // ================================================================
+        const PROVIDERS = {
+            nontongo: {
+                name: 'NontonGo',
+                movie: (id, lang) => `https://nontongo.win/embed/movie/${id}?lang=${lang}`,
+                series: (id, season, episode, lang) => `https://nontongo.win/embed/tv/${id}/${season}/${episode}?lang=${lang}`
+            },
+            vidsrc: {
+                name: 'VidSrc',
+                movie: (id, lang) => `https://vidsrc.to/embed/movie/${id}?lang=${lang}`,
+                series: (id, season, episode, lang) => `https://vidsrc.to/embed/tv/${id}/${season}/${episode}?lang=${lang}`
+            },
+            '2embed': {
+                name: '2Embed',
+                movie: (id, lang) => `https://2embed.skin/embed/movie/${id}?lang=${lang}`,
+                series: (id, season, episode, lang) => `https://2embed.skin/embed/tv/${id}/${season}/${episode}?lang=${lang}`
+            },
+            autoembed: {
+                name: 'AutoEmbed',
+                movie: (id, lang) => `https://autoembed.co/embed/movie/${id}?lang=${lang}`,
+                series: (id, season, episode, lang) => `https://autoembed.co/embed/tv/${id}/${season}/${episode}?lang=${lang}`
+            }
+        };
+
+        // Ordem de fallback para o modo automático
+        const FALLBACK_ORDER = ['nontongo', 'vidsrc', '2embed', 'autoembed'];
+
+        // ================================================================
+        //  STATE
+        // ================================================================
+        const appState = {
+            currentId: null,
+            type: 'movie',
+            currentSeason: 1,
+            currentEpisode: 1,
+            currentTitle: '',
+            currentProvider: 'auto',
+            currentLanguage: 'pt-BR'
+        };
+
+        // ================================================================
+        //  DOM
+        // ================================================================
+        const grid = document.getElementById('movieGrid');
+        const loader = document.getElementById('loaderGrid');
+        const noResults = document.getElementById('noResults');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const playerIframe = document.getElementById('main-player');
+        const movieTitlePlayer = document.getElementById('movieTitlePlayer');
+        const sourceSelector = document.getElementById('sourceSelector');
+        const languageSelector = document.getElementById('languageSelector');
+        const episodesWrapper = document.getElementById('episodes-wrapper');
+        const episodeGrid = document.getElementById('episodeGrid');
+        const episodeLoader = document.getElementById('episodeLoader');
+        const seasonDisplay = document.getElementById('seasonDisplay');
+        const playerError = document.getElementById('playerError');
+        const playerLoading = document.getElementById('playerLoading');
+
+        let currentFilter = 'all';
+        let currentProviderIndex = 0;
+        let isRetrying = false;
+
+        // ================================================================
+        //  UPDATE PLAYER - COM FALLBACK INTELIGENTE E DUBLAGEM
+        // ================================================================
+        function updatePlayerSource() {
+            if (!appState.currentId) {
+                playerIframe.src = 'about:blank';
+                return;
+            }
+
+            const selectedProvider = sourceSelector.value;
+            const language = languageSelector.value;
+            appState.currentLanguage = language;
+
+            let providersToTry = [];
+
+            if (selectedProvider === 'auto') {
+                providersToTry = FALLBACK_ORDER;
+            } else if (PROVIDERS[selectedProvider]) {
+                providersToTry = [selectedProvider];
+            } else {
+                providersToTry = FALLBACK_ORDER;
+            }
+
+            currentProviderIndex = 0;
+            isRetrying = false;
+            tryLoadProvider(providersToTry, language);
+        }
+
+        function tryLoadProvider(providers, language, retryCount = 0) {
+            if (currentProviderIndex >= providers.length) {
+                playerError.classList.add('visible');
+                playerLoading.classList.remove('visible');
+                const langLabel = language === 'pt-BR' ? '🇧🇷 PT-BR' : language === 'en' ? '🇺🇸 EN' : '🇪🇸 ES';
+                movieTitlePlayer.innerHTML = `<i class="fas fa-exclamation-circle text-[#ff6b6b] mr-2"></i> <strong>Erro</strong> — Nenhum provedor disponível para ${langLabel}`;
+                return;
+            }
+
+            const providerKey = providers[currentProviderIndex];
+            const provider = PROVIDERS[providerKey];
+            
+            if (!provider) {
+                currentProviderIndex++;
+                tryLoadProvider(providers, language);
+                return;
+            }
+
+            playerLoading.classList.add('visible');
+            playerError.classList.remove('visible');
+
+            let url;
+            if (appState.type === 'tv') {
+                url = provider.series(appState.currentId, appState.currentSeason, appState.currentEpisode, language);
+            } else {
+                url = provider.movie(appState.currentId, language);
+            }
+            
+            playerIframe.src = url;
+            
+            const langLabel = language === 'pt-BR' ? '🇧🇷 Dublado' : language === 'en' ? '🇺🇸 Legendado' : '🇪🇸 Espanhol';
+            const typeLabel = appState.type === 'tv' 
+                ? `S${appState.currentSeason}E${appState.currentEpisode}` 
+                : 'Filme';
+            
+            movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${appState.currentTitle}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${provider.name} · ${langLabel} · ${typeLabel}</span>`;
+            
+            // Verifica se o iframe carregou
+            let checkInterval = 0;
+            const maxChecks = 20; // ~10 segundos
+            const checkLoad = setInterval(() => {
+                checkInterval++;
+                
+                try {
+                    const src = playerIframe.src;
+                    if (src && src !== 'about:blank' && !src.includes('about:blank')) {
+                        clearInterval(checkLoad);
+                        playerLoading.classList.remove('visible');
+                        return;
+                    }
+                } catch (e) {}
+                
+                if (checkInterval >= maxChecks) {
+                    clearInterval(checkLoad);
+                    if (!isRetrying) {
+                        isRetrying = true;
+                        currentProviderIndex++;
+                        tryLoadProvider(providers, language);
+                    }
+                }
+            }, 500);
+            
+            setTimeout(() => {
+                clearInterval(checkLoad);
+                if (!isRetrying && checkInterval < maxChecks) {
+                    isRetrying = true;
+                    currentProviderIndex++;
+                    tryLoadProvider(providers, language);
+                }
+            }, 12000);
+        }
+
+        // ================================================================
+        //  EPISODES
+        // ================================================================
+        function loadEpisodesLocal(seriesId, seasonNum = 1) {
+            episodesWrapper.classList.add('active');
+            episodeGrid.innerHTML = '';
+            episodeLoader.style.display = 'flex';
+            seasonDisplay.textContent = `Temporada ${seasonNum}`;
+
+            const episodesData = {
+                '100088': [
+                    { episode_number: 1, name: 'When You\'re Lost in the Darkness' },
+                    { episode_number: 2, name: 'Infected' },
+                    { episode_number: 3, name: 'Long, Long Time' },
+                    { episode_number: 4, name: 'Please Hold to My Hand' },
+                    { episode_number: 5, name: 'Endure and Survive' },
+                    { episode_number: 6, name: 'Kin' },
+                    { episode_number: 7, name: 'Left Behind' },
+                    { episode_number: 8, name: 'When We Are in Need' },
+                    { episode_number: 9, name: 'Look for the Light' }
+                ],
+                '115713': [
+                    { episode_number: 1, name: 'System' },
+                    { episode_number: 2, name: 'Hands' },
+                    { episode_number: 3, name: 'Bread' },
+                    { episode_number: 4, name: 'Honeydew' },
+                    { episode_number: 5, name: 'Dogs' },
+                    { episode_number: 6, name: 'Ceres' },
+                    { episode_number: 7, name: 'Review' },
+                    { episode_number: 8, name: 'Braciole' }
+                ],
+                '76479': [
+                    { episode_number: 1, name: 'The Name of the Game' },
+                    { episode_number: 2, name: 'Cherry' },
+                    { episode_number: 3, name: 'Get Some' },
+                    { episode_number: 4, name: 'The Female of the Species' },
+                    { episode_number: 5, name: 'Good for the Soul' },
+                    { episode_number: 6, name: 'The Innocents' },
+                    { episode_number: 7, name: 'The Self-Preservation Society' },
+                    { episode_number: 8, name: 'You Found Me' }
+                ]
+            };
+
+            const episodes = episodesData[String(seriesId)] || [];
+            episodeLoader.style.display = 'none';
+
+            if (episodes.length === 0) {
+                episodeGrid.innerHTML = `<span class="text-[#445566] text-sm">Episódios disponíveis em breve.</span>`;
+                return;
+            }
+
+            episodes.forEach(ep => {
+                const btn = document.createElement('button');
+                btn.className = 'episode-btn';
+                if (ep.episode_number === appState.currentEpisode) {
+                    btn.classList.add('active');
+                }
+                btn.textContent = `EP ${ep.episode_number}`;
+                btn.title = ep.name || `Episódio ${ep.episode_number}`;
+                
+                btn.addEventListener('click', function() {
+                    appState.currentEpisode = ep.episode_number;
+                    document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    updatePlayerSource();
+                });
+                
+                episodeGrid.appendChild(btn);
+            });
+        }
+
+        // ================================================================
+        //  RENDER CARDS
+        // ================================================================
+        function renderMovies(movies) {
+            grid.innerHTML = '';
+            
+            if (!movies || movies.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+
+            movies.forEach(movie => {
+                const id = movie.id;
+                const title = movie.title;
+                const year = movie.year || '2026';
+                const posterPath = movie.poster || 'https://via.placeholder.com/342x513/0a0a0a/334455?text=' + encodeURIComponent(title);
+                const mediaType = movie.type || 'movie';
+
+                const card = document.createElement('div');
+                card.className = 'card-cyber';
+                card.setAttribute('data-id', id);
+                card.setAttribute('data-type', mediaType);
+                card.setAttribute('data-title', title);
+                
+                card.innerHTML = `
+                    <div class="poster-wrapper">
+                        <img src="${posterPath}" alt="${title}" loading="lazy" 
+                             onerror="this.src='https://via.placeholder.com/342x513/0a0a0a/334455?text=404'" />
+                    </div>
+                    <div class="info">
+                        <div class="flex justify-between items-start">
+                            <h3>${title}</h3>
+                        </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="year">${year}</span>
+                            <span class="badge-type">${mediaType === 'tv' ? 'Série' : 'Filme'}</span>
+                        </div>
+                    </div>
+                `;
+                
+                card.addEventListener('click', function() {
+                    const movieId = this.getAttribute('data-id');
+                    const movieTitle = this.getAttribute('data-title') || 'Título';
+                    const mediaType = this.getAttribute('data-type') || 'movie';
+                    
+                    appState.currentId = movieId;
+                    appState.currentTitle = movieTitle;
+                    appState.type = mediaType;
+                    appState.currentSeason = 1;
+                    appState.currentEpisode = 1;
+                    
+                    if (mediaType === 'tv') {
+                        loadEpisodesLocal(movieId, 1);
+                    } else {
+                        episodesWrapper.classList.remove('active');
+                    }
+                    
+                    updatePlayerSource();
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // ================================================================
+        //  FILTER CATALOG
+        // ================================================================
+        function filterCatalog(filter, query = '') {
+            let filtered = [...CATALOG];
+            
+            if (filter === 'movie') {
+                filtered = filtered.filter(m => m.type === 'movie');
+            } else if (filter === 'tv') {
+                filtered = filtered.filter(m => m.type === 'tv');
+            }
+            
+            if (query.trim()) {
+                const q = query.toLowerCase();
+                filtered = filtered.filter(m => 
+                    m.title.toLowerCase().includes(q)
+                );
+            }
+            
+            return filtered;
+        }
+
+        // ================================================================
+        //  LOAD CATALOG
+        // ================================================================
+        function loadCatalog(filter = 'all', query = '') {
+            const loaderElement = document.querySelector('#loaderGrid .loader-neon');
+            if (loaderElement) loaderElement.style.display = 'block';
+            
+            const movies = filterCatalog(filter, query);
+            
+            if (loaderElement) loaderElement.style.display = 'none';
+            renderMovies(movies);
+        }
+
+        // ================================================================
+        //  HANDLE FILTER
+        // ================================================================
+        function handleFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab-neon').forEach(tab => tab.classList.remove('active'));
+            const activeTab = document.querySelector(`.tab-neon[data-filter="${filter}"]`);
+            if (activeTab) activeTab.classList.add('active');
+
+            if (filter === 'continue') {
+                grid.innerHTML = `<div class="text-[#445566] p-6 text-center w-full">⏳ Em breve: sua lista de continuar assistindo.</div>`;
+                noResults.classList.add('hidden');
+                return;
+            }
+
+            searchInput.value = '';
+            loadCatalog(filter);
+        }
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            document.querySelectorAll('.tab-neon').forEach(tab => tab.classList.remove('active'));
+            loadCatalog('all', query);
+        }
+
+        // ================================================================
+        //  EVENTOS DOS SELECTORES
+        // ================================================================
+        sourceSelector.addEventListener('change', function() {
+            if (appState.currentId) {
+                playerError.classList.remove('visible');
+                playerLoading.classList.remove('visible');
+                updatePlayerSource();
+            }
+        });
+
+        languageSelector.addEventListener('change', function() {
+            if (appState.currentId) {
+                playerError.classList.remove('visible');
+                playerLoading.classList.remove('visible');
+                updatePlayerSource();
+            }
+        });
+
+        // ================================================================
+        //  INIT
+        // ================================================================
+        function init() {
+            loadCatalog('all');
+
+            document.querySelectorAll('.tab-neon').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    handleFilter(this.getAttribute('data-filter'));
+                });
+            });
+
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') performSearch();
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+    })();
+    </script>
+
+    <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
+        <span>© 2026 Ricoflix · Dublado PT-BR</span>
+        <span><i class="fas fa-language text-[#00E5FF] mr-1"></i> Áudio: Português · English · Español</span>
+    </footer>
+</body>
+</html>
