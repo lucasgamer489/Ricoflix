@@ -155,11 +155,10 @@
                 </select>
                 <span class="label"><i class="fas fa-plug mr-1"></i>Fonte:</span>
                 <select id="sourceSelector" class="source-selector">
-                    <option value="auto">🤖 Auto (Recomendado)</option>
+                    <option value="auto">🤖 Auto</option>
                     <option value="2embed">🔵 2Embed</option>
                     <option value="vidsrc">🟢 VidSrc</option>
                     <option value="superembed">🟣 SuperEmbed</option>
-                    <option value="moviedb">🟠 MovieDB</option>
                 </select>
             </div>
         </div>
@@ -218,15 +217,10 @@
                 name: 'SuperEmbed',
                 movie: (id, lang) => `https://superembed.stream/movie/${id}`,
                 series: (id, season, episode, lang) => `https://superembed.stream/tv/${id}/${season}/${episode}`
-            },
-            moviedb: {
-                name: 'MovieDB',
-                movie: (id, lang) => `https://moviedb.lol/movie/${id}`,
-                series: (id, season, episode, lang) => `https://moviedb.lol/tv/${id}/${season}/${episode}`
             }
         };
 
-        const FALLBACK_ORDER = ['2embed', 'vidsrc', 'superembed', 'moviedb'];
+        const FALLBACK_ORDER = ['2embed', 'vidsrc', 'superembed'];
 
         const appState = {
             currentId: null,
