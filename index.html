@@ -38,12 +38,9 @@
         .scroll-neon { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 1.2rem; padding: 0.8rem 0.2rem 2rem 0.2rem; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
         .scroll-neon > * { flex: 0 0 auto; scroll-snap-align: start; }
 
-        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); box-shadow: 0 0 60px rgba(0, 229, 255, 0.02), inset 0 0 60px rgba(0, 229, 255, 0.01); position: relative; min-height: 420px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        #player-container .fallback-message { color: #445566; text-align: center; padding: 2rem; }
-        #player-container .fallback-message i { font-size: 3rem; color: #00E5FF; margin-bottom: 1rem; display: block; }
-        #player-container .fallback-message .title { color: #eef4ff; font-weight: 600; font-size: 1.2rem; margin-bottom: 0.5rem; }
-        #player-container .fallback-message .sub { font-size: 0.9rem; }
-        #player-container iframe { width: 100%; height: 420px; border: none; background: #000; display: none; }
+        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); box-shadow: 0 0 60px rgba(0, 229, 255, 0.02), inset 0 0 60px rgba(0, 229, 255, 0.01); position: relative; min-height: 420px; }
+        #player-container::before { content: ''; position: absolute; inset: -1px; border-radius: 28px; padding: 1px; background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(180, 0, 255, 0.05)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+        #player-container iframe { width: 100%; height: 420px; border: none; background: #000; display: block; }
         @media (min-width: 768px) { #player-container iframe { height: 540px; } }
 
         .loader-neon { border: 2px solid rgba(0, 229, 255, 0.05); border-top: 2px solid #00E5FF; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.9s cubic-bezier(0.6, 0, 0.4, 1) infinite; box-shadow: 0 0 30px rgba(0, 229, 255, 0.05); margin: 2rem auto; }
@@ -54,14 +51,12 @@
         .btn-neon { background: rgba(0, 229, 255, 0.04); border: 1px solid rgba(0, 229, 255, 0.15); color: #00E5FF; padding: 0.5rem 1.4rem; border-radius: 60px; font-weight: 500; transition: all 0.3s; font-size: 0.85rem; letter-spacing: 0.3px; }
         .btn-neon:hover { background: rgba(0, 229, 255, 0.08); border-color: #00E5FF; box-shadow: 0 0 30px rgba(0, 229, 255, 0.06); transform: scale(1.02); }
 
-        .source-selector { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 40px; padding: 0.4rem 1rem; color: #aabbdd; font-size: 0.8rem; cursor: pointer; transition: 0.3s; min-width: 180px; }
+        .source-selector { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 40px; padding: 0.4rem 1rem; color: #aabbdd; font-size: 0.8rem; cursor: pointer; transition: 0.3s; min-width: 200px; }
         .source-selector:hover { border-color: rgba(0, 229, 255, 0.3); }
         .source-selector option { background: #0a0a0a; color: #e0e0e0; padding: 0.3rem; }
 
         .player-title { color: #aabbdd; font-weight: 400; letter-spacing: 0.3px; }
         .player-title strong { color: #00E5FF; font-weight: 600; }
-        .btn-abrir { background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 40px; padding: 0.5rem 1.5rem; color: #00E5FF; font-weight: 500; cursor: pointer; transition: all 0.3s; margin-top: 1rem; display: inline-block; text-decoration: none; font-size: 0.85rem; }
-        .btn-abrir:hover { background: rgba(0, 229, 255, 0.15); border-color: #00E5FF; transform: scale(1.02); }
 
         #episodes-wrapper { background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(0, 229, 255, 0.06); border-radius: 20px; padding: 1.2rem; margin-top: 1rem; display: none; max-height: 200px; overflow-y: auto; }
         #episodes-wrapper.active { display: block; }
@@ -75,16 +70,22 @@
         .player-error.visible { display: block; }
         .player-error i { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
 
+        .player-loading { display: none; background: rgba(0, 229, 255, 0.03); border: 1px solid rgba(0, 229, 255, 0.08); border-radius: 16px; padding: 1.5rem; text-align: center; margin-top: 1rem; color: #00E5FF; }
+        .player-loading.visible { display: block; }
+        .player-loading i { font-size: 2rem; margin-bottom: 0.5rem; display: block; animation: spin 1s linear infinite; }
+
         .player-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 0.5rem; padding: 0.5rem 0.2rem; }
         .player-controls .label { font-size: 0.7rem; color: #445566; letter-spacing: 0.3px; }
+
+        .btn-abrir { background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 40px; padding: 0.5rem 1.5rem; color: #00E5FF; font-weight: 500; cursor: pointer; transition: all 0.3s; margin-top: 0.5rem; display: inline-block; text-decoration: none; font-size: 0.85rem; }
+        .btn-abrir:hover { background: rgba(0, 229, 255, 0.15); border-color: #00E5FF; transform: scale(1.02); }
 
         @media (max-width: 640px) {
             .card-cyber { width: 160px; }
             .card-cyber .poster-wrapper { height: 220px; }
             .search-cyber { width: 180px; padding-left: 2.2rem; }
             .logo-glitch { font-size: 1.5rem; }
-            .source-selector { min-width: 140px; font-size: 0.7rem; }
-            #player-container iframe { height: 280px; }
+            .source-selector { min-width: 150px; font-size: 0.7rem; }
         }
     </style>
 </head>
@@ -126,17 +127,17 @@
 
     <section id="player-section" class="mt-6">
         <div id="player-container" class="relative">
-            <div id="fallbackMessage" class="fallback-message">
-                <i class="fas fa-film"></i>
-                <div class="title">🎬 Selecione um filme</div>
-                <div class="sub">Clique em um card para assistir</div>
-            </div>
             <iframe id="main-player" src="about:blank" allowfullscreen="true" allow="autoplay; encrypted-media; picture-in-picture" loading="lazy"></iframe>
+        </div>
+        
+        <div id="playerLoading" class="player-loading">
+            <i class="fas fa-spinner"></i>
+            <span>Carregando player com DUBLAGEM...</span>
         </div>
         
         <div id="playerError" class="player-error">
             <i class="fas fa-exclamation-triangle"></i>
-            <span>Não foi possível carregar no player. Clique no botão abaixo para abrir.</span>
+            <span>Não foi possível carregar o vídeo dublado. Tente outro servidor abaixo.</span>
         </div>
         
         <div class="player-controls">
@@ -146,8 +147,8 @@
             <div class="flex flex-wrap items-center gap-2 ml-auto">
                 <span class="label"><i class="fas fa-plug mr-1"></i>Fonte:</span>
                 <select id="sourceSelector" class="source-selector">
+                    <option value="superembed">🟣 SuperEmbed (Dublado)</option>
                     <option value="embedsu">🔵 EmbedSU</option>
-                    <option value="superembed">🟣 SuperEmbed</option>
                     <option value="vidsrc">🟢 VidSrc</option>
                     <option value="2embed">🟠 2Embed</option>
                 </select>
@@ -194,18 +195,18 @@
         ];
 
         // ================================================================
-        //  PROVIDERS - TODOS COM DUBLAGEM
+        //  PROVIDERS - TODOS CONFIGURADOS PARA DUBLAGEM PT-BR
         // ================================================================
         const PROVIDERS = {
+            'superembed': {
+                name: 'SuperEmbed',
+                movie: (id) => `https://getsuperembed.link/?video_id=${id}&player_bg_color=000000&player_primary_color=34cfeb&player_loader=1`,
+                series: (id, season, episode) => `https://getsuperembed.link/?video_id=${id}&season=${season}&episode=${episode}&player_bg_color=000000&player_primary_color=34cfeb&player_loader=1`
+            },
             'embedsu': {
                 name: 'EmbedSU',
                 movie: (id) => `https://embed.su/embed/movie/${id}`,
                 series: (id, season, episode) => `https://embed.su/embed/tv/${id}/${season}/${episode}`
-            },
-            'superembed': {
-                name: 'SuperEmbed',
-                movie: (id) => `https://superembed.stream/movie/${id}`,
-                series: (id, season, episode) => `https://superembed.stream/tv/${id}/${season}/${episode}`
             },
             'vidsrc': {
                 name: 'VidSrc',
@@ -218,6 +219,8 @@
                 series: (id, season, episode) => `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`
             }
         };
+
+        const FALLBACK_ORDER = ['superembed', 'embedsu', 'vidsrc', '2embed'];
 
         // ================================================================
         //  STATE
@@ -239,7 +242,6 @@
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
         const playerIframe = document.getElementById('main-player');
-        const fallbackMessage = document.getElementById('fallbackMessage');
         const movieTitlePlayer = document.getElementById('movieTitlePlayer');
         const sourceSelector = document.getElementById('sourceSelector');
         const episodesWrapper = document.getElementById('episodes-wrapper');
@@ -247,25 +249,61 @@
         const episodeLoader = document.getElementById('episodeLoader');
         const seasonDisplay = document.getElementById('seasonDisplay');
         const playerError = document.getElementById('playerError');
+        const playerLoading = document.getElementById('playerLoading');
 
         let currentFilter = 'all';
-        let isIframeLoaded = false;
+        let currentProviderIndex = 0;
+        let isRetrying = false;
 
         // ================================================================
-        //  UPDATE PLAYER
+        //  UPDATE PLAYER COM DUBLAGEM
         // ================================================================
         function updatePlayerSource() {
             if (!appState.currentId) {
-                playerIframe.style.display = 'none';
-                fallbackMessage.style.display = 'block';
+                playerIframe.src = 'about:blank';
                 playerError.classList.remove('visible');
+                playerLoading.classList.remove('visible');
                 movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme`;
                 return;
             }
 
-            const providerKey = sourceSelector.value;
-            const provider = PROVIDERS[providerKey] || PROVIDERS['embedsu'];
+            const selectedProvider = sourceSelector.value;
+
+            let providersToTry = [];
+            if (selectedProvider === 'superembed') {
+                // Se for SuperEmbed, tenta ele primeiro, depois fallback
+                providersToTry = ['superembed', ...FALLBACK_ORDER.filter(p => p !== 'superembed')];
+            } else if (PROVIDERS[selectedProvider]) {
+                providersToTry = [selectedProvider];
+            } else {
+                providersToTry = FALLBACK_ORDER;
+            }
+
+            currentProviderIndex = 0;
+            isRetrying = false;
+            tryLoadProvider(providersToTry);
+        }
+
+        function tryLoadProvider(providers) {
+            if (currentProviderIndex >= providers.length) {
+                playerError.classList.add('visible');
+                playerLoading.classList.remove('visible');
+                movieTitlePlayer.innerHTML = `<i class="fas fa-exclamation-circle text-[#ff6b6b] mr-2"></i> <strong>Erro</strong> — Nenhum provedor disponível com dublagem`;
+                return;
+            }
+
+            const providerKey = providers[currentProviderIndex];
+            const provider = PROVIDERS[providerKey];
             
+            if (!provider) {
+                currentProviderIndex++;
+                tryLoadProvider(providers);
+                return;
+            }
+
+            playerLoading.classList.add('visible');
+            playerError.classList.remove('visible');
+
             let url;
             if (appState.type === 'tv') {
                 url = provider.series(appState.currentId, appState.currentSeason, appState.currentEpisode);
@@ -273,46 +311,46 @@
                 url = provider.movie(appState.currentId);
             }
             
-            // Tenta carregar no iframe
-            playerIframe.style.display = 'block';
-            fallbackMessage.style.display = 'none';
-            playerError.classList.remove('visible');
             playerIframe.src = url;
             
+            const langLabel = '🇧🇷 Dublado';
             const typeLabel = appState.type === 'tv' 
                 ? `S${appState.currentSeason}E${appState.currentEpisode}` 
                 : 'Filme';
             
-            movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${appState.currentTitle}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${provider.name} · ${typeLabel}</span>`;
+            movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${appState.currentTitle}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${provider.name} · ${langLabel} · ${typeLabel}</span>`;
             
-            // Mostra botão de fallback se o iframe não carregar
-            setTimeout(() => {
+            let checkInterval = 0;
+            const maxChecks = 25;
+            const checkLoad = setInterval(() => {
+                checkInterval++;
                 try {
                     const src = playerIframe.src;
-                    if (!src || src === 'about:blank') {
-                        showFallbackButton(url);
+                    if (src && src !== 'about:blank' && !src.includes('about:blank')) {
+                        clearInterval(checkLoad);
+                        playerLoading.classList.remove('visible');
+                        return;
                     }
-                } catch (e) {
-                    showFallbackButton(url);
+                } catch (e) {}
+                
+                if (checkInterval >= maxChecks) {
+                    clearInterval(checkLoad);
+                    if (!isRetrying) {
+                        isRetrying = true;
+                        currentProviderIndex++;
+                        tryLoadProvider(providers);
+                    }
                 }
-            }, 5000);
+            }, 500);
             
-            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function showFallbackButton(url) {
-            const errorDiv = playerError;
-            errorDiv.classList.add('visible');
-            errorDiv.innerHTML = `
-                <i class="fas fa-external-link-alt"></i>
-                <span>O player não carregou automaticamente. Clique no botão para abrir em nova aba.</span>
-                <br><br>
-                <a href="${url}" target="_blank" class="btn-abrir">
-                    <i class="fas fa-play mr-2"></i> Assistir Agora
-                </a>
-                <br><br>
-                <span style="font-size:0.7rem;color:#445566;">(Dublado em português do Brasil)</span>
-            `;
+            setTimeout(() => {
+                clearInterval(checkLoad);
+                if (!isRetrying && checkInterval < maxChecks) {
+                    isRetrying = true;
+                    currentProviderIndex++;
+                    tryLoadProvider(providers);
+                }
+            }, 15000);
         }
 
         // ================================================================
@@ -427,8 +465,6 @@
                         episodesWrapper.classList.remove('active');
                     }
                     
-                    // Reset error
-                    playerError.classList.remove('visible');
                     updatePlayerSource();
                 });
                 
@@ -496,6 +532,7 @@
         sourceSelector.addEventListener('change', function() {
             if (appState.currentId) {
                 playerError.classList.remove('visible');
+                playerLoading.classList.remove('visible');
                 updatePlayerSource();
             }
         });
