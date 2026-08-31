@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ricoflix — Dublado PT-BR</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
@@ -37,13 +38,17 @@
         .scroll-neon { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 1.2rem; padding: 0.8rem 0.2rem 2rem 0.2rem; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
         .scroll-neon > * { flex: 0 0 auto; scroll-snap-align: start; }
 
-        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); box-shadow: 0 0 60px rgba(0, 229, 255, 0.02), inset 0 0 60px rgba(0, 229, 255, 0.01); position: relative; min-height: 420px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        #player-container .fallback-message { color: #445566; text-align: center; padding: 2rem; }
-        #player-container .fallback-message i { font-size: 3rem; color: #00E5FF; margin-bottom: 1rem; display: block; }
-        #player-container .fallback-message .title { color: #eef4ff; font-weight: 600; font-size: 1.2rem; margin-bottom: 0.5rem; }
-        #player-container .fallback-message .sub { font-size: 0.9rem; }
-        .btn-abrir { background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 40px; padding: 0.7rem 1.8rem; color: #00E5FF; font-weight: 500; cursor: pointer; transition: all 0.3s; margin-top: 1rem; display: inline-block; text-decoration: none; }
-        .btn-abrir:hover { background: rgba(0, 229, 255, 0.15); border-color: #00E5FF; transform: scale(1.02); }
+        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); box-shadow: 0 0 60px rgba(0, 229, 255, 0.02), inset 0 0 60px rgba(0, 229, 255, 0.01); position: relative; min-height: 420px; }
+        #player-container::before { content: ''; position: absolute; inset: -1px; border-radius: 28px; padding: 1px; background: linear-gradient(135deg, rgba(0, 229, 255, 0.1), rgba(180, 0, 255, 0.05)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+        #player-container .plyr { border-radius: 28px; background: #000; }
+        #player-container .plyr__video-wrapper { background: #000; }
+        #player-container .plyr__controls { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); border-top: 1px solid rgba(0, 229, 255, 0.05); }
+        .plyr__control--overlaid { background: rgba(0, 229, 255, 0.15) !important; border: 2px solid rgba(0, 229, 255, 0.3) !important; box-shadow: 0 0 60px rgba(0, 229, 255, 0.1) !important; backdrop-filter: blur(8px); }
+        .plyr__control--overlaid svg { fill: #00E5FF !important; }
+        .plyr__control--overlaid:hover { background: rgba(0, 229, 255, 0.25) !important; transform: scale(1.05); }
+        .plyr__progress__buffer { background: rgba(0, 229, 255, 0.08) !important; }
+        .plyr__progress--played, .plyr__progress--buffer { color: #00E5FF !important; }
+        .plyr__menu__container .plyr__control[role=menuitemradio][aria-checked=true]::before { background: #00E5FF !important; }
 
         .loader-neon { border: 2px solid rgba(0, 229, 255, 0.05); border-top: 2px solid #00E5FF; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.9s cubic-bezier(0.6, 0, 0.4, 1) infinite; box-shadow: 0 0 30px rgba(0, 229, 255, 0.05); margin: 2rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -60,9 +65,6 @@
         .player-title { color: #aabbdd; font-weight: 400; letter-spacing: 0.3px; }
         .player-title strong { color: #00E5FF; font-weight: 600; }
 
-        .player-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; margin-top: 0.5rem; padding: 0.5rem 0.2rem; }
-        .player-controls .label { font-size: 0.7rem; color: #445566; letter-spacing: 0.3px; }
-
         #episodes-wrapper { background: rgba(10, 10, 10, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(0, 229, 255, 0.06); border-radius: 20px; padding: 1.2rem; margin-top: 1rem; display: none; max-height: 200px; overflow-y: auto; }
         #episodes-wrapper.active { display: block; }
         #episodes-wrapper .episode-title { color: #00E5FF; font-size: 0.9rem; font-weight: 500; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem; }
@@ -70,6 +72,10 @@
         .episode-btn { background: rgba(0, 229, 255, 0.04); border: 1px solid rgba(0, 229, 255, 0.08); border-radius: 30px; padding: 0.4rem 1rem; color: #aabbdd; font-size: 0.75rem; cursor: pointer; transition: all 0.3s; font-weight: 400; letter-spacing: 0.3px; }
         .episode-btn:hover { background: rgba(0, 229, 255, 0.08); border-color: #00E5FF; color: #00E5FF; transform: scale(1.05); }
         .episode-btn.active { background: rgba(0, 229, 255, 0.12); border-color: #00E5FF; color: #00E5FF; box-shadow: 0 0 20px rgba(0, 229, 255, 0.05); }
+
+        .player-error { display: none; background: rgba(255, 0, 0, 0.05); border: 1px solid rgba(255, 0, 0, 0.1); border-radius: 16px; padding: 1.5rem; text-align: center; margin-top: 1rem; color: #ff6b6b; }
+        .player-error.visible { display: block; }
+        .player-error i { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
 
         @media (max-width: 640px) {
             .card-cyber { width: 160px; }
@@ -118,25 +124,23 @@
 
     <section id="player-section" class="mt-6">
         <div id="player-container" class="relative">
-            <div id="fallbackMessage" class="fallback-message">
-                <i class="fas fa-film"></i>
-                <div class="title">🎬 Selecione um filme</div>
-                <div class="sub">Clique em um card para assistir</div>
-            </div>
-            <iframe id="main-player" src="about:blank" class="w-full h-full border-0" allowfullscreen="true" allow="autoplay; encrypted-media; picture-in-picture" loading="lazy" style="display:none;"></iframe>
+            <video id="player" playsinline controls></video>
         </div>
         
-        <div class="player-controls">
-            <div class="flex flex-wrap items-center gap-3">
-                <span id="movieTitlePlayer" class="player-title text-sm"><i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme</span>
-            </div>
-            <div class="flex flex-wrap items-center gap-2 ml-auto">
-                <span class="label"><i class="fas fa-plug mr-1"></i>Fonte:</span>
+        <div id="playerError" class="player-error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Não foi possível carregar o vídeo. Tente outro servidor abaixo.</span>
+        </div>
+        
+        <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
+            <span id="movieTitlePlayer" class="player-title"><i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme</span>
+            <div class="flex items-center gap-2">
+                <span class="text-[10px] text-[#445566]"><i class="fas fa-plug text-[#00E5FF] mr-1"></i> Fonte:</span>
                 <select id="sourceSelector" class="source-selector">
-                    <option value="netmovies" selected>🎬 NetMovies (Dublado)</option>
-                    <option value="2embed">🔵 2Embed</option>
+                    <option value="redecanais">🔴 RedeCanais (Dublado)</option>
                     <option value="superembed">🟣 SuperEmbed</option>
                     <option value="vidsrc">🟢 VidSrc</option>
+                    <option value="2embed">🔵 2Embed</option>
                 </select>
             </div>
         </div>
@@ -153,150 +157,194 @@
         </div>
     </section>
 
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
     (function() {
         'use strict';
 
+        // ================================================================
+        //  CATÁLOGO COM CÓDIGOS REDECANAIS - TODOS DUBLADOS
+        // ================================================================
         const CATALOG = [
-            { id: 939243, title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie' },
-            { id: 533535, title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie' },
-            { id: 1022789, title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie' },
-            { id: 872585, title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie' },
-            { id: 693134, title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie' },
-            { id: 603692, title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie' },
-            { id: 245891, title: 'John Wick', year: '2014', poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', type: 'movie' },
-            { id: 324852, title: 'John Wick 2', year: '2017', poster: 'https://image.tmdb.org/t/p/w342/3bN7V5X9nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
-            { id: 458576, title: 'John Wick 3', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie' },
-            { id: 123456, title: 'Godzilla x Kong', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', type: 'movie' },
-            { id: 151667, title: 'Aranhaverso', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/xD1l6vW0V8K9W6X8p8A0zJ2fL.jpg', type: 'movie' },
-            { id: 234567, title: 'Furiosa', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/iDdF3vF0nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
-            { id: 100088, title: 'The Last of Us', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', type: 'tv' },
-            { id: 115713, title: 'The Bear', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/7H8Hk2W0U8V4K9W6X8p8A0zJ2fL.jpg', type: 'tv' },
-            { id: 76479, title: 'The Boys', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', type: 'tv' },
-            { id: 67744, title: 'Succession', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/7rTllR2Tx2UMj17HwDfB9TZ67jM.jpg', type: 'tv' },
-            { id: 66732, title: 'Stranger Things', year: '2016', poster: 'https://image.tmdb.org/t/p/w342/49WJfeN0E1p5R0Y2Q8yN1z3X9fA.jpg', type: 'tv' }
+            // FILMES
+            { id: 'sonic3', title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie', file: 'STHPRKT03' },
+            { id: 'deadpool3', title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie', file: 'DPRKT03' },
+            { id: 'divertidamente2', title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie', file: 'INSIDEOUT2' },
+            { id: 'oppenheimer', title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie', file: 'OPPENHEIMER' },
+            { id: 'duna2', title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie', file: 'DUNA2' },
+            { id: 'johnwick4', title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie', file: 'JWICK4' },
+            { id: 'johnwick', title: 'John Wick', year: '2014', poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', type: 'movie', file: 'JWICK1' },
+            { id: 'johnwick2', title: 'John Wick 2', year: '2017', poster: 'https://image.tmdb.org/t/p/w342/3bN7V5X9nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie', file: 'JWICK2' },
+            { id: 'johnwick3', title: 'John Wick 3', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', file: 'JWICK3' },
+            { id: 'godzillaxkong', title: 'Godzilla x Kong', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', type: 'movie', file: 'GODZILLAKONG' },
+            { id: 'insideout', title: 'Divertida Mente', year: '2015', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', file: 'INSIDEOUT' },
+            { id: 'thor4', title: 'Thor: Amor e Trovão', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', file: 'THOR4' },
+            
+            // SÉRIES
+            { id: 'lastofus', title: 'The Last of Us', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', type: 'tv', file: 'TLOU' },
+            { id: 'thebear', title: 'The Bear', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/7H8Hk2W0U8V4K9W6X8p8A0zJ2fL.jpg', type: 'tv', file: 'THEBEAR' },
+            { id: 'theboys', title: 'The Boys', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', type: 'tv', file: 'THEBOYS' },
+            { id: 'succession', title: 'Succession', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/7rTllR2Tx2UMj17HwDfB9TZ67jM.jpg', type: 'tv', file: 'SUCCESSION' },
+            { id: 'strangerthings', title: 'Stranger Things', year: '2016', poster: 'https://image.tmdb.org/t/p/w342/49WJfeN0E1p5R0Y2Q8yN1z3X9fA.jpg', type: 'tv', file: 'STRANGERTHINGS' }
         ];
 
         // ================================================================
-        //  PROVIDERS - NETMOVIES É O PRINCIPAL (DUBLADO)
+        //  SERVIDORES
         // ================================================================
         const PROVIDERS = {
-            'netmovies': {
-                name: 'NetMovies',
-                movie: (id, lang) => {
-                    // NetMovies tem versão web - tenta diferentes domínios
-                    return `https://netmovies.to/filme/${id}`;
+            'redecanais': {
+                name: 'RedeCanais',
+                movie: (file) => {
+                    return `https://cdnv4.ec.cx/RedeCanais/RedeCanais/RCFServer1/ondemand/${file}.mp4`;
                 },
-                series: (id, season, episode, lang) => {
-                    return `https://netmovies.to/serie/${id}`;
-                }
-            },
-            '2embed': {
-                name: '2Embed',
-                movie: (id, lang) => {
-                    if (lang === 'pt-BR') {
-                        return `https://www.2embed.cc/embed/${id}?lang=pt`;
-                    }
-                    return `https://www.2embed.cc/embed/${id}`;
-                },
-                series: (id, season, episode, lang) => {
-                    if (lang === 'pt-BR') {
-                        return `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}&lang=pt`;
-                    }
-                    return `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`;
+                series: (file, season, episode) => {
+                    const ep = String(episode).padStart(2, '0');
+                    const sea = String(season).padStart(2, '0');
+                    return `https://cdnv4.ec.cx/RedeCanais/RedeCanais/RCFServer1/ondemand/${file}S${sea}E${ep}.mp4`;
                 }
             },
             'superembed': {
                 name: 'SuperEmbed',
-                movie: (id, lang) => {
-                    if (lang === 'pt-BR') {
-                        return `https://superembed.stream/movie/${id}?lang=pt`;
-                    }
-                    return `https://superembed.stream/movie/${id}`;
-                },
-                series: (id, season, episode, lang) => {
-                    if (lang === 'pt-BR') {
-                        return `https://superembed.stream/tv/${id}/${season}/${episode}?lang=pt`;
-                    }
-                    return `https://superembed.stream/tv/${id}/${season}/${episode}`;
-                }
+                movie: (id) => `https://superembed.stream/movie/${id}`,
+                series: (id, season, episode) => `https://superembed.stream/tv/${id}/${season}/${episode}`
             },
             'vidsrc': {
                 name: 'VidSrc',
-                movie: (id, lang) => {
-                    if (lang === 'pt-BR') {
-                        return `https://vidsrc.xyz/embed/movie/${id}?lang=pt`;
-                    }
-                    return `https://vidsrc.xyz/embed/movie/${id}`;
-                },
-                series: (id, season, episode, lang) => {
-                    if (lang === 'pt-BR') {
-                        return `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}?lang=pt`;
-                    }
-                    return `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}`;
-                }
+                movie: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
+                series: (id, season, episode) => `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}`
+            },
+            '2embed': {
+                name: '2Embed',
+                movie: (id) => `https://www.2embed.cc/embed/${id}`,
+                series: (id, season, episode) => `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}`
             }
         };
 
-        const FALLBACK_ORDER = ['netmovies', '2embed', 'superembed', 'vidsrc'];
-
+        // ================================================================
+        //  STATE
+        // ================================================================
         const appState = {
             currentId: null,
+            currentFile: null,
             type: 'movie',
             currentSeason: 1,
             currentEpisode: 1,
-            currentTitle: '',
-            currentLanguage: 'pt-BR'
+            currentTitle: ''
         };
 
+        // ================================================================
+        //  DOM
+        // ================================================================
         const grid = document.getElementById('movieGrid');
         const loader = document.getElementById('loaderGrid');
         const noResults = document.getElementById('noResults');
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
-        const playerIframe = document.getElementById('main-player');
-        const fallbackMessage = document.getElementById('fallbackMessage');
+        const videoElement = document.getElementById('player');
         const movieTitlePlayer = document.getElementById('movieTitlePlayer');
         const sourceSelector = document.getElementById('sourceSelector');
         const episodesWrapper = document.getElementById('episodes-wrapper');
         const episodeGrid = document.getElementById('episodeGrid');
         const episodeLoader = document.getElementById('episodeLoader');
         const seasonDisplay = document.getElementById('seasonDisplay');
+        const playerError = document.getElementById('playerError');
 
+        let plyrInstance = null;
         let currentFilter = 'all';
 
         // ================================================================
-        //  UPDATE PLAYER COM NETMOVIES
+        //  PLYR INIT
+        // ================================================================
+        function initPlyr() {
+            if (plyrInstance) {
+                plyrInstance.destroy();
+            }
+            plyrInstance = new Plyr(videoElement, {
+                controls: [
+                    'play-large', 'play', 'progress', 'current-time', 'duration',
+                    'mute', 'volume', 'captions', 'settings', 'pip', 'fullscreen'
+                ],
+                settings: ['quality', 'speed'],
+                quality: { default: 720, options: [4320, 2160, 1440, 1080, 720, 480, 360] },
+                i18n: { quality: 'Qualidade', speed: 'Velocidade' }
+            });
+        }
+
+        // ================================================================
+        //  UPDATE PLAYER
         // ================================================================
         function updatePlayerSource() {
             if (!appState.currentId) {
-                playerIframe.style.display = 'none';
-                fallbackMessage.style.display = 'block';
+                videoElement.src = '';
+                videoElement.poster = '';
+                if (plyrInstance) plyrInstance.stop();
+                movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme`;
+                playerError.classList.remove('visible');
                 return;
             }
 
-            const selectedProvider = sourceSelector.value;
-            const provider = PROVIDERS[selectedProvider] || PROVIDERS['netmovies'];
+            const providerKey = sourceSelector.value;
+            const provider = PROVIDERS[providerKey] || PROVIDERS['redecanais'];
             
-            let url;
-            if (appState.type === 'tv') {
-                url = provider.series(appState.currentId, appState.currentSeason, appState.currentEpisode, 'pt-BR');
-            } else {
-                url = provider.movie(appState.currentId, 'pt-BR');
+            const movieData = CATALOG.find(m => m.id === appState.currentId);
+            
+            let url = '';
+            let isRedeCanais = false;
+
+            if (providerKey === 'redecanais' && movieData && movieData.file) {
+                isRedeCanais = true;
+                if (appState.type === 'tv') {
+                    url = provider.series(movieData.file, appState.currentSeason, appState.currentEpisode);
+                } else {
+                    url = provider.movie(movieData.file);
+                }
+                
+                // Tenta também com o servidor v2 se o v4 falhar
+                const urlFallback = url.replace('cdnv4.ec.cx/RedeCanais/RedeCanais/RCFServer1/ondemand', 'cdnv2.ec.cx/RedeCanais/RedeCanais/RCServer01/videos');
+                
+                // Usa o player HTML5 para RedeCanais
+                videoElement.src = url;
+                videoElement.type = 'video/mp4';
+                videoElement.poster = movieData?.poster || '';
+                videoElement.load();
+                
+                // Se falhar, tenta o fallback
+                videoElement.onerror = function() {
+                    if (this.src !== urlFallback) {
+                        this.src = urlFallback;
+                        this.load();
+                    } else {
+                        playerError.classList.add('visible');
+                        movieTitlePlayer.innerHTML = `<i class="fas fa-exclamation-circle text-[#ff6b6b] mr-2"></i> <strong>Erro</strong> — Vídeo não encontrado`;
+                    }
+                };
+                
+                if (plyrInstance) {
+                    setTimeout(() => plyrInstance.play(), 500);
+                }
+                
+                const typeLabel = appState.type === 'tv' 
+                    ? `S${appState.currentSeason}E${appState.currentEpisode}` 
+                    : 'Filme';
+                movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${appState.currentTitle}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${provider.name} · ${typeLabel} · Dublado</span>`;
+                
+                document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                return;
             }
-            
-            // Mostra o iframe
-            playerIframe.style.display = 'block';
-            fallbackMessage.style.display = 'none';
-            playerIframe.src = url;
-            
-            const typeLabel = appState.type === 'tv' 
-                ? `S${appState.currentSeason}E${appState.currentEpisode}` 
-                : 'Filme';
-            
-            movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${appState.currentTitle}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${provider.name} · ${typeLabel}</span>`;
-            
-            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Para outros provedores, abre em nova aba
+            if (!isRedeCanais) {
+                if (appState.type === 'tv') {
+                    url = provider.series(appState.currentId, appState.currentSeason, appState.currentEpisode);
+                } else {
+                    url = provider.movie(appState.currentId);
+                }
+                
+                if (url) {
+                    window.open(url, '_blank');
+                    movieTitlePlayer.innerHTML = `<i class="fas fa-external-link-alt text-[#00E5FF] mr-2"></i> <strong>${appState.currentTitle}</strong> <span class="text-[#445566] text-xs ml-2">⚡ Abrindo ${provider.name}...</span>`;
+                }
+            }
         }
 
         // ================================================================
@@ -308,49 +356,34 @@
             episodeLoader.style.display = 'flex';
             seasonDisplay.textContent = `Temporada ${seasonNum}`;
 
-            const episodesData = {
-                '100088': [
-                    { episode_number: 1 }, { episode_number: 2 }, { episode_number: 3 },
-                    { episode_number: 4 }, { episode_number: 5 }, { episode_number: 6 },
-                    { episode_number: 7 }, { episode_number: 8 }, { episode_number: 9 }
-                ],
-                '115713': [
-                    { episode_number: 1 }, { episode_number: 2 }, { episode_number: 3 },
-                    { episode_number: 4 }, { episode_number: 5 }, { episode_number: 6 },
-                    { episode_number: 7 }, { episode_number: 8 }
-                ],
-                '76479': [
-                    { episode_number: 1 }, { episode_number: 2 }, { episode_number: 3 },
-                    { episode_number: 4 }, { episode_number: 5 }, { episode_number: 6 },
-                    { episode_number: 7 }, { episode_number: 8 }
-                ]
+            const maxEpisodes = {
+                'lastofus': 9,
+                'thebear': 8,
+                'theboys': 8,
+                'succession': 10,
+                'strangerthings': 9
             };
 
-            const episodes = episodesData[String(seriesId)] || [];
+            const totalEpisodes = maxEpisodes[seriesId] || 10;
             episodeLoader.style.display = 'none';
 
-            if (episodes.length === 0) {
-                episodeGrid.innerHTML = `<span class="text-[#445566] text-sm">Episódios disponíveis em breve.</span>`;
-                return;
-            }
-
-            episodes.forEach(ep => {
+            for (let i = 1; i <= totalEpisodes; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'episode-btn';
-                if (ep.episode_number === appState.currentEpisode) {
+                if (i === appState.currentEpisode) {
                     btn.classList.add('active');
                 }
-                btn.textContent = `EP ${ep.episode_number}`;
+                btn.textContent = `EP ${i}`;
                 
                 btn.addEventListener('click', function() {
-                    appState.currentEpisode = ep.episode_number;
+                    appState.currentEpisode = i;
                     document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     updatePlayerSource();
                 });
                 
                 episodeGrid.appendChild(btn);
-            });
+            }
         }
 
         // ================================================================
@@ -377,6 +410,7 @@
                 card.setAttribute('data-id', id);
                 card.setAttribute('data-type', mediaType);
                 card.setAttribute('data-title', title);
+                card.setAttribute('data-file', movie.file || '');
                 
                 card.innerHTML = `
                     <div class="poster-wrapper">
@@ -398,8 +432,10 @@
                     const movieId = this.getAttribute('data-id');
                     const movieTitle = this.getAttribute('data-title') || 'Título';
                     const mediaType = this.getAttribute('data-type') || 'movie';
+                    const file = this.getAttribute('data-file') || '';
                     
                     appState.currentId = movieId;
+                    appState.currentFile = file;
                     appState.currentTitle = movieTitle;
                     appState.type = mediaType;
                     appState.currentSeason = 1;
@@ -418,6 +454,9 @@
             });
         }
 
+        // ================================================================
+        //  FILTERS
+        // ================================================================
         function filterCatalog(filter, query = '') {
             let filtered = [...CATALOG];
             
@@ -469,13 +508,20 @@
             loadCatalog('all', query);
         }
 
+        // ================================================================
+        //  SOURCE SELECTOR CHANGE
+        // ================================================================
         sourceSelector.addEventListener('change', function() {
             if (appState.currentId) {
                 updatePlayerSource();
             }
         });
 
+        // ================================================================
+        //  INIT
+        // ================================================================
         function init() {
+            initPlyr();
             loadCatalog('all');
 
             document.querySelectorAll('.tab-neon').forEach(tab => {
@@ -501,7 +547,7 @@
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
         <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span><i class="fas fa-language text-[#00E5FF] mr-1"></i> NetMovies · Dublagem Garantida</span>
+        <span><i class="fas fa-language text-[#00E5FF] mr-1"></i> TODOS OS TÍTULOS DUBLADOS</span>
     </footer>
 </body>
 </html>
