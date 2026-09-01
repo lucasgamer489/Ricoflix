@@ -3,54 +3,49 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricoflix — Sem Anúncios</title>
+    <title>Ricoflix — Stream Dublado</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
-        body { background: #000000; font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif; color: #e0e0e0; min-height: 100vh; }
+        body { background: #0a0a0a; font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif; color: #e0e0e0; min-height: 100vh; }
         
-        .card-cyber { width: 200px; background: #080808; border-radius: 24px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.04); transition: all 0.3s; cursor: pointer; flex-shrink: 0; }
-        .card-cyber:hover { transform: translateY(-6px) scale(1.02); border-color: #00E5FF; box-shadow: 0 0 30px rgba(0, 229, 255, 0.1); }
+        /* Cards */
+        .card-cyber { width: 200px; background: #111; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s; cursor: pointer; flex-shrink: 0; }
+        .card-cyber:hover { transform: translateY(-8px) scale(1.02); border-color: #00E5FF; box-shadow: 0 0 40px rgba(0,229,255,0.05); }
         .card-cyber .poster-wrapper { position: relative; width: 100%; height: 280px; background: #0a0a0a; overflow: hidden; }
         .card-cyber .poster-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .card-cyber .info { padding: 0.9rem; }
         .card-cyber .info h3 { font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #eef4ff; }
         .card-cyber .info .year { font-size: 0.75rem; color: #6688aa; }
-        .card-cyber .badge-type { font-size: 0.6rem; background: rgba(0, 229, 255, 0.06); border: 1px solid rgba(0, 229, 255, 0.08); padding: 0.15rem 0.7rem; border-radius: 40px; color: #88ccff; }
+        .card-cyber .badge-type { font-size: 0.6rem; background: rgba(0,229,255,0.06); border: 1px solid rgba(0,229,255,0.08); padding: 0.15rem 0.7rem; border-radius: 40px; color: #88ccff; }
         
         .scroll-neon { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 1.2rem; padding: 0.8rem 0.2rem 2rem 0.2rem; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
         .scroll-neon > * { flex: 0 0 auto; scroll-snap-align: start; }
         
-        .logo-glitch { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #00E5FF 0%, #b000ff 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-glitch { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #00E5FF 0%, #b000ff 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .btn-neon { background: rgba(0, 229, 255, 0.04); border: 1px solid rgba(0, 229, 255, 0.15); color: #00E5FF; padding: 0.5rem 1.4rem; border-radius: 60px; font-weight: 500; transition: all 0.3s; }
-        .btn-neon:hover { background: rgba(0, 229, 255, 0.08); border-color: #00E5FF; }
+        .btn-neon { background: rgba(0,229,255,0.04); border: 1px solid rgba(0,229,255,0.15); color: #00E5FF; padding: 0.5rem 1.4rem; border-radius: 60px; font-weight: 500; transition: all 0.3s; }
+        .btn-neon:hover { background: rgba(0,229,255,0.08); border-color: #00E5FF; }
         
-        .search-cyber { background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 60px; padding: 0.5rem 1.2rem 0.5rem 2.8rem; color: #f0f0f0; width: 260px; transition: all 0.3s; }
+        .search-cyber { background: rgba(0,0,0,0.7); border: 1px solid rgba(0,229,255,0.15); border-radius: 60px; padding: 0.5rem 1.2rem 0.5rem 2.8rem; color: #f0f0f0; width: 260px; transition: all 0.3s; }
         .search-cyber:focus { outline: none; border-color: #00E5FF; }
         .search-cyber::placeholder { color: #556677; }
         
-        .tab-neon { background: transparent; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 40px; padding: 0.5rem 1.2rem; color: #8899aa; transition: all 0.25s; cursor: pointer; }
-        .tab-neon.active { background: rgba(0, 229, 255, 0.08); border-color: #00E5FF; color: #00E5FF; }
+        .tab-neon { background: transparent; border: 1px solid rgba(255,255,255,0.06); border-radius: 40px; padding: 0.5rem 1.2rem; color: #8899aa; transition: all 0.25s; cursor: pointer; }
+        .tab-neon.active { background: rgba(0,229,255,0.08); border-color: #00E5FF; color: #00E5FF; }
         
-        .loader-neon { border: 2px solid rgba(0, 229, 255, 0.05); border-top: 2px solid #00E5FF; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.9s linear infinite; margin: 2rem auto; }
+        .loader-neon { border: 2px solid rgba(0,229,255,0.05); border-top: 2px solid #00E5FF; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.9s linear infinite; margin: 2rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); min-height: 420px; position: relative; }
+        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0,229,255,0.08); min-height: 420px; }
         #player-container iframe { width: 100%; height: 420px; border: none; background: #000; display: block; }
-        #player-container .plyr { border-radius: 28px; background: #000; }
-        #player-container .plyr__controls { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); border-top: 1px solid rgba(0, 229, 255, 0.05); }
-        .plyr__control--overlaid { background: rgba(0, 229, 255, 0.15) !important; border: 2px solid rgba(0, 229, 255, 0.3) !important; }
-        .plyr__control--overlaid svg { fill: #00E5FF !important; }
         
         .fallback-message { display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 3rem; text-align: center; color: #445566; }
         .fallback-message i { font-size: 3rem; color: #00E5FF; margin-bottom: 1rem; }
         .fallback-message .title { color: #eef4ff; font-size: 1.2rem; font-weight: 600; }
-        .fallback-message .sub { color: #556677; margin-top: 0.5rem; }
         
-        .source-selector { background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 40px; padding: 0.4rem 1rem; color: #aabbdd; font-size: 0.8rem; cursor: pointer; min-width: 180px; }
+        .source-selector { background: rgba(0,0,0,0.7); border: 1px solid rgba(0,229,255,0.15); border-radius: 40px; padding: 0.4rem 1rem; color: #aabbdd; font-size: 0.8rem; cursor: pointer; min-width: 180px; }
         .source-selector option { background: #0a0a0a; color: #e0e0e0; }
         
         @media (max-width: 640px) { .card-cyber { width: 160px; } .card-cyber .poster-wrapper { height: 220px; } .search-cyber { width: 180px; } #player-container iframe { height: 280px; } }
@@ -62,7 +57,7 @@
         <div class="flex items-center gap-3">
             <span class="logo-glitch">Ricoflix</span>
             <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">
-                <i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Anti-Popup
+                <i class="fas fa-play text-[#00E5FF] mr-1"></i> Dublado
             </span>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
@@ -79,7 +74,7 @@
         <span class="tab-neon" data-filter="movie">🎬 Filmes</span>
         <span class="tab-neon" data-filter="tv">📺 Séries</span>
         <span class="ml-auto text-[10px] text-[#445566]">
-            <i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Bloqueio de Pop-ups
+            <i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> Dublado PT-BR
         </span>
     </div>
 
@@ -94,24 +89,20 @@
     <section id="player-section" class="mt-6">
         <div id="player-container">
             <div id="fallbackMessage" class="fallback-message">
-                <i class="fas fa-shield-alt"></i>
-                <div class="title">🛡️ Player Seguro</div>
-                <div class="sub">Clique em um card para assistir sem pop-ups</div>
-                <div class="sub" style="font-size:0.7rem;color:#334455;margin-top:0.3rem;">
-                    <i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> 
-                    Dublagem em português · Bloqueio de anúncios
-                </div>
+                <i class="fas fa-film"></i>
+                <div class="title">🎬 Selecione um filme</div>
+                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir</div>
             </div>
-            <iframe id="playerIframe" src="about:blank" allowfullscreen="true" allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms" style="display:none;"></iframe>
+            <iframe id="playerIframe" src="about:blank" allowfullscreen="true" allow="autoplay; encrypted-media; picture-in-picture" style="display:none;"></iframe>
         </div>
         <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
             <span id="movieTitlePlayer" class="player-title"><i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme</span>
             <div class="flex items-center gap-2">
                 <span class="text-[10px] text-[#445566]"><i class="fas fa-plug mr-1"></i>Fonte:</span>
                 <select id="sourceSelector" class="source-selector">
-                    <option value="multiembed">🔴 MultiEmbed</option>
-                    <option value="vidsrc">🟢 VidSrc</option>
-                    <option value="superembed">🟣 SuperEmbed</option>
+                    <option value="multiembed">MultiEmbed</option>
+                    <option value="vidsrc">VidSrc</option>
+                    <option value="superembed">SuperEmbed</option>
                 </select>
             </div>
         </div>
@@ -122,58 +113,74 @@
         'use strict';
 
         // ================================================================
-        //  CATÁLOGO
+        //  CATÁLOGO COM TMDB
         // ================================================================
-        const CATALOG = [
-            { id: '939243', title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie' },
-            { id: '533535', title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie' },
-            { id: '1022789', title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie' },
-            { id: '872585', title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie' },
-            { id: '693134', title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie' },
-            { id: '603692', title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie' },
-            { id: '245891', title: 'John Wick', year: '2014', poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', type: 'movie' },
-            { id: '324852', title: 'John Wick 2', year: '2017', poster: 'https://image.tmdb.org/t/p/w342/3bN7V5X9nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
-            { id: '458576', title: 'John Wick 3', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie' },
-            { id: '123456', title: 'Godzilla x Kong', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', type: 'movie' },
-            { id: '151667', title: 'Aranhaverso', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/xD1l6vW0V8K9W6X8p8A0zJ2fL.jpg', type: 'movie' },
-            { id: '234567', title: 'Furiosa', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/iDdF3vF0nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
-            { id: '100088', title: 'The Last of Us', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', type: 'tv' },
-            { id: '115713', title: 'The Bear', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/7H8Hk2W0U8V4K9W6X8p8A0zJ2fL.jpg', type: 'tv' },
-            { id: '76479', title: 'The Boys', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', type: 'tv' },
-            { id: '67744', title: 'Succession', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/7rTllR2Tx2UMj17HwDfB9TZ67jM.jpg', type: 'tv' },
-            { id: '66732', title: 'Stranger Things', year: '2016', poster: 'https://image.tmdb.org/t/p/w342/49WJfeN0E1p5R0Y2Q8yN1z3X9fA.jpg', type: 'tv' }
+        const TMDB_API_KEY = 'ebea8cfca72fdff8d2624ad7bbf78e4c';
+        const IMG_BASE = 'https://image.tmdb.org/t/p/w342';
+
+        const MOVIE_IDS = [
+            '939243', // Sonic 3
+            '533535', // Deadpool 3
+            '1022789', // Divertida Mente 2
+            '872585', // Oppenheimer
+            '693134', // Duna 2
+            '603692'  // John Wick 4
         ];
 
+        let catalog = [];
+
         // ================================================================
-        //  FONTES - COM BLOQUEIO DE POP-UP
+        //  BUSCAR DADOS DA TMDB
+        // ================================================================
+        async function fetchMovies() {
+            try {
+                const movies = await Promise.all(
+                    MOVIE_IDS.map(async (id) => {
+                        const response = await fetch(
+                            `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=pt-BR`
+                        );
+                        if (!response.ok) return null;
+                        const data = await response.json();
+                        return {
+                            id: data.id,
+                            title: data.title,
+                            year: data.release_date ? data.release_date.slice(0,4) : '2026',
+                            poster: data.poster_path ? `${IMG_BASE}${data.poster_path}` : null,
+                            type: 'movie',
+                            overview: data.overview || ''
+                        };
+                    })
+                );
+                return movies.filter(m => m !== null);
+            } catch (error) {
+                console.warn('Erro ao buscar TMDB:', error);
+                // Fallback local
+                return [
+                    { id: '939243', title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie' },
+                    { id: '533535', title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie' },
+                    { id: '1022789', title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie' },
+                    { id: '872585', title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie' },
+                    { id: '693134', title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie' },
+                    { id: '603692', title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie' }
+                ];
+            }
+        }
+
+        // ================================================================
+        //  FONTES
         // ================================================================
         const SOURCES = {
             'multiembed': {
                 name: 'MultiEmbed',
-                url: (id, type, season, episode) => {
-                    if (type === 'tv') {
-                        return `https://multiembed.mov/?video_id=${id}&tmdb=1&lang=pt&season=${season}&episode=${episode}`;
-                    }
-                    return `https://multiembed.mov/?video_id=${id}&tmdb=1&lang=pt`;
-                }
+                url: (id) => `https://multiembed.mov/?video_id=${id}&tmdb=1&lang=pt`
             },
             'vidsrc': {
                 name: 'VidSrc',
-                url: (id, type, season, episode) => {
-                    if (type === 'tv') {
-                        return `https://vidsrc.xyz/embed/tv/${id}/${season}/${episode}?lang=pt`;
-                    }
-                    return `https://vidsrc.xyz/embed/movie/${id}?lang=pt`;
-                }
+                url: (id) => `https://vidsrc.xyz/embed/movie/${id}?lang=pt`
             },
             'superembed': {
                 name: 'SuperEmbed',
-                url: (id, type, season, episode) => {
-                    if (type === 'tv') {
-                        return `https://superembed.stream/tv/${id}/${season}/${episode}?lang=pt`;
-                    }
-                    return `https://superembed.stream/movie/${id}?lang=pt`;
-                }
+                url: (id) => `https://superembed.stream/movie/${id}?lang=pt`
             }
         };
 
@@ -194,7 +201,7 @@
         let currentMovie = null;
 
         // ================================================================
-        //  CARREGAR FILME - COM BLOQUEIO DE POP-UP
+        //  CARREGAR FILME (SEM SANDBOX)
         // ================================================================
         function loadMovie(movie) {
             currentMovie = movie;
@@ -202,24 +209,12 @@
             const sourceKey = sourceSelector.value;
             const source = SOURCES[sourceKey] || SOURCES['multiembed'];
             
-            let url;
-            if (movie.type === 'tv') {
-                url = source.url(movie.id, 'tv', 1, 1);
-            } else {
-                url = source.url(movie.id, 'movie');
-            }
+            const url = source.url(movie.id);
             
-            // Mostra o player com sandbox bloqueando pop-ups
             fallbackMessage.style.display = 'none';
             playerIframe.style.display = 'block';
+            playerIframe.src = url;
             
-            // Recarrega o iframe com a nova URL
-            playerIframe.src = 'about:blank';
-            setTimeout(() => {
-                playerIframe.src = url;
-            }, 100);
-            
-            // Atualiza título
             movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${movie.title}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${source.name} · Dublado</span>`;
             
             document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -241,7 +236,8 @@
                 card.className = 'card-cyber';
                 card.innerHTML = `
                     <div class="poster-wrapper">
-                        <img src="${movie.poster}" alt="${movie.title}" loading="lazy" 
+                        <img src="${movie.poster || 'https://via.placeholder.com/342x513/0a0a0a/334455?text=404'}" 
+                             alt="${movie.title}" loading="lazy" 
                              onerror="this.src='https://via.placeholder.com/342x513/0a0a0a/334455?text=404'" />
                         <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);padding:0.2rem 0.6rem;border-radius:40px;border:1px solid rgba(0,229,255,0.2);">
                             <span style="font-size:0.5rem;color:#00E5FF;">
@@ -272,7 +268,7 @@
         //  FILTROS
         // ================================================================
         function filterCatalog(filter, query = '') {
-            let filtered = [...CATALOG];
+            let filtered = [...catalog];
             if (filter === 'movie') {
                 filtered = filtered.filter(m => m.type === 'movie');
             } else if (filter === 'tv') {
@@ -285,9 +281,14 @@
             return filtered;
         }
 
-        function loadCatalog(filter = 'all', query = '') {
+        async function loadCatalog(filter = 'all', query = '') {
             const loaderElement = document.querySelector('#loaderGrid .loader-neon');
             if (loaderElement) loaderElement.style.display = 'block';
+            
+            if (catalog.length === 0) {
+                catalog = await fetchMovies();
+            }
+            
             const movies = filterCatalog(filter, query);
             if (loaderElement) loaderElement.style.display = 'none';
             renderMovies(movies);
@@ -345,8 +346,8 @@
     </script>
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
-        <span>© 2026 Ricoflix · Anti-Popup</span>
-        <span><i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Bloqueio de Anúncios</span>
+        <span>© 2026 Ricoflix · Dublado PT-BR</span>
+        <span><i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> Com TMDB</span>
     </footer>
 </body>
 </html>
