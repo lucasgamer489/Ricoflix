@@ -35,7 +35,6 @@
         .card-year { color: #bbb; font-size: 14px; }
         .card-badge { background: #00bcd4; color: #000; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
-        /* ===== ÁREA DA SÉRIE (EPISÓDIOS) ===== */
         .serie-area { display: none; padding: 40px 50px; max-width: 1400px; margin: 0 auto; }
         .voltar-btn { background: #333; border: none; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 30px; }
         .voltar-btn:hover { background: #555; }
@@ -54,10 +53,9 @@
         .ep-title { font-size: 18px; font-weight: bold; }
         .ep-desc { font-size: 14px; color: #888; line-height: 1.5; margin-top: 5px; }
 
-        /* ===== PLAYER ===== */
         .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
         .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 12px; overflow: hidden; }
-        .player-box video { width: 100%; height: 100%; }
+        .player-box iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
@@ -93,68 +91,28 @@
     </div>
 
     <script>
-        // ================= DADOS =================
+        // DADOS
         const filmes = [
-            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', 
-              img: 'https://upload.wikimedia.org/wikipedia/pt/8/89/Sonic_The_Hedgehog_3_p%C3%B4ster.png?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original', 
-              video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' },
-            
-            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', 
-              img: 'deadpool.jpg', 
-              video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' },
-            
-            { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', 
-              img: 'https://br.web.img3.acsta.net/r_1280_720/pictures/23/10/09/19/22/1150330.jpg' }
+            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'sonic.jpg', video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' },
+            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'deadpool.jpg', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' },
+            { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'gumball.jpg' }
         ];
 
-        // ================= EPISÓDIOS COMPLETOS DA 1ª TEMPORADA =================
         const seriesData = {
             'serie1': {
                 nome: 'O Incrível Mundo de Gumball',
                 temporadas: {
                     1: [
-                        { num: 1, titulo: 'O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável", enquanto inundam a casa.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP1_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d8a97b35-2578-44e9-835e-296095eb76cc/53d62f56599a91c276fcd83a6822ec175591683c.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 2, titulo: 'Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e se perdeu.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/c2b6a2d8-08b9-43ae-9721-e0b05496959e/619f40e4ce41d8672a1d5452285356f6493100fe.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo amigo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP3_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d2f6f5de-1c9e-40ca-9fbc-f4dbab8e9c16/e4ea763d35bb7e5212a4206e5f225b1592209414.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 4, titulo: 'A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP4_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/7aab9e37-373c-4d6d-a785-14874d568fb2/297baa056bac31b18c18989dbec92bd8d22c62af.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 5, titulo: 'O Fim', desc: 'Gumball e Darwin estão convencidos de que o mundo acabará em 24 horas.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP5_AQUI' },
-                        { num: 6, titulo: 'O Vestido', desc: 'Gumball vai para a escola de vestido e se torna a atração da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP6_AQUI' },
-                        { num: 7, titulo: 'A Busca', desc: 'Gumball e Darwin ajudam Anais a resgatar sua guia de uma loja de brinquedos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP7_AQUI' },
-                        { num: 8, titulo: 'A Colher', desc: 'Gumball e Darwin querem virar cúmplices de um roubo em um posto de gasolina.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP8_AQUI' },
-                        { num: 9, titulo: 'A Pressão', desc: 'Gumball tenta impressionar sua paixão, Penny, com um truque de mágica.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP9_AQUI' },
-                        { num: 10, titulo: 'O Desenho', desc: 'Gumball fica com ciúmes quando o desenho da sua família fica feio.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP10_AQUI' },
-                        { num: 11, titulo: 'O Preguiçoso', desc: 'Gumball e Darwin decidem fazer tudo o que o outro diz, causando caos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP11_AQUI' },
-                        { num: 12, titulo: 'O Fantasma', desc: 'Gumball tenta provar que a escola é assombrada por um fantasma.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP12_AQUI' },
-                        { num: 13, titulo: 'O Mistério', desc: 'A escola inteira está de olho em Gumball quando ele se torna um detetive.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP13_AQUI' },
-                        { num: 14, titulo: 'A Partida', desc: 'Gumball fica triste quando pensa que Darwin vai voltar para o oceano.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP14_AQUI' },
-                        { num: 15, titulo: 'O Karateca', desc: 'Gumball tenta aprender karatê para se defender de um valentão.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP15_AQUI' },
-                        { num: 16, titulo: 'O Beijo', desc: 'Gumball tenta beijar Penny, mas as coisas saem do controle.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP16_AQUI' },
-                        { num: 17, titulo: 'A Festa', desc: 'Gumball e Darwin vão a uma festa do pijama na casa da Srta. Simian.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP17_AQUI' },
-                        { num: 18, titulo: 'O Reembolso', desc: 'Gumball tenta devolver um brinquedo quebrado em uma loja.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP18_AQUI' },
-                        { num: 19, titulo: 'O Robô', desc: 'Gumball e Darwin constroem um robô para fazer as tarefas de casa.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP19_AQUI' },
-                        { num: 20, titulo: 'O Piquenique', desc: 'A família Watterson vai acampar e tudo dá errado.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP20_AQUI' },
-                        { num: 21, titulo: 'Os Tolos', desc: 'Gumball e Darwin tentam fazer uma pegadinha no Dia da Mentira.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP21_AQUI' },
-                        { num: 22, titulo: 'O Segredo', desc: 'Darwin não consegue guardar um segredo e acaba contando para todos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP22_AQUI' },
-                        { num: 23, titulo: 'A Meia', desc: 'Gumball e Darwin tem uma missão secreta para encontrar uma meia perdida.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP23_AQUI' },
-                        { num: 24, titulo: 'O Génio', desc: 'Gumball tenta provar que é um gênio para impressionar a escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP24_AQUI' },
-                        { num: 25, titulo: 'O Poltergeist', desc: 'A família Watterson começa a ser assombrada por um poltergeist.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP25_AQUI' },
-                        { num: 26, titulo: 'O Bigode', desc: 'Gumball e Darwin tentam fazer um bigode crescer no rosto de Richard.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP26_AQUI' },
-                        { num: 27, titulo: 'O Encontro', desc: 'Nicole e Richard tentam ter um encontro romântico, mas as crianças atrapalham.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP27_AQUI' },
-                        { num: 28, titulo: 'O Clube', desc: 'Gumball é expulso do clube da escola e decide criar o seu próprio.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP28_AQUI' },
-                        { num: 29, titulo: 'A Varinha', desc: 'Gumball encontra uma varinha mágica e decide mudar o mundo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP29_AQUI' },
-                        { num: 30, titulo: 'O Primata', desc: 'Darwin começa a agir como um macaco e Gumball tenta mudá-lo de volta.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP30_AQUI' },
-                        { num: 31, titulo: 'O Carro', desc: 'O carro da família Watterson quebra e eles tentam consertá-lo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP31_AQUI' },
-                        { num: 32, titulo: 'A Maldição', desc: 'Gumball tenta quebrar uma maldição que ele acha que colocou em si mesmo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP32_AQUI' },
-                        { num: 33, titulo: 'O Micro-ondas', desc: 'Gumball e Darwin usam um micro-ondas para viajar no tempo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP33_AQUI' },
-                        { num: 34, titulo: 'A Intrometida', desc: 'Gumball e Darwin tentam se livrar de uma visita indesejada.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP34_AQUI' },
-                        { num: 35, titulo: 'O Capacete', desc: 'Gumball ganha um capacete de bicicleta que o deixa com superpoderes.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP35_AQUI' },
-                        { num: 36, titulo: 'A Luta', desc: 'Gumball decide enfrentar Tobias em uma luta na escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP36_AQUI' }
+                        { num: 1, titulo: 'O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável".', video: 'https://superflix4k5.lol/anime/o-incrivel-mundo-de-gumball-2011', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d8a97b35-2578-44e9-835e-296095eb76cc/53d62f56599a91c276fcd83a6822ec175591683c.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
+                        { num: 2, titulo: 'Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/c2b6a2d8-08b9-43ae-9721-e0b05496959e/619f40e4ce41d8672a1d5452285356f6493100fe.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
+                        { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP3_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d2f6f5de-1c9e-40ca-9fbc-f4dbab8e9c16/e4ea763d35bb7e5212a4206e5f225b1592209414.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
+                        { num: 4, titulo: 'A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP4_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/7aab9e37-373c-4d6d-a785-14874d568fb2/297baa056bac31b18c18989dbec92bd8d22c62af.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' }
                     ]
                 }
             }
         };
 
-        // ================= LÓGICA =================
+        // LÓGICA
         function renderizarCatalogo() {
             const grid = document.getElementById('grid-catalogo');
             grid.innerHTML = '';
@@ -205,7 +163,6 @@
         function filtrar(tipo) {
             document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
-
             const grid = document.getElementById('grid-catalogo');
             grid.innerHTML = '';
             const listaFiltrada = tipo === 'tudo' ? filmes : filmes.filter(f => f.tipo === tipo);
@@ -237,11 +194,8 @@
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'block';
             
-            document.getElementById('player-box').innerHTML = `
-                <video controls autoplay>
-                    <source src="${linkVideo}" type="video/mp4">
-                </video>
-            `;
+            // USANDO IFRAME PARA REPRODUZIR O LINK DE OUTROS SITES
+            document.getElementById('player-box').innerHTML = `<iframe src="${linkVideo}" allowfullscreen></iframe>`;
         }
 
         function abrirSerie(id) {
@@ -264,11 +218,9 @@
         function mudarTemporada(idSerie, numTemp, btnClicado) {
             document.querySelectorAll('.temp-btn').forEach(b => b.classList.remove('active'));
             btnClicado.classList.add('active');
-
             const eps = seriesData[idSerie].temporadas[numTemp];
             const lista = document.getElementById('lista-episodios');
             lista.innerHTML = '';
-
             eps.forEach(ep => {
                 const thumbSrc = ep.img ? ep.img : `https://placehold.co/640x360/222/00bcd4?text=Epis%C3%B3dio+${ep.num}`;
                 
