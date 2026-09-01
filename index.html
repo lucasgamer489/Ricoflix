@@ -96,15 +96,15 @@
         // ================= DADOS =================
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', 
-              img: 'https://upload.wikimedia.org/wikipedia/pt/8/89/Sonic_The_Hedgehog_3_p%C3%B4ster.png?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original', 
+              img: 'sonic.jpg', 
               video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' },
             
             { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', 
-              img: 'https://nahativa.com.br/storage/2024/07/image_9b066416.jpeg', 
+              img: 'deadpool.jpg', 
               video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' },
             
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', 
-              img: 'https://br.web.img3.acsta.net/r_1280_720/pictures/23/10/09/19/22/1150330.jpg' }
+              img: 'gumball.jpg' }
         ];
 
         // ================= EPISÓDIOS COMPLETOS DA 1ª TEMPORADA =================
@@ -116,7 +116,7 @@
                         { num: 1, titulo: 'O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável", enquanto inundam a casa.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP1_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d8a97b35-2578-44e9-835e-296095eb76cc/53d62f56599a91c276fcd83a6822ec175591683c.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
                         { num: 2, titulo: 'Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e se perdeu.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/c2b6a2d8-08b9-43ae-9721-e0b05496959e/619f40e4ce41d8672a1d5452285356f6493100fe.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
                         { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo amigo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP3_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d2f6f5de-1c9e-40ca-9fbc-f4dbab8e9c16/e4ea763d35bb7e5212a4206e5f225b1592209414.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 4, titulo: 'A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP4_AQUI' },
+                        { num: 4, titulo: 'A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP4_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/7aab9e37-373c-4d6d-a785-14874d568fb2/297baa056bac31b18c18989dbec92bd8d22c62af.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
                         { num: 5, titulo: 'O Fim', desc: 'Gumball e Darwin estão convencidos de que o mundo acabará em 24 horas.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP5_AQUI' },
                         { num: 6, titulo: 'O Vestido', desc: 'Gumball vai para a escola de vestido e se torna a atração da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP6_AQUI' },
                         { num: 7, titulo: 'A Busca', desc: 'Gumball e Darwin ajudam Anais a resgatar sua guia de uma loja de brinquedos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP7_AQUI' },
@@ -269,7 +269,6 @@
             const lista = document.getElementById('lista-episodios');
             lista.innerHTML = '';
 
-            // Lógica especial: Se tiver imagem, usa; senão, gera uma capa automática bem bonita
             eps.forEach(ep => {
                 const thumbSrc = ep.img ? ep.img : `https://placehold.co/640x360/222/00bcd4?text=Epis%C3%B3dio+${ep.num}`;
                 
