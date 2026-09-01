@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ricoflix - Assistir Sonic 3</title>
     <style>
-        /* CSS - Estilização igual ao site */
+        /* CSS - Mantendo o visual que você gostou */
         body {
             background-color: #0f0f0f;
             color: #fff;
@@ -29,10 +29,9 @@
             position: relative;
         }
 
-        /* A área onde o filme aparece */
         #video-area {
             width: 100%;
-            aspect-ratio: 16 / 9; /* Mantém proporção de vídeo */
+            aspect-ratio: 16 / 9;
             background-color: #000;
             display: flex;
             justify-content: center;
@@ -45,7 +44,6 @@
             border: none;
         }
 
-        /* Estilo dos botões de canais */
         .player-controls {
             background-color: #1a1a1a;
             padding: 15px;
@@ -71,7 +69,7 @@
         }
 
         .tab-btn.active {
-            background-color: #006400; /* Verde escuro */
+            background-color: #006400;
             border-color: #00ff00;
         }
 
@@ -105,21 +103,17 @@
 
     <h1>Assistir Sonic 3: O Filme</h1>
 
-    <!-- O Player -->
     <div class="player-container">
         <div id="video-area">
-            <!-- O vídeo será injetado aqui pelo JavaScript -->
             <p style="color: #555;">Escolha um canal para começar</p>
         </div>
 
         <div class="player-controls">
-            <!-- Abas Dublado/Legendado -->
             <div class="tabs">
                 <button class="tab-btn active" onclick="mudarIdioma('dublado')">DUBLADO</button>
                 <button class="tab-btn" onclick="mudarIdioma('legendado')">LEGENDADO</button>
             </div>
 
-            <!-- Botões de Canal -->
             <div class="channel-buttons">
                 <button class="channel-btn" onclick="trocarVideo('1')">▶ Canal 1</button>
                 <button class="channel-btn" onclick="trocarVideo('2')">▶ Canal 2</button>
@@ -129,35 +123,26 @@
     </div>
 
     <script>
-        // ID do filme Sonic 3 no IMDB
-        const IMDB_ID = 'tt18259086';
-        
-        // Função para trocar o idioma (visual apenas, mas mantém o mesmo link por enquanto)
         function mudarIdioma(idioma) {
-            // Aqui você poderia trocar o link se tiver versões dubladas ou legendadas diferentes
             alert("Você selecionou: " + idioma.toUpperCase());
         }
 
-        // A FUNÇÃO PRINCIPAL: Troca o vídeo na tela
+        // TROCA AQUI OS LINKS PARA OS SERVIDORES QUE NÃO BLOQUEIAM
         function trocarVideo(canal) {
             const videoArea = document.getElementById('video-area');
-            
-            // Deixa a tela preta e mostra "Carregando"
             videoArea.innerHTML = '<p style="color: #fff;">Carregando Canal ' + canal + '...</p>';
 
-            // Lógica para pegar o link correto dependendo do canal
-            // Aqui você coloca os links que achou no Inspecionar!
             let linkDoVideo = '';
 
+            // Links de embed de terceiros que funcionam na maioria dos sites
             if (canal === '1') {
-                linkDoVideo = 'https://vidsrc.me/embed/movie?tt18259086'; // Link mais estável
+                linkDoVideo = 'https://embed.su/embed/movie/tt18259086'; 
             } else if (canal === '2') {
-                linkDoVideo = 'https://vidsrc.to/embed/movie/tt18259086'; // Link alternativo
+                linkDoVideo = 'https://vidsrc.to/embed/movie/tt18259086'; 
             } else {
-                linkDoVideo = 'https://embed.su/embed/movie/tt18259086'; // Link reserva
+                linkDoVideo = 'https://vidlink.pro/movie/tt18259086';
             }
 
-            // Injeta o Iframe na tela
             videoArea.innerHTML = `
                 <iframe 
                     src="${linkDoVideo}" 
