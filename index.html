@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Player Google</title>
+    <title>Ricoflix - Player Google Drive</title>
     <style>
         body {
             background-color: #0f0f0f;
@@ -19,12 +19,9 @@
             border-bottom: 1px solid #333;
         }
 
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #00bcd4;
-        }
+        .logo { font-size: 28px; font-weight: bold; color: #00bcd4; }
 
+        /* Catálogo */
         .catalogo-section { padding: 40px; }
         .grid-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         
@@ -41,8 +38,10 @@
         .card-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
         .card-meta { color: #888; font-size: 13px; }
 
+        /* Séries */
         .serie-area { display: none; padding: 40px; }
         .voltar-btn { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        .voltar-btn:hover { background: #555; }
         .temp-buttons { display: flex; gap: 10px; margin-bottom: 30px; }
         .temp-btn { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
         .temp-btn.active { background: #00bcd4; color: #000; font-weight: bold; }
@@ -53,11 +52,12 @@
         .ep-title { font-size: 16px; font-weight: bold; margin: 8px 0; }
         .ep-desc { font-size: 13px; color: #888; }
 
+        /* Player */
         .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
-        .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; }
+        .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         
-        /* O Iframe do Google ocupa 100% do espaço */
-        .player-box iframe { width: 100%; height: 100%; border: none; }
+        /* Tag de vídeo nativa */
+        .player-box video { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -80,18 +80,19 @@
     <div id="tela-player" class="player-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
         <div class="player-box" id="player-box">
-            <p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>
+            <p style="color:#555; text-align:center;">Carregando...</p>
         </div>
     </div>
 
     <script>
-        // ================= DADOS =================
+        // ================= DADOS (Use seus IDs do Drive aqui) =================
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
-              video: 'https://drive.google.com/file/d/1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q/preview' }, 
+              // MUITO IMPORTANTE: Formato usado para rodar no player HTML5
+              video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' }, 
             
             { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/cdNA3GO8tXgC7WnYgG3RzT0oG8F.jpg', 
-              video: 'https://drive.google.com/file/d/SEU_ID_DEADPOOL_AQUI/preview' },
+              video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' },
             
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'https://image.tmdb.org/t/p/w500/1d8Z1z5v7WcG7nJ0y2z0x5f0b8.jpg' }
         ];
@@ -101,8 +102,8 @@
                 nome: 'O Incrível Mundo de Gumball',
                 temporadas: {
                     1: [
-                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball prova que a escola é assombrada.', video: 'https://drive.google.com/file/d/SEU_ID_EP1_AQUI/preview' },
-                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser esperto.', video: 'https://drive.google.com/file/d/SEU_ID_EP2_AQUI/preview' }
+                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball prova que a escola é assombrada.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP1_AQUI' },
+                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser esperto.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI' }
                     ]
                 }
             }
@@ -130,14 +131,18 @@
             else abrirSerie(id);
         }
 
+        // AQUI É ONDE O VÍDEO RODA DE VERDADE
         function abrirPlayer(linkVideo) {
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'block';
 
-            // Injeta o Iframe do Google Drive aqui
+            // Usa a tag <video> para rodar o link direto do Drive
             document.getElementById('player-box').innerHTML = `
-                <iframe src="${linkVideo}" allow="autoplay"></iframe>
+                <video controls autoplay>
+                    <source src="${linkVideo}" type="video/mp4">
+                    Seu navegador não suporta vídeo HTML5.
+                </video>
             `;
         }
 
@@ -176,7 +181,7 @@
         }
 
         function voltarCatalogo() {
-            document.getElementById('player-box').innerHTML = '<p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>';
+            document.getElementById('player-box').innerHTML = '<p style="color:#555; text-align:center;">Carregando...</p>';
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'none';
             document.getElementById('tela-catalogo').style.display = 'block';
