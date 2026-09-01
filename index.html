@@ -3,13 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Player Profissional</title>
-    
-    <!-- CSS do Player Profissional (Video.js) -->
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-
+    <title>Ricoflix - Player Google</title>
     <style>
-        /* ================= ESTILO GERAL ================= */
         body {
             background-color: #0f0f0f;
             color: #fff;
@@ -19,101 +14,50 @@
         }
 
         header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 20px 40px;
             background-color: #141414;
             border-bottom: 1px solid #333;
-            position: sticky;
-            top: 0;
-            z-index: 100;
         }
 
         .logo {
             font-size: 28px;
             font-weight: bold;
             color: #00bcd4;
-            letter-spacing: 1px;
         }
 
-        /* ================= CATÁLOGO ================= */
-        .catalogo-section {
-            padding: 40px;
-        }
-
-        .filtros {
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        .filtro-btn {
-            background: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .filtro-btn.active { background: #00bcd4; color: #000; font-weight: bold; }
-
-        .grid-catalogo {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
+        .catalogo-section { padding: 40px; }
+        .grid-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        
         .card {
             background-color: #1a1a1a;
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: transform 0.3s;
         }
-
-        .card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-            border: 1px solid #00bcd4;
-        }
-
-        .card img {
-            width: 100%;
-            height: 280px;
-            object-fit: cover;
-            display: block;
-            background-color: #222;
-        }
-
+        .card:hover { transform: scale(1.05); border: 1px solid #00bcd4; }
+        .card img { width: 100%; height: 280px; object-fit: cover; }
         .card-info { padding: 15px; }
         .card-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
-        .card-meta { display: flex; justify-content: space-between; color: #888; font-size: 13px; }
-        .badge { background: #004d40; color: #00bcd4; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .card-meta { color: #888; font-size: 13px; }
 
-        /* ================= ÁREA DA SÉRIE ================= */
         .serie-area { display: none; padding: 40px; }
         .voltar-btn { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
-        .voltar-btn:hover { background: #555; }
         .temp-buttons { display: flex; gap: 10px; margin-bottom: 30px; }
         .temp-btn { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        .temp-btn.active { background: #00bcd4; border-color: #00bcd4; color: #000; font-weight: bold; }
+        .temp-btn.active { background: #00bcd4; color: #000; font-weight: bold; }
         .grid-episodios { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        
-        .ep-card { background: #1a1a1a; border-radius: 6px; padding: 15px; cursor: pointer; transition: 0.3s; border: 1px solid #222; }
-        .ep-card:hover { background: #222; border-color: #00bcd4; }
-        .ep-num { color: #00bcd4; font-weight: bold; margin-bottom: 8px; }
-        .ep-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .ep-card { background: #1a1a1a; border-radius: 6px; padding: 15px; cursor: pointer; transition: 0.3s; }
+        .ep-card:hover { background: #222; border: 1px solid #00bcd4; }
+        .ep-num { color: #00bcd4; font-weight: bold; }
+        .ep-title { font-size: 16px; font-weight: bold; margin: 8px 0; }
         .ep-desc { font-size: 13px; color: #888; }
 
-        /* ================= PLAYER PROFISSIONAL ================= */
         .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
-        .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+        .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; }
         
-        /* Ajustes no player Video.js para ficar preto e bonito */
-        .video-js { width: 100%; height: 100%; background-color: #000; }
+        /* O Iframe do Google ocupa 100% do espaço */
+        .player-box iframe { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
@@ -122,49 +66,33 @@
         <div class="logo">Ricoflix</div>
     </header>
 
-    <!-- CATÁLOGO -->
     <div id="tela-catalogo" class="catalogo-section">
-        <div class="filtros">
-            <button class="filtro-btn active" onclick="filtrar('tudo')">Tudo</button>
-            <button class="filtro-btn" onclick="filtrar('filme')">Filmes</button>
-            <button class="filtro-btn" onclick="filtrar('serie')">Séries</button>
-        </div>
         <div class="grid-catalogo" id="grid-catalogo"></div>
     </div>
 
-    <!-- SÉRIE -->
     <div id="tela-serie" class="serie-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar ao Catálogo</button>
-        <h1 id="titulo-serie" style="margin-bottom: 20px;"></h1>
+        <h1 id="titulo-serie"></h1>
         <div class="temp-buttons" id="botoes-temporada"></div>
         <div class="grid-episodios" id="lista-episodios"></div>
     </div>
 
-    <!-- PLAYER -->
     <div id="tela-player" class="player-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
-        <div class="player-box">
-            <!-- O player profissional entra aqui -->
-            <video id="meu-player" class="video-js vjs-default-skin" controls preload="auto"></video>
+        <div class="player-box" id="player-box">
+            <p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>
         </div>
     </div>
 
-    <!-- Script do Player Profissional (Video.js) -->
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-
     <script>
         // ================= DADOS =================
-        // IMPORTANTE: Substitua os links abaixo pelos seus links do Google Drive (formato /preview)
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
-              video: 'https://drive.google.com/file/d/1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q/preview' }, // SEU LINK DO DRIVE AQUI!
+              video: 'https://drive.google.com/file/d/1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q/preview' }, 
             
             { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/cdNA3GO8tXgC7WnYgG3RzT0oG8F.jpg', 
               video: 'https://drive.google.com/file/d/SEU_ID_DEADPOOL_AQUI/preview' },
-
-            { id: 'filme3', titulo: 'Divertida Mente 2', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/xZm0F5YgR4pS0rT9QwA5fX0S8eN.jpg', 
-              video: 'https://drive.google.com/file/d/SEU_ID_DIVERTIDA_AQUI/preview' },
-
+            
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'https://image.tmdb.org/t/p/w500/1d8Z1z5v7WcG7nJ0y2z0x5f0b8.jpg' }
         ];
 
@@ -173,43 +101,24 @@
                 nome: 'O Incrível Mundo de Gumball',
                 temporadas: {
                     1: [
-                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball tenta provar que a escola é assombrada.', video: 'https://drive.google.com/file/d/SEU_ID_EP1_AQUI/preview' },
-                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser mais esperto que Gumball.', video: 'https://drive.google.com/file/d/SEU_ID_EP2_AQUI/preview' }
+                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball prova que a escola é assombrada.', video: 'https://drive.google.com/file/d/SEU_ID_EP1_AQUI/preview' },
+                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser esperto.', video: 'https://drive.google.com/file/d/SEU_ID_EP2_AQUI/preview' }
                     ]
                 }
             }
         };
 
-        // ================= FUNÇÕES =================
+        // ================= LÓGICA =================
         function renderizarCatalogo() {
             const grid = document.getElementById('grid-catalogo');
             grid.innerHTML = '';
             filmes.forEach(item => {
-                const tipoBadge = item.tipo === 'filme' ? 'Filme' : 'Série';
                 grid.innerHTML += `
                     <div class="card" onclick="abrirItem('${item.id}')">
                         <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/222/555?text=Ricoflix'">
                         <div class="card-info">
                             <div class="card-title">${item.titulo}</div>
-                            <div class="card-meta"><span>${item.ano}</span><span class="badge">${tipoBadge}</span></div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function filtrar(tipo) {
-            document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            const grid = document.getElementById('grid-catalogo');
-            grid.innerHTML = '';
-            const listaFiltrada = tipo === 'tudo' ? filmes : filmes.filter(f => f.tipo === tipo);
-            listaFiltrada.forEach(item => {
-                grid.innerHTML += `
-                    <div class="card" onclick="abrirItem('${item.id}')">
-                        <img src="${item.img}">
-                        <div class="card-info">
-                            <div class="card-title">${item.titulo}</div>
-                            <div class="card-meta"><span>${item.ano}</span><span class="badge">${item.tipo === 'filme' ? 'Filme' : 'Série'}</span></div>
+                            <div class="card-meta"><span>${item.ano}</span></div>
                         </div>
                     </div>`;
             });
@@ -217,32 +126,24 @@
 
         function abrirItem(id) {
             const item = filmes.find(f => f.id === id);
-            if (item.tipo === 'filme') abrirPlayer(item.video, item.titulo);
+            if (item.tipo === 'filme') abrirPlayer(item.video);
             else abrirSerie(id);
         }
 
-        function abrirPlayer(linkVideo, titulo) {
+        function abrirPlayer(linkVideo) {
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'block';
 
-            // Destruir player antigo se existir
-            if (videojs.getPlayer('meu-player')) {
-                videojs.getPlayer('meu-player').dispose();
-            }
-
-            // Criar novo player com o link do Drive
-            videojs('meu-player', {}, function() {
-                var player = this;
-                player.src({ src: linkVideo, type: 'video/mp4' });
-                player.play();
-            });
+            // Injeta o Iframe do Google Drive aqui
+            document.getElementById('player-box').innerHTML = `
+                <iframe src="${linkVideo}" allow="autoplay"></iframe>
+            `;
         }
 
         function abrirSerie(id) {
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-player').style.display = 'none';
-            
             const serie = seriesData[id];
             document.getElementById('titulo-serie').innerText = serie.nome;
             
@@ -260,14 +161,13 @@
             document.querySelectorAll('.temp-btn').forEach(b => b.classList.remove('active'));
             btnClicado.classList.add('active');
 
-            const serie = seriesData[idSerie];
-            const eps = serie.temporadas[numTemp];
+            const eps = seriesData[idSerie].temporadas[numTemp];
             const lista = document.getElementById('lista-episodios');
             lista.innerHTML = '';
 
             eps.forEach(ep => {
                 lista.innerHTML += `
-                    <div class="ep-card" onclick="abrirPlayer('${ep.video}', '${serie.nome} - T${numTemp} Ep ${ep.num}')">
+                    <div class="ep-card" onclick="abrirPlayer('${ep.video}')">
                         <div class="ep-num">Episódio ${ep.num}</div>
                         <div class="ep-title">${ep.titulo}</div>
                         <div class="ep-desc">${ep.desc}</div>
@@ -276,17 +176,13 @@
         }
 
         function voltarCatalogo() {
-            // Destruir player e limpar tela
-            if (videojs.getPlayer('meu-player')) {
-                videojs.getPlayer('meu-player').dispose();
-            }
+            document.getElementById('player-box').innerHTML = '<p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>';
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'none';
             document.getElementById('tela-catalogo').style.display = 'block';
             renderizarCatalogo();
         }
 
-        // Inicia o site
         window.onload = renderizarCatalogo;
     </script>
 </body>
