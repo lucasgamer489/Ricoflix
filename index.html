@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" />
     <style>
         * {
             margin: 0;
@@ -219,15 +218,6 @@
             font-weight: 600;
         }
 
-        .dub-badge {
-            background: rgba(0, 229, 255, 0.06);
-            border: 1px solid rgba(0, 229, 255, 0.08);
-            padding: 0.1rem 0.6rem;
-            border-radius: 40px;
-            color: #00E5FF;
-            font-size: 0.6rem;
-        }
-
         @media (max-width: 640px) {
             .card {
                 width: 160px;
@@ -279,7 +269,7 @@
             <template x-for="movie in filteredMovies" :key="movie.id">
                 <div class="card" @click="loadMovie(movie)">
                     <div class="poster-wrapper">
-                        <img :src="movie.poster || 'https://via.placeholder.com/342x513/0a0a0a/334455?text=404'" :alt="movie.title" loading="lazy" />
+                        <img :src="movie.poster" :alt="movie.title" loading="lazy" />
                         <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);padding:0.2rem 0.6rem;border-radius:40px;border:1px solid rgba(0,229,255,0.2);">
                             <span style="font-size:0.5rem;color:#00E5FF;">DUB</span>
                         </div>
@@ -383,43 +373,51 @@
                 },
 
                 async fetchMovies() {
-                    const TMDB_API_KEY = 'ebea8cfca72fdff8d2624ad7bbf78e4c';
-                    const IMG_BASE = 'https://image.tmdb.org/t/p/w342';
+                    const MOVIES = [{
+                        id: 'sonic3',
+                        title: 'Sonic 3',
+                        year: '2024',
+                        poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
+                        type: 'movie',
+                        video: 'https://anonmp4.art/stream/3F23Ihvy1KPOKNe.mp4'
+                    }, {
+                        id: 'deadpool3',
+                        title: 'Deadpool 3',
+                        year: '2024',
+                        poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg',
+                        type: 'movie',
+                        video: null
+                    }, {
+                        id: 'divertidamente2',
+                        title: 'Divertida Mente 2',
+                        year: '2024',
+                        poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg',
+                        type: 'movie',
+                        video: null
+                    }, {
+                        id: 'oppenheimer',
+                        title: 'Oppenheimer',
+                        year: '2023',
+                        poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
+                        type: 'movie',
+                        video: null
+                    }, {
+                        id: 'duna2',
+                        title: 'Duna: Parte 2',
+                        year: '2024',
+                        poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
+                        type: 'movie',
+                        video: null
+                    }, {
+                        id: 'johnwick4',
+                        title: 'John Wick 4',
+                        year: '2023',
+                        poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg',
+                        type: 'movie',
+                        video: null
+                    }];
 
-                    const MOVIES = [
-                        { id: '939243', title: 'Sonic 3', year: '2024', video: 'https://anonmp4.art/stream/3F23Ihvy1KPOKNe.mp4', type: 'movie' },
-                        { id: '533535', title: 'Deadpool 3', year: '2024', video: null, type: 'movie' },
-                        { id: '1022789', title: 'Divertida Mente 2', year: '2024', video: null, type: 'movie' },
-                        { id: '872585', title: 'Oppenheimer', year: '2023', video: null, type: 'movie' },
-                        { id: '693134', title: 'Duna 2', year: '2024', video: null, type: 'movie' },
-                        { id: '603692', title: 'John Wick 4', year: '2023', video: null, type: 'movie' }
-                    ];
-
-                    try {
-                        const moviesWithPoster = await Promise.all(
-                            MOVIES.map(async (movie) => {
-                                const response = await fetch(
-                                    `https://api.themoviedb.org/3/movie/${movie.id}?api_key=${TMDB_API_KEY}&language=pt-BR`
-                                );
-                                let poster = movie.poster || null;
-                                if (response.ok) {
-                                    const data = await response.json();
-                                    poster = data.poster_path ? `${IMG_BASE}${data.poster_path}` : poster;
-                                }
-                                return {
-                                    ...movie,
-                                    poster: poster || 'https://via.placeholder.com/342x513/0a0a0a/334455?text=404'
-                                };
-                            })
-                        );
-                        return moviesWithPoster;
-                    } catch (error) {
-                        console.warn('Erro ao buscar TMDB:', error);
-                        return MOVIES.map(m => ({
-                            ...m,
-                            poster: 'https://via.placeholder.com/342x513/0a0a0a/334455?text=404'
-                        }));
-                    }
+                    return MOVIES;
                 },
 
                 loadMovie(movie) {
@@ -433,14 +431,14 @@
                         videoElement.style.display = 'none';
                         placeholder.innerHTML = `
                             <div class="icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#ff6b6b;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
                                     <circle cx="12" cy="12" r="10" />
                                     <line x1="12" y1="8" x2="12" y2="12" />
                                     <line x1="12" y1="16" x2="12.01" y2="16" />
                                 </svg>
                             </div>
-                            <div class="title" style="color:#ff6b6b;">Vídeo indisponível</div>
-                            <div class="sub" style="color:#445566;margin-top:0.5rem;">Este título ainda não foi hospedado</div>
+                            <div class="title">Em breve</div>
+                            <div class="sub" style="color:#445566;margin-top:0.5rem;">Este título ainda está sendo hospedado</div>
                         `;
                         return;
                     }
@@ -473,7 +471,7 @@
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
         <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span><i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> Player Nativo · Sem Anúncios</span>
+        <span>Player Nativo · Sem Anúncios</span>
     </footer>
 </body>
 </html>
