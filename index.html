@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricoflix — Player Rápido</title>
+    <title>Ricoflix — Sem Anúncios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -53,11 +53,6 @@
         .source-selector { background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 40px; padding: 0.4rem 1rem; color: #aabbdd; font-size: 0.8rem; cursor: pointer; min-width: 180px; }
         .source-selector option { background: #0a0a0a; color: #e0e0e0; }
         
-        .dub-badge { background: rgba(0, 229, 255, 0.06); border: 1px solid rgba(0, 229, 255, 0.08); padding: 0.1rem 0.6rem; border-radius: 40px; color: #00E5FF; font-size: 0.6rem; }
-        
-        .server-selector { display: flex; align-items: center; gap: 0.8rem; }
-        .server-selector label { font-size: 0.7rem; color: #445566; }
-        
         @media (max-width: 640px) { .card-cyber { width: 160px; } .card-cyber .poster-wrapper { height: 220px; } .search-cyber { width: 180px; } #player-container iframe { height: 280px; } }
     </style>
 </head>
@@ -67,7 +62,7 @@
         <div class="flex items-center gap-3">
             <span class="logo-glitch">Ricoflix</span>
             <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">
-                <i class="fas fa-bolt text-[#00E5FF] mr-1"></i> Rápido
+                <i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Anti-Popup
             </span>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
@@ -84,7 +79,7 @@
         <span class="tab-neon" data-filter="movie">🎬 Filmes</span>
         <span class="tab-neon" data-filter="tv">📺 Séries</span>
         <span class="ml-auto text-[10px] text-[#445566]">
-            <i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> Dublado PT-BR
+            <i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Bloqueio de Pop-ups
         </span>
     </div>
 
@@ -99,22 +94,22 @@
     <section id="player-section" class="mt-6">
         <div id="player-container">
             <div id="fallbackMessage" class="fallback-message">
-                <i class="fas fa-bolt"></i>
-                <div class="title">⚡ Player Rápido</div>
-                <div class="sub">Clique em um card para assistir instantaneamente</div>
+                <i class="fas fa-shield-alt"></i>
+                <div class="title">🛡️ Player Seguro</div>
+                <div class="sub">Clique em um card para assistir sem pop-ups</div>
                 <div class="sub" style="font-size:0.7rem;color:#334455;margin-top:0.3rem;">
                     <i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> 
-                    Dublagem em português · Sem demora
+                    Dublagem em português · Bloqueio de anúncios
                 </div>
             </div>
-            <iframe id="playerIframe" src="about:blank" allowfullscreen="true" allow="autoplay; encrypted-media; picture-in-picture" style="display:none;"></iframe>
+            <iframe id="playerIframe" src="about:blank" allowfullscreen="true" allow="autoplay; encrypted-media; picture-in-picture" sandbox="allow-scripts allow-same-origin allow-forms" style="display:none;"></iframe>
         </div>
         <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
             <span id="movieTitlePlayer" class="player-title"><i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme</span>
             <div class="flex items-center gap-2">
                 <span class="text-[10px] text-[#445566]"><i class="fas fa-plug mr-1"></i>Fonte:</span>
                 <select id="sourceSelector" class="source-selector">
-                    <option value="multiembed">🔴 MultiEmbed (4K)</option>
+                    <option value="multiembed">🔴 MultiEmbed</option>
                     <option value="vidsrc">🟢 VidSrc</option>
                     <option value="superembed">🟣 SuperEmbed</option>
                 </select>
@@ -150,11 +145,11 @@
         ];
 
         // ================================================================
-        //  FONTES RÁPIDAS
+        //  FONTES - COM BLOQUEIO DE POP-UP
         // ================================================================
         const SOURCES = {
             'multiembed': {
-                name: 'MultiEmbed (4K)',
+                name: 'MultiEmbed',
                 url: (id, type, season, episode) => {
                     if (type === 'tv') {
                         return `https://multiembed.mov/?video_id=${id}&tmdb=1&lang=pt&season=${season}&episode=${episode}`;
@@ -199,7 +194,7 @@
         let currentMovie = null;
 
         // ================================================================
-        //  CARREGAR FILME - INSTANTÂNEO
+        //  CARREGAR FILME - COM BLOQUEIO DE POP-UP
         // ================================================================
         function loadMovie(movie) {
             currentMovie = movie;
@@ -214,10 +209,15 @@
                 url = source.url(movie.id, 'movie');
             }
             
-            // Mostra o player imediatamente
+            // Mostra o player com sandbox bloqueando pop-ups
             fallbackMessage.style.display = 'none';
             playerIframe.style.display = 'block';
-            playerIframe.src = url;
+            
+            // Recarrega o iframe com a nova URL
+            playerIframe.src = 'about:blank';
+            setTimeout(() => {
+                playerIframe.src = url;
+            }, 100);
             
             // Atualiza título
             movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${movie.title}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${source.name} · Dublado</span>`;
@@ -345,8 +345,8 @@
     </script>
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
-        <span>© 2026 Ricoflix · Player Rápido</span>
-        <span><i class="fas fa-bolt text-[#00E5FF] mr-1"></i> Instantâneo · Dublado PT-BR</span>
+        <span>© 2026 Ricoflix · Anti-Popup</span>
+        <span><i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Bloqueio de Anúncios</span>
     </footer>
 </body>
 </html>
