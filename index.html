@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Catálogo Premium</title>
+    <title>Ricoflix - Player Profissional</title>
+    
+    <!-- CSS do Player Profissional (Video.js) -->
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+
     <style>
         /* ================= ESTILO GERAL ================= */
         body {
@@ -14,7 +18,6 @@
             padding: 0;
         }
 
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -32,21 +35,6 @@
             font-weight: bold;
             color: #00bcd4;
             letter-spacing: 1px;
-        }
-
-        .search-bar {
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-bar input {
-            background: #222;
-            border: 1px solid #444;
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: white;
-            outline: none;
-            width: 250px;
         }
 
         /* ================= CATÁLOGO ================= */
@@ -70,12 +58,7 @@
             transition: 0.3s;
         }
 
-        .filtro-btn.active {
-            background: #00bcd4;
-            border-color: #00bcd4;
-            color: #000;
-            font-weight: bold;
-        }
+        .filtro-btn.active { background: #00bcd4; color: #000; font-weight: bold; }
 
         .grid-catalogo {
             display: grid;
@@ -83,14 +66,12 @@
             gap: 20px;
         }
 
-        /* Estilo dos Cards */
         .card {
             background-color: #1a1a1a;
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
             transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
         }
 
         .card:hover {
@@ -107,252 +88,156 @@
             background-color: #222;
         }
 
-        .card-info {
-            padding: 15px;
-        }
+        .card-info { padding: 15px; }
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
+        .card-meta { display: flex; justify-content: space-between; color: #888; font-size: 13px; }
+        .badge { background: #004d40; color: #00bcd4; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
 
-        .card-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #888;
-            font-size: 13px;
-        }
-
-        .badge {
-            background: #004d40;
-            color: #00bcd4;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-        }
-
-        /* ================= ÁREA DA SÉRIE (EPISÓDIOS) ================= */
-        .serie-area {
-            display: none; /* Escondido até clicar na série */
-            padding: 40px;
-        }
-
-        .voltar-btn {
-            background: #333;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-
+        /* ================= ÁREA DA SÉRIE ================= */
+        .serie-area { display: none; padding: 40px; }
+        .voltar-btn { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
         .voltar-btn:hover { background: #555; }
-
-        .temp-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-        }
-
-        .temp-btn {
-            background: #222;
-            border: 1px solid #444;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .temp-btn.active {
-            background: #00bcd4;
-            border-color: #00bcd4;
-            color: #000;
-            font-weight: bold;
-        }
-
-        .grid-episodios {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .ep-card {
-            background: #1a1a1a;
-            border-radius: 6px;
-            padding: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-            border: 1px solid #222;
-        }
-
-        .ep-card:hover {
-            background: #222;
-            border-color: #00bcd4;
-        }
-
-        .ep-num {
-            color: #00bcd4;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
+        .temp-buttons { display: flex; gap: 10px; margin-bottom: 30px; }
+        .temp-btn { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .temp-btn.active { background: #00bcd4; border-color: #00bcd4; color: #000; font-weight: bold; }
+        .grid-episodios { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
+        
+        .ep-card { background: #1a1a1a; border-radius: 6px; padding: 15px; cursor: pointer; transition: 0.3s; border: 1px solid #222; }
+        .ep-card:hover { background: #222; border-color: #00bcd4; }
+        .ep-num { color: #00bcd4; font-weight: bold; margin-bottom: 8px; }
         .ep-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
         .ep-desc { font-size: 13px; color: #888; }
 
-        /* ================= PLAYER ================= */
-        .player-area {
-            display: none; /* Escondido até clicar em algo */
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .player-box {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: black;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-
-        iframe { width: 100%; height: 100%; border: none; }
+        /* ================= PLAYER PROFISSIONAL ================= */
+        .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
+        
+        /* Ajustes no player Video.js para ficar preto e bonito */
+        .video-js { width: 100%; height: 100%; background-color: #000; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">Ricoflix</div>
-        <div class="search-bar">
-            <input type="text" placeholder="Buscar filmes e séries...">
-            <button style="background:#00bcd4; border:none; padding: 8px 15px; border-radius: 20px; cursor:pointer;">Ir</button>
-        </div>
     </header>
 
-    <!-- ÁREA DO CATÁLOGO -->
+    <!-- CATÁLOGO -->
     <div id="tela-catalogo" class="catalogo-section">
         <div class="filtros">
             <button class="filtro-btn active" onclick="filtrar('tudo')">Tudo</button>
             <button class="filtro-btn" onclick="filtrar('filme')">Filmes</button>
             <button class="filtro-btn" onclick="filtrar('serie')">Séries</button>
         </div>
-
-        <div class="grid-catalogo" id="grid-catalogo">
-            <!-- Cards gerados via JavaScript -->
-        </div>
+        <div class="grid-catalogo" id="grid-catalogo"></div>
     </div>
 
-    <!-- ÁREA DA SÉRIE (MOSTRA EPISÓDIOS) -->
+    <!-- SÉRIE -->
     <div id="tela-serie" class="serie-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar ao Catálogo</button>
-        <h1 id="titulo-serie" style="margin-bottom: 20px;">O Incrível Mundo de Gumball</h1>
-        
+        <h1 id="titulo-serie" style="margin-bottom: 20px;"></h1>
         <div class="temp-buttons" id="botoes-temporada"></div>
         <div class="grid-episodios" id="lista-episodios"></div>
     </div>
 
-    <!-- ÁREA DO PLAYER -->
+    <!-- PLAYER -->
     <div id="tela-player" class="player-area">
-        <button class="voltar-btn" onclick="voltarParaOrigem()">← Voltar</button>
-        <div class="player-box" id="player-box">
-            <p style="color:#555; text-align:center; margin-top: 200px;">Escolha um canal para assistir</p>
+        <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
+        <div class="player-box">
+            <!-- O player profissional entra aqui -->
+            <video id="meu-player" class="video-js vjs-default-skin" controls preload="auto"></video>
         </div>
-        <h2 id="titulo-player" style="margin-top:0;">Assistindo...</h2>
     </div>
 
+    <!-- Script do Player Profissional (Video.js) -->
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
     <script>
-        // ================= DADOS (SIMULANDO UM BANCO DE DADOS) =================
+        // ================= DADOS =================
+        // IMPORTANTE: Substitua os links abaixo pelos seus links do Google Drive (formato /preview)
         const filmes = [
-            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg' },
-            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/cdNA3GO8tXgC7WnYgG3RzT0oG8F.jpg' },
-            { id: 'filme3', titulo: 'Divertida Mente 2', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/xZm0F5YgR4pS0rT9QwA5fX0S8eN.jpg' },
-            { id: 'filme4', titulo: 'Oppenheimer', ano: 2023, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg' },
-            { id: 'filme5', titulo: 'Duna: Parte 2', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg' },
+            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
+              video: 'https://drive.google.com/file/d/1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q/preview' }, // SEU LINK DO DRIVE AQUI!
+            
+            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/cdNA3GO8tXgC7WnYgG3RzT0oG8F.jpg', 
+              video: 'https://drive.google.com/file/d/SEU_ID_DEADPOOL_AQUI/preview' },
+
+            { id: 'filme3', titulo: 'Divertida Mente 2', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/xZm0F5YgR4pS0rT9QwA5fX0S8eN.jpg', 
+              video: 'https://drive.google.com/file/d/SEU_ID_DIVERTIDA_AQUI/preview' },
+
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'https://image.tmdb.org/t/p/w500/1d8Z1z5v7WcG7nJ0y2z0x5f0b8.jpg' }
         ];
 
-        // Dados da Série (Episódios)
         const seriesData = {
             'serie1': {
                 nome: 'O Incrível Mundo de Gumball',
                 temporadas: {
                     1: [
-                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball tenta provar que a escola é assombrada.' },
-                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser mais esperto que Gumball.' }
-                    ],
-                    2: [
-                        { num: 1, titulo: 'A Entrevista', desc: 'Gumball estraga uma entrevista na TV.' },
-                        { num: 2, titulo: 'A Vingança', desc: 'Darwin se cansa das travessuras de Gumball.' }
+                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball tenta provar que a escola é assombrada.', video: 'https://drive.google.com/file/d/SEU_ID_EP1_AQUI/preview' },
+                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser mais esperto que Gumball.', video: 'https://drive.google.com/file/d/SEU_ID_EP2_AQUI/preview' }
                     ]
                 }
             }
         };
 
-        // ================= LÓGICA DA INTERFACE =================
-
+        // ================= FUNÇÕES =================
         function renderizarCatalogo() {
             const grid = document.getElementById('grid-catalogo');
             grid.innerHTML = '';
-
             filmes.forEach(item => {
-                const tipoBadge = item.tipo === 'filme' ? 'Filme' : 'Série';
-                const cardHTML = `
-                    <div class="card" onclick="abrirItem('${item.id}')">
-                        <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/222/555?text=Ricoflix'" alt="${item.titulo}">
-                        <div class="card-info">
-                            <div class="card-title">${item.titulo}</div>
-                            <div class="card-meta">
-                                <span>${item.ano}</span>
-                                <span class="badge">${tipoBadge}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += cardHTML;
-            });
-        }
-
-        function filtrar(tipo) {
-            // Atualiza botões
-            document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            const grid = document.getElementById('grid-catalogo');
-            grid.innerHTML = '';
-
-            const listaFiltrada = tipo === 'tudo' ? filmes : filmes.filter(f => f.tipo === tipo);
-            
-            listaFiltrada.forEach(item => {
                 const tipoBadge = item.tipo === 'filme' ? 'Filme' : 'Série';
                 grid.innerHTML += `
                     <div class="card" onclick="abrirItem('${item.id}')">
                         <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/222/555?text=Ricoflix'">
                         <div class="card-info">
                             <div class="card-title">${item.titulo}</div>
-                            <div class="card-meta">
-                                <span>${item.ano}</span>
-                                <span class="badge">${tipoBadge}</span>
-                            </div>
+                            <div class="card-meta"><span>${item.ano}</span><span class="badge">${tipoBadge}</span></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
+            });
+        }
+
+        function filtrar(tipo) {
+            document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            const grid = document.getElementById('grid-catalogo');
+            grid.innerHTML = '';
+            const listaFiltrada = tipo === 'tudo' ? filmes : filmes.filter(f => f.tipo === tipo);
+            listaFiltrada.forEach(item => {
+                grid.innerHTML += `
+                    <div class="card" onclick="abrirItem('${item.id}')">
+                        <img src="${item.img}">
+                        <div class="card-info">
+                            <div class="card-title">${item.titulo}</div>
+                            <div class="card-meta"><span>${item.ano}</span><span class="badge">${item.tipo === 'filme' ? 'Filme' : 'Série'}</span></div>
+                        </div>
+                    </div>`;
             });
         }
 
         function abrirItem(id) {
             const item = filmes.find(f => f.id === id);
-
-            if (item.tipo === 'filme') {
-                abrirPlayer(id, item.titulo);
-            } else {
-                abrirSerie(id);
-            }
+            if (item.tipo === 'filme') abrirPlayer(item.video, item.titulo);
+            else abrirSerie(id);
         }
 
-        // ================= LÓGICA DA SÉRIE =================
+        function abrirPlayer(linkVideo, titulo) {
+            document.getElementById('tela-catalogo').style.display = 'none';
+            document.getElementById('tela-serie').style.display = 'none';
+            document.getElementById('tela-player').style.display = 'block';
+
+            // Destruir player antigo se existir
+            if (videojs.getPlayer('meu-player')) {
+                videojs.getPlayer('meu-player').dispose();
+            }
+
+            // Criar novo player com o link do Drive
+            videojs('meu-player', {}, function() {
+                var player = this;
+                player.src({ src: linkVideo, type: 'video/mp4' });
+                player.play();
+            });
+        }
 
         function abrirSerie(id) {
             document.getElementById('tela-catalogo').style.display = 'none';
@@ -361,74 +246,47 @@
             const serie = seriesData[id];
             document.getElementById('titulo-serie').innerText = serie.nome;
             
-            // Cria botões de temporada
             const botoesTemp = document.getElementById('botoes-temporada');
             botoesTemp.innerHTML = '';
             Object.keys(serie.temporadas).forEach(temp => {
                 botoesTemp.innerHTML += `<button class="temp-btn" onclick="mudarTemporada('${id}', ${temp}, this)">Temporada ${temp}</button>`;
             });
 
-            // Mostra a tela da série
             document.getElementById('tela-serie').style.display = 'block';
             mudarTemporada(id, 1, botoesTemp.firstChild);
         }
 
         function mudarTemporada(idSerie, numTemp, btnClicado) {
-            // Ativa visual do botão
             document.querySelectorAll('.temp-btn').forEach(b => b.classList.remove('active'));
             btnClicado.classList.add('active');
 
             const serie = seriesData[idSerie];
             const eps = serie.temporadas[numTemp];
-            
             const lista = document.getElementById('lista-episodios');
             lista.innerHTML = '';
 
             eps.forEach(ep => {
                 lista.innerHTML += `
-                    <div class="ep-card" onclick="abrirPlayer('${idSerie}-t${numTemp}-e${ep.num}', '${serie.nome} - T${numTemp} Ep ${ep.num}')">
+                    <div class="ep-card" onclick="abrirPlayer('${ep.video}', '${serie.nome} - T${numTemp} Ep ${ep.num}')">
                         <div class="ep-num">Episódio ${ep.num}</div>
                         <div class="ep-title">${ep.titulo}</div>
                         <div class="ep-desc">${ep.desc}</div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
-        // ================= LÓGICA DO PLAYER =================
-
-        function abrirPlayer(idItem, titulo) {
-            document.getElementById('tela-catalogo').style.display = 'none';
-            document.getElementById('tela-serie').style.display = 'none';
-            
-            document.getElementById('titulo-player').innerText = titulo;
-            document.getElementById('tela-player').style.display = 'block';
-
-            // Coloca o iframe do Sonic 3 por padrão (para testar), 
-            // mas o ideal é ter um banco de dados com links para cada filme/episódio.
-            const playerBox = document.getElementById('player-box');
-            playerBox.innerHTML = `
-                <iframe 
-                    src="https://vidsrc.to/embed/movie/tt18259086" 
-                    frameborder="0" 
-                    allow="autoplay; encrypted-media; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
-            `;
-        }
-
         function voltarCatalogo() {
+            // Destruir player e limpar tela
+            if (videojs.getPlayer('meu-player')) {
+                videojs.getPlayer('meu-player').dispose();
+            }
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'none';
             document.getElementById('tela-catalogo').style.display = 'block';
             renderizarCatalogo();
         }
 
-        function voltarParaOrigem() {
-            voltarCatalogo();
-        }
-
-        // Inicializa o catálogo ao carregar a página
+        // Inicia o site
         window.onload = renderizarCatalogo;
     </script>
 </body>
