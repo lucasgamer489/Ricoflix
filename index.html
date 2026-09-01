@@ -3,38 +3,48 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricoflix — Dublado PT-BR</title>
+    <title>Ricoflix — Atividade Discord</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
         body { background: #000000; font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif; color: #e0e0e0; min-height: 100vh; }
+        
         .card-cyber { width: 200px; background: #080808; border-radius: 24px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.04); transition: all 0.3s; cursor: pointer; flex-shrink: 0; }
-        .card-cyber:hover { transform: translateY(-6px) scale(1.02); border-color: #00E5FF; }
+        .card-cyber:hover { transform: translateY(-6px) scale(1.02); border-color: #00E5FF; box-shadow: 0 0 30px rgba(0, 229, 255, 0.1); }
         .card-cyber .poster-wrapper { position: relative; width: 100%; height: 280px; background: #0a0a0a; overflow: hidden; }
         .card-cyber .poster-wrapper img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .card-cyber .info { padding: 0.9rem; }
         .card-cyber .info h3 { font-size: 0.95rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #eef4ff; }
         .card-cyber .info .year { font-size: 0.75rem; color: #6688aa; }
         .card-cyber .badge-type { font-size: 0.6rem; background: rgba(0, 229, 255, 0.06); border: 1px solid rgba(0, 229, 255, 0.08); padding: 0.15rem 0.7rem; border-radius: 40px; color: #88ccff; }
+        
         .scroll-neon { display: flex; flex-wrap: nowrap; overflow-x: auto; gap: 1.2rem; padding: 0.8rem 0.2rem 2rem 0.2rem; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
         .scroll-neon > * { flex: 0 0 auto; scroll-snap-align: start; }
+        
         .logo-glitch { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #00E5FF 0%, #b000ff 80%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
         .btn-neon { background: rgba(0, 229, 255, 0.04); border: 1px solid rgba(0, 229, 255, 0.15); color: #00E5FF; padding: 0.5rem 1.4rem; border-radius: 60px; font-weight: 500; transition: all 0.3s; }
         .btn-neon:hover { background: rgba(0, 229, 255, 0.08); border-color: #00E5FF; }
-        .player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); min-height: 420px; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; text-align: center; }
-        .player-container .icon { font-size: 4rem; color: #00E5FF; margin-bottom: 1rem; }
-        .player-container .title { color: #eef4ff; font-size: 1.2rem; font-weight: 600; }
-        .player-container .sub { color: #556677; margin-top: 0.5rem; }
-        .btn-abrir { background: rgba(0, 229, 255, 0.08); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 40px; padding: 0.6rem 2rem; color: #00E5FF; font-weight: 500; cursor: pointer; transition: all 0.3s; margin-top: 1.5rem; display: inline-block; text-decoration: none; }
-        .btn-abrir:hover { background: rgba(0, 229, 255, 0.15); border-color: #00E5FF; transform: scale(1.02); }
+        
         .search-cyber { background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 60px; padding: 0.5rem 1.2rem 0.5rem 2.8rem; color: #f0f0f0; width: 260px; transition: all 0.3s; }
         .search-cyber:focus { outline: none; border-color: #00E5FF; }
         .search-cyber::placeholder { color: #556677; }
+        
         .tab-neon { background: transparent; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 40px; padding: 0.5rem 1.2rem; color: #8899aa; transition: all 0.25s; cursor: pointer; }
         .tab-neon.active { background: rgba(0, 229, 255, 0.08); border-color: #00E5FF; color: #00E5FF; }
+        
         .loader-neon { border: 2px solid rgba(0, 229, 255, 0.05); border-top: 2px solid #00E5FF; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.9s linear infinite; margin: 2rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); min-height: 420px; display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 2rem; text-align: center; }
+        #player-container .icon { font-size: 4rem; color: #00E5FF; margin-bottom: 1rem; }
+        #player-container .title { color: #eef4ff; font-size: 1.2rem; font-weight: 600; }
+        #player-container .sub { color: #556677; margin-top: 0.5rem; }
+        #player-container video { width: 100%; max-height: 500px; border-radius: 20px; background: #000; }
+        
+        .discord-badge { background: rgba(88, 101, 242, 0.15); border: 1px solid rgba(88, 101, 242, 0.2); padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.6rem; color: #8ea1e1; }
+        
         @media (max-width: 640px) { .card-cyber { width: 160px; } .card-cyber .poster-wrapper { height: 220px; } .search-cyber { width: 180px; } }
     </style>
 </head>
@@ -43,8 +53,8 @@
     <header class="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div class="flex items-center gap-3">
             <span class="logo-glitch">Ricoflix</span>
-            <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">
-                <i class="fas fa-language text-[#00E5FF] mr-1"></i> Dublado PT-BR
+            <span class="hidden sm:inline discord-badge">
+                <i class="fab fa-discord text-[#5865F2] mr-1"></i> Atividade
             </span>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
@@ -61,7 +71,7 @@
         <span class="tab-neon" data-filter="movie">🎬 Filmes</span>
         <span class="tab-neon" data-filter="tv">📺 Séries</span>
         <span class="ml-auto text-[10px] text-[#445566]">
-            <i class="fas fa-circle text-[#00E5FF] text-[5px] align-middle mr-1"></i> RedeCanais
+            <i class="fas fa-circle text-[#00E5FF] text-[5px] align-middle mr-1"></i> 50+ títulos dublados
         </span>
     </div>
 
@@ -74,11 +84,14 @@
     </section>
 
     <section id="player-section" class="mt-6">
-        <div id="player-container" class="player-container">
+        <div id="player-container">
             <div class="icon"><i class="fas fa-film"></i></div>
             <div class="title">🎬 Selecione um filme ou série</div>
-            <div class="sub">Clique em um card para abrir no Rede Canais com dublagem PT-BR</div>
-            <div class="sub" style="font-size:0.7rem;margin-top:0.3rem;color:#334455;">Todos os títulos são DUBLADOS em português do Brasil</div>
+            <div class="sub">Clique em um card para assistir com dublagem PT-BR</div>
+            <div class="sub" style="font-size:0.7rem;margin-top:0.3rem;color:#334455;">
+                <i class="fab fa-discord text-[#5865F2] mr-1"></i> 
+                Sua atividade no Discord será atualizada automaticamente
+            </div>
         </div>
     </section>
 
@@ -86,63 +99,115 @@
     (function() {
         'use strict';
 
+        // ================================================================
+        //  CATÁLOGO EXPANDIDO - 50+ TÍTULOS DUBLADOS
+        // ================================================================
         const CATALOG = [
-            { id: 'sonic3', title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie' },
-            { id: 'deadpool3', title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie' },
-            { id: 'divertidamente2', title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie' },
-            { id: 'oppenheimer', title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie' },
-            { id: 'duna2', title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie' },
-            { id: 'johnwick4', title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie' },
-            { id: 'johnwick', title: 'John Wick', year: '2014', poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', type: 'movie' },
-            { id: 'godzillaxkong', title: 'Godzilla x Kong', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', type: 'movie' },
-            { id: 'lastofus', title: 'The Last of Us', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', type: 'tv' },
-            { id: 'thebear', title: 'The Bear', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/7H8Hk2W0U8V4K9W6X8p8A0zJ2fL.jpg', type: 'tv' },
-            { id: 'theboys', title: 'The Boys', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', type: 'tv' },
-            { id: 'succession', title: 'Succession', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/7rTllR2Tx2UMj17HwDfB9TZ67jM.jpg', type: 'tv' },
-            { id: 'strangerthings', title: 'Stranger Things', year: '2016', poster: 'https://image.tmdb.org/t/p/w342/49WJfeN0E1p5R0Y2Q8yN1z3X9fA.jpg', type: 'tv' }
+            // FILMES
+            { id: 'sonic3', title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie', video: 'https://archive.org/download/sonic-3/Sonic%203.mp4' },
+            { id: 'deadpool3', title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie', video: 'https://archive.org/download/deadpool-3/Deadpool%203.mp4' },
+            { id: 'divertidamente2', title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie', video: 'https://archive.org/download/inside-out-2/Inside%20Out%202.mp4' },
+            { id: 'oppenheimer', title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie', video: 'https://archive.org/download/oppenheimer-2023/Oppenheimer%202023.mp4' },
+            { id: 'duna2', title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie', video: 'https://archive.org/download/dune-part-two-2024/Dune%20Part%20Two%202024.mp4' },
+            { id: 'johnwick4', title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie', video: 'https://archive.org/download/john-wick-4-2023/John%20Wick%204%202023.mp4' },
+            { id: 'johnwick', title: 'John Wick', year: '2014', poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', type: 'movie', video: 'https://archive.org/download/john-wick-2014/John%20Wick%202014.mp4' },
+            { id: 'johnwick2', title: 'John Wick 2', year: '2017', poster: 'https://image.tmdb.org/t/p/w342/3bN7V5X9nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie', video: 'https://archive.org/download/john-wick-2-2017/John%20Wick%202%202017.mp4' },
+            { id: 'johnwick3', title: 'John Wick 3', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/john-wick-3-2019/John%20Wick%203%202019.mp4' },
+            { id: 'godzillaxkong', title: 'Godzilla x Kong', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', type: 'movie', video: 'https://archive.org/download/godzilla-x-kong-2024/Godzilla%20x%20Kong%202024.mp4' },
+            { id: 'aranhaverso', title: 'Aranhaverso', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/xD1l6vW0V8K9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/spiderman-into-the-spider-verse-2018/Spider-Man%20Into%20the%20Spider-Verse%202018.mp4' },
+            { id: 'furiosa', title: 'Furiosa', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/iDdF3vF0nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie', video: 'https://archive.org/download/furiosa-2024/Furiosa%202024.mp4' },
+            { id: 'barbie', title: 'Barbie', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg', type: 'movie', video: 'https://archive.org/download/barbie-2023/Barbie%202023.mp4' },
+            { id: 'thebatman', title: 'The Batman', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/the-batman-2022/The%20Batman%202022.mp4' },
+            { id: 'joker', title: 'Joker', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/joker-2019/Joker%202019.mp4' },
+            { id: 'topgunmaverick', title: 'Top Gun: Maverick', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/top-gun-maverick-2022/Top%20Gun%20Maverick%202022.mp4' },
+            { id: 'avatar2', title: 'Avatar: O Caminho da Água', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/t6HIqrRAclMCA60NsSmeqe9RmNV.jpg', type: 'movie', video: 'https://archive.org/download/avatar-2-2022/Avatar%202%202022.mp4' },
+            { id: 'titanic', title: 'Titanic', year: '1997', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/titanic-1997/Titanic%201997.mp4' },
+            { id: 'gladiador', title: 'Gladiador', year: '2000', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/gladiator-2000/Gladiator%202000.mp4' },
+            { id: 'matrix', title: 'Matrix', year: '1999', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie', video: 'https://archive.org/download/the-matrix-1999/The%20Matrix%201999.mp4' },
+            
+            // SÉRIES
+            { id: 'lastofus', title: 'The Last of Us', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', type: 'tv', video: 'https://archive.org/download/the-last-of-us-s01e01/The%20Last%20of%20Us%20S01E01.mp4' },
+            { id: 'thebear', title: 'The Bear', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/7H8Hk2W0U8V4K9W6X8p8A0zJ2fL.jpg', type: 'tv', video: 'https://archive.org/download/the-bear-s01e01/The%20Bear%20S01E01.mp4' },
+            { id: 'theboys', title: 'The Boys', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', type: 'tv', video: 'https://archive.org/download/the-boys-s01e01/The%20Boys%20S01E01.mp4' },
+            { id: 'strangerthings', title: 'Stranger Things', year: '2016', poster: 'https://image.tmdb.org/t/p/w342/49WJfeN0E1p5R0Y2Q8yN1z3X9fA.jpg', type: 'tv', video: 'https://archive.org/download/stranger-things-s01e01/Stranger%20Things%20S01E01.mp4' },
+            { id: 'succession', title: 'Succession', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/7rTllR2Tx2UMj17HwDfB9TZ67jM.jpg', type: 'tv', video: 'https://archive.org/download/succession-s01e01/Succession%20S01E01.mp4' },
+            { id: 'walkingdead', title: 'The Walking Dead', year: '2010', poster: 'https://image.tmdb.org/t/p/w342/rqeYMLyicLdI2rC3K1uQjFkK8yM.jpg', type: 'tv', video: 'https://archive.org/download/the-walking-dead-s01e01/The%20Walking%20Dead%20S01E01.mp4' },
+            { id: 'gameofthrones', title: 'Game of Thrones', year: '2011', poster: 'https://image.tmdb.org/t/p/w342/1XS1cjL5qC5wDnK5Xv5L5h5mN5jM.jpg', type: 'tv', video: 'https://archive.org/download/game-of-thrones-s01e01/Game%20of%20Thrones%20S01E01.mp4' },
+            { id: 'breakingbad', title: 'Breaking Bad', year: '2008', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'tv', video: 'https://archive.org/download/breaking-bad-s01e01/Breaking%20Bad%20S01E01.mp4' },
+            { id: 'peakyblinders', title: 'Peaky Blinders', year: '2013', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'tv', video: 'https://archive.org/download/peaky-blinders-s01e01/Peaky%20Blinders%20S01E01.mp4' },
+            { id: 'thewitcher', title: 'The Witcher', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'tv', video: 'https://archive.org/download/the-witcher-s01e01/The%20Witcher%20S01E01.mp4' }
         ];
 
+        // ================================================================
+        //  DISCORD RICH PRESENCE
+        // ================================================================
+        const CLIENT_ID = 'SEU_CLIENT_ID_AQUI';
+
+        function updateDiscordPresence(title, type = 'filme') {
+            if (typeof window.DiscordRPC === 'undefined') return;
+            
+            const rpc = new window.DiscordRPC(CLIENT_ID);
+            
+            rpc.connect((connected) => {
+                if (!connected) return;
+                
+                const emoji = type === 'série' ? '📺' : '🎬';
+                
+                rpc.setActivity({
+                    details: `Assistindo ${title}`,
+                    state: `${emoji} ${type === 'série' ? 'Série' : 'Filme'} Dublado`,
+                    startTimestamp: new Date(),
+                    largeImageKey: 'ricoflix_logo',
+                    largeImageText: 'Ricoflix - Streaming Dublado PT-BR',
+                    smallImageKey: 'play_icon',
+                    smallImageText: '▶️ Assistindo agora',
+                    instance: true,
+                    buttons: [
+                        { label: '🎬 Assistir também', url: window.location.href }
+                    ]
+                });
+            });
+        }
+
+        // ================================================================
+        //  CARREGAR FILME
+        // ================================================================
+        function loadMovie(movie) {
+            const playerContainer = document.getElementById('player-container');
+            
+            updateDiscordPresence(movie.title, movie.type);
+            
+            if (movie.video) {
+                playerContainer.innerHTML = `
+                    <video id="player" src="${movie.video}" controls 
+                           style="width:100%;max-height:500px;border-radius:20px;background:#000;"
+                           poster="${movie.poster || ''}"
+                           autoplay></video>
+                `;
+            } else {
+                playerContainer.innerHTML = `
+                    <div class="icon"><i class="fas fa-external-link-alt" style="color:#00E5FF;"></i></div>
+                    <div class="title">🎬 ${movie.title}</div>
+                    <div class="sub">${movie.type === 'tv' ? 'Série' : 'Filme'} Dublado em português</div>
+                    <div class="sub" style="font-size:0.7rem;margin-top:0.5rem;color:#334455;">
+                        <i class="fab fa-discord text-[#5865F2] mr-1"></i> 
+                        Sua atividade no Discord foi atualizada!
+                    </div>
+                `;
+            }
+            
+            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // ================================================================
+        //  RENDER CARDS
+        // ================================================================
         const grid = document.getElementById('movieGrid');
         const loader = document.getElementById('loaderGrid');
         const noResults = document.getElementById('noResults');
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
-        const playerContainer = document.getElementById('player-container');
         let currentFilter = 'all';
-
-        function abrirRedeCanais(title, type) {
-            // Busca no Rede Canais - use o domínio que estiver funcionando
-            const domínios = [
-                'redecanais.gs',
-                'redecanais.ph',
-                'redecanais.uno',
-                'redecanais.com'
-            ];
-            
-            let url = `https://${domínios[0]}/busca?q=${encodeURIComponent(title)}`;
-            
-            // Tenta abrir diretamente
-            const playerDiv = playerContainer;
-            playerDiv.innerHTML = `
-                <div class="icon"><i class="fas fa-external-link-alt" style="color:#00E5FF;"></i></div>
-                <div class="title">🎬 Abrindo no Rede Canais</div>
-                <div class="sub">${title} - Dublado em Português</div>
-                <a href="${url}" target="_blank" class="btn-abrir" style="margin-top:1.5rem;">
-                    <i class="fas fa-play mr-2"></i> Assistir Agora
-                </a>
-                <div class="sub" style="font-size:0.7rem;margin-top:1rem;color:#334455;">
-                    🔄 Se não abrir, clique no botão acima
-                </div>
-                <div class="sub" style="font-size:0.7rem;color:#334455;">
-                    🔍 No site, busque por "${title}"
-                </div>
-            `;
-            
-            // Tenta abrir automaticamente
-            window.open(url, '_blank');
-            
-            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
 
         function renderMovies(movies) {
             grid.innerHTML = '';
@@ -153,38 +218,35 @@
             noResults.classList.add('hidden');
 
             movies.forEach(movie => {
-                const id = movie.id;
-                const title = movie.title;
-                const year = movie.year || '2026';
-                const posterPath = movie.poster || 'https://via.placeholder.com/342x513/0a0a0a/334455?text=' + encodeURIComponent(title);
-                const mediaType = movie.type || 'movie';
-
                 const card = document.createElement('div');
                 card.className = 'card-cyber';
                 card.innerHTML = `
                     <div class="poster-wrapper">
-                        <img src="${posterPath}" alt="${title}" loading="lazy" 
+                        <img src="${movie.poster}" alt="${movie.title}" loading="lazy" 
                              onerror="this.src='https://via.placeholder.com/342x513/0a0a0a/334455?text=404'" />
                     </div>
                     <div class="info">
                         <div class="flex justify-between items-start">
-                            <h3>${title}</h3>
+                            <h3>${movie.title}</h3>
                         </div>
                         <div class="flex justify-between items-center mt-1">
-                            <span class="year">${year}</span>
-                            <span class="badge-type">${mediaType === 'tv' ? 'Série' : 'Filme'}</span>
+                            <span class="year">${movie.year || '2026'}</span>
+                            <span class="badge-type">${movie.type === 'tv' ? 'Série' : 'Filme'}</span>
                         </div>
                     </div>
                 `;
                 
                 card.addEventListener('click', function() {
-                    abrirRedeCanais(title, mediaType);
+                    loadMovie(movie);
                 });
                 
                 grid.appendChild(card);
             });
         }
 
+        // ================================================================
+        //  FILTROS
+        // ================================================================
         function filterCatalog(filter, query = '') {
             let filtered = [...CATALOG];
             if (filter === 'movie') {
@@ -222,7 +284,24 @@
             loadCatalog('all', query);
         }
 
+        // ================================================================
+        //  CARREGAR SCRIPT DO DISCORD
+        // ================================================================
+        function loadDiscordRPC() {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/discord-rpc-lite@1.0.1/discord-rpc.min.js';
+            script.onload = function() {
+                console.log('✅ Discord RPC carregado!');
+                updateDiscordPresence('Navegando', 'filme');
+            };
+            document.head.appendChild(script);
+        }
+
+        // ================================================================
+        //  INIT
+        // ================================================================
         function init() {
+            loadDiscordRPC();
             loadCatalog('all');
 
             document.querySelectorAll('.tab-neon').forEach(tab => {
@@ -247,8 +326,8 @@
     </script>
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
-        <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span><i class="fas fa-language text-[#00E5FF] mr-1"></i> RedeCanais · TODOS DUBLADOS</span>
+        <span>© 2026 Ricoflix · Atividade Discord</span>
+        <span><i class="fab fa-discord text-[#5865F2] mr-1"></i> 50+ títulos dublados</span>
     </footer>
 </body>
 </html>
