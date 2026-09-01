@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ricoflix</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #0b0b0b; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: #141414; position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 32px; font-weight: 900; color: #00bcd4; letter-spacing: -1px; }
-        .criar-sala-btn { background: #00bcd4; color: #000; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
-        .criar-sala-btn:hover { background: #00e5ff; }
+        
+        .search-box { display: flex; gap: 10px; }
+        .search-box input { background: #222; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 20px; outline: none; font-size: 14px; width: 250px; }
+        .search-box input:focus { border-color: #00bcd4; }
 
         .container { max-width: 1400px; margin: 0 auto; padding: 40px 50px; }
         
@@ -21,6 +22,7 @@
         .filtro-btn.active { color: #00bcd4; border-bottom: 3px solid #00bcd4; }
 
         .grid-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+        
         .card { position: relative; background: #141414; border-radius: 12px; overflow: hidden; cursor: pointer; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 188, 212, 0.2); }
         .card img { width: 100%; height: 300px; object-fit: cover; }
@@ -47,27 +49,19 @@
         .ep-title { font-size: 18px; font-weight: bold; }
         .ep-desc { font-size: 14px; color: #888; line-height: 1.5; margin-top: 5px; }
 
-        .sala-area { display: none; padding: 20px; max-width: 1400px; margin: 0 auto; }
-        .sala-container { display: grid; grid-template-columns: 3fr 1fr; gap: 20px; }
+        .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
         .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 12px; overflow: hidden; }
         .player-box video { width: 100%; height: 100%; }
         .player-box iframe { width: 100%; height: 100%; border: none; }
-        
-        .chat-box { background: #141414; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; height: 100%; max-height: 600px; }
-        .chat-header { font-weight: bold; margin-bottom: 15px; color: #00bcd4; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .chat-messages { flex: 1; overflow-y: auto; margin-bottom: 15px; }
-        .chat-msg { margin-bottom: 10px; font-size: 14px; }
-        .chat-msg strong { color: #00bcd4; }
-        .chat-input-area { display: flex; gap: 10px; }
-        .chat-input-area input { background: #222; border: 1px solid #444; border-radius: 20px; padding: 10px 15px; color: #fff; flex: 1; outline: none; }
-        .chat-input-area button { background: #00bcd4; border: none; border-radius: 20px; padding: 10px 20px; color: #000; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">Ricoflix</div>
-        <button class="criar-sala-btn" onclick="criarSala()">🎬 Criar Sala</button>
+        <div class="search-box">
+            <input type="text" id="campo-busca" placeholder="Buscar filme ou série..." onkeyup="buscarConteudo()">
+        </div>
     </header>
 
     <div class="container" id="tela-catalogo">
@@ -86,35 +80,21 @@
         <div class="grid-episodios" id="lista-episodios"></div>
     </div>
 
-    <div id="tela-sala" class="sala-area">
+    <div id="tela-player" class="player-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
-        <div class="sala-container">
-            <div class="player-box" id="player-box">
-                <p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>
-            </div>
-            <div class="chat-box">
-                <div class="chat-header">💬 Chat da Sala</div>
-                <div class="chat-messages" id="chat-messages"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="chat-input" placeholder="Digite..." onkeypress="if(event.key === 'Enter') enviarMensagem()">
-                    <button onclick="enviarMensagem()">Enviar</button>
-                </div>
-            </div>
+        <div class="player-box" id="player-box">
+            <p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>
         </div>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://jqolqvtavnbowlmehzo.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impxb2xxdnRhdm5ib3dsbW5laHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyODY0MzksImV4cCI6MjEwMzg2MjQzOX0.AA-ld5Q2HFr213o1RySdEYBeQ-96CQV5LWb2ieSZC7A';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        let salaAtual = null;
-        let userName = 'User' + Math.floor(Math.random() * 1000);
-        let videoAtualLink = null;
-
         const filmes = [
-            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'sonic.jpg', video: 'https://quvh4oxodaakzovy.public.blob.vercel-storage.com/Sonic%203%20Filme%20Dublado.mp4' },
-            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'deadpool.jpg', video: 'https://vidsrc.to/embed/movie/tt6263850' },
+            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'sonic.jpg', 
+              video: 'https://quvh4oxodaakzovy.public.blob.vercel-storage.com/Sonic%203%20Filme%20Dublado.mp4' },
+            
+            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'deadpool.jpg', 
+              video: 'https://vidsrc.to/embed/movie/tt6263850' },
+            
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'gumball.jpg' }
         ];
 
@@ -134,6 +114,28 @@
             const grid = document.getElementById('grid-catalogo');
             grid.innerHTML = '';
             filmes.forEach(item => {
+                const tipoBadge = item.tipo === 'filme' ? 'FILME' : 'SÉRIE';
+                grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
+                    <img src="${item.img}" onerror="this.src='https://placehold.co/400x600/1a1a1a/00bcd4?text=${item.titulo}'">
+                    <div class="card-overlay"></div>
+                    <div class="card-info">
+                        <div class="card-title">${item.titulo}</div>
+                        <div class="card-meta">
+                            <span class="card-year">${item.ano}</span>
+                            <span class="card-badge">${tipoBadge}</span>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function buscarConteudo() {
+            let termo = document.getElementById('campo-busca').value.toLowerCase();
+            const grid = document.getElementById('grid-catalogo');
+            grid.innerHTML = '';
+            if (termo === '') { renderizarCatalogo(); return; }
+            const resultados = filmes.filter(f => f.titulo.toLowerCase().includes(termo));
+            resultados.forEach(item => {
                 const tipoBadge = item.tipo === 'filme' ? 'FILME' : 'SÉRIE';
                 grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
                     <img src="${item.img}" onerror="this.src='https://placehold.co/400x600/1a1a1a/00bcd4?text=${item.titulo}'">
@@ -171,51 +173,32 @@
             });
         }
 
-        function criarSala() {
-            salaAtual = Math.random().toString(36).substring(2, 10).toUpperCase();
-            const link = window.location.origin + window.location.pathname + '?sala=' + salaAtual;
-            navigator.clipboard.writeText(link);
-            alert('Sala criada! Link: ' + link);
-            document.getElementById('tela-catalogo').style.display = 'none';
-            document.getElementById('tela-sala').style.display = 'block';
-            carregarMensagens();
-        }
-
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('sala')) {
-            salaAtual = urlParams.get('sala');
-            document.getElementById('tela-catalogo').style.display = 'none';
-            document.getElementById('tela-sala').style.display = 'block';
-            carregarMensagens();
-        }
-
         function abrirItem(id) {
             const item = filmes.find(f => f.id === id);
             if (item.tipo === 'filme') abrirPlayer(item.video);
             else abrirSerie(id);
         }
 
+        // Se for .mp4 puro (do Vercel), usa video. Se não, usa iframe (vidsrc)
         function abrirPlayer(linkVideo) {
-            videoAtualLink = linkVideo;
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-serie').style.display = 'none';
-            document.getElementById('tela-sala').style.display = 'block';
+            document.getElementById('tela-player').style.display = 'block';
             
             if (linkVideo.includes('.mp4')) {
-                document.getElementById('player-box').innerHTML = `<video controls autoplay><source src="${linkVideo}" type="video/mp4"></video>`;
+                document.getElementById('player-box').innerHTML = `
+                    <video controls autoplay>
+                        <source src="${linkVideo}" type="video/mp4">
+                    </video>
+                `;
             } else {
                 document.getElementById('player-box').innerHTML = `<iframe src="${linkVideo}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-            }
-
-            if (salaAtual) {
-                sincronizarVideo(linkVideo);
-                carregarMensagens();
             }
         }
 
         function abrirSerie(id) {
             document.getElementById('tela-catalogo').style.display = 'none';
-            document.getElementById('tela-sala').style.display = 'none';
+            document.getElementById('tela-player').style.display = 'none';
             const serie = seriesData[id];
             document.getElementById('titulo-serie').innerText = serie.nome;
             const botoesTemp = document.getElementById('botoes-temporada');
@@ -249,45 +232,10 @@
         function voltarCatalogo() {
             document.getElementById('player-box').innerHTML = '<p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>';
             document.getElementById('tela-serie').style.display = 'none';
-            document.getElementById('tela-sala').style.display = 'none';
+            document.getElementById('tela-player').style.display = 'none';
             document.getElementById('tela-catalogo').style.display = 'block';
             renderizarCatalogo();
         }
-
-        async function carregarMensagens() {
-            if (!salaAtual) return;
-            const { data } = await supabase.from('messages').select('*').eq('room_id', salaAtual).order('id', { ascending: true });
-            const chatBox = document.getElementById('chat-messages');
-            chatBox.innerHTML = '';
-            (data || []).forEach(msg => {
-                chatBox.innerHTML += `<div class="chat-msg"><strong>${msg.username}:</strong> ${msg.content}</div>`;
-            });
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        async function enviarMensagem() {
-            const input = document.getElementById('chat-input');
-            const content = input.value.trim();
-            if (!content || !salaAtual) return;
-            await supabase.from('messages').insert([{ username: userName, content: content, room_id: salaAtual }]);
-            input.value = '';
-            carregarMensagens();
-        }
-
-        async function sincronizarVideo(link) {
-            if (!salaAtual) return;
-            await supabase.from('messages').insert([{ username: 'SISTEMA', content: 'VIDEO:' + link, room_id: salaAtual }]);
-            carregarMensagens();
-        }
-
-        supabase.channel('sala-' + (salaAtual || 'geral')).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-            const msg = payload.new;
-            if (msg.content.startsWith('VIDEO:') && msg.content.split('VIDEO:')[1] !== videoAtualLink) {
-                const novoLink = msg.content.split('VIDEO:')[1];
-                abrirPlayer(novoLink);
-            }
-            carregarMensagens();
-        }).subscribe();
 
         window.onload = renderizarCatalogo;
     </script>
