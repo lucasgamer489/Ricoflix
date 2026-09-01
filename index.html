@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix</title>
+    <title>Ricoflix - Player Infalível</title>
     <style>
         body { background-color: #0f0f0f; color: #fff; font-family: sans-serif; margin: 0; padding: 0; }
         header { padding: 20px 40px; background-color: #141414; }
@@ -31,10 +31,10 @@
         .ep-desc { font-size: 13px; color: #888; }
 
         .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
-        
-        /* Player Iframe */
         .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; }
-        .player-box iframe { width: 100%; height: 100%; border: none; }
+        
+        /* Player HTML5 */
+        .player-box video { width: 100%; height: 100%; background: black; }
     </style>
 </head>
 <body>
@@ -63,12 +63,12 @@
         // ================= DADOS =================
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
-              // ✅ LINK CORRETO E PÚBLICO (PREVIEW) - Tamanho gigante permitido
-              video: 'https://drive.google.com/file/d/1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q/preview' 
+              // ✅ O LINK MÁGICO PARA ARQUIVOS GRANDES (uc?export=download)
+              video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' 
             },
             
             { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/cdNA3GO8tXgC7WnYgG3RzT0oG8F.jpg', 
-              video: 'https://drive.google.com/file/d/SEU_ID_DEADPOOL_AQUI/preview' 
+              video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' 
             },
             
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'https://image.tmdb.org/t/p/w500/1d8Z1z5v7WcG7nJ0y2z0x5f0b8.jpg' }
@@ -79,8 +79,8 @@
                 nome: 'O Incrível Mundo de Gumball',
                 temporadas: {
                     1: [
-                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball prova que a escola é assombrada.', video: 'https://drive.google.com/file/d/SEU_ID_EP1_AQUI/preview' },
-                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser esperto.', video: 'https://drive.google.com/file/d/SEU_ID_EP2_AQUI/preview' }
+                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball prova que a escola é assombrada.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP1_AQUI' },
+                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser esperto.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI' }
                     ]
                 }
             }
@@ -104,14 +104,17 @@
             else abrirSerie(id);
         }
 
+        // AQUI ESTÁ A MUDANÇA: Usamos a tag <video> com o link de download direto
         function abrirPlayer(linkVideo) {
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'block';
 
-            // Injeta o Iframe do Google Drive (funciona 100%)
             document.getElementById('player-box').innerHTML = `
-                <iframe src="${linkVideo}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                <video controls autoplay>
+                    <source src="${linkVideo}" type="video/mp4">
+                    Seu navegador não suporta a tag de vídeo.
+                </video>
             `;
         }
 
