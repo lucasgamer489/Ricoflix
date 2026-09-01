@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Streaming</title>
+    <title>Ricoflix</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #0b0b0b; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -87,13 +87,12 @@
     </div>
 
     <script>
-        // ================= DADOS =================
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'sonic.jpg', 
-              video: 'https://gofile.io/d/xfDCG3hJ' }, // ✅ LINK DO GOFILE (PLAYER)
+              video: 'https://pixeldrain.com/u/euBmEcCF' }, // ✅ LINK DA PÁGINA DO PIXELDRAIN
             
             { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'deadpool.jpg', 
-              video: 'https://gofile.io/d/SEU_ID_DEADPOOL' },
+              video: 'https://vidsrc.to/embed/movie/tt6263850' }, 
             
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'gumball.jpg' }
         ];
@@ -103,15 +102,14 @@
                 nome: 'O Incrível Mundo de Gumball',
                 temporadas: {
                     1: [
-                        { num: 1, titulo: 'O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável".', video: 'https://gofile.io/d/SEU_ID_EP1', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d8a97b35-2578-44e9-835e-296095eb76cc/53d62f56599a91c276fcd83a6822ec175591683c.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 2, titulo: 'Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD.', video: 'https://gofile.io/d/SEU_ID_EP2', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/c2b6a2d8-08b9-43ae-9721-e0b05496959e/619f40e4ce41d8672a1d5452285356f6493100fe.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida.', video: 'https://gofile.io/d/SEU_ID_EP3', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d2f6f5de-1c9e-40ca-9fbc-f4dbab8e9c16/e4ea763d35bb7e5212a4206e5f225b1592209414.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' }
+                        { num: 1, titulo: 'O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável".', video: 'https://vidsrc.to/embed/tv/tt18259086/1/1', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d8a97b35-2578-44e9-835e-296095eb76cc/53d62f56599a91c276fcd83a6822ec175591683c.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
+                        { num: 2, titulo: 'Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD.', video: 'https://vidsrc.to/embed/tv/tt18259086/1/2', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/c2b6a2d8-08b9-43ae-9721-e0b05496959e/619f40e4ce41d8672a1d5452285356f6493100fe.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
+                        { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida.', video: 'https://vidsrc.to/embed/tv/tt18259086/1/3', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d2f6f5de-1c9e-40ca-9fbc-f4dbab8e9c16/e4ea763d35bb7e5212a4206e5f225b1592209414.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' }
                     ]
                 }
             }
         };
 
-        // ================= LÓGICA =================
         function renderizarCatalogo() {
             const grid = document.getElementById('grid-catalogo');
             grid.innerHTML = '';
@@ -181,15 +179,13 @@
             else abrirSerie(id);
         }
 
+        // 🔥 FUNÇÃO ATUALIZADA: Usa iframe para tudo (Pixeldrain e VidSrc)
         function abrirPlayer(linkVideo) {
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'block';
             
-            // TROCA IMPORTANTE: Usamos Iframe (para GoFile)
-            document.getElementById('player-box').innerHTML = `
-                <iframe src="${linkVideo}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-            `;
+            document.getElementById('player-box').innerHTML = `<iframe src="${linkVideo}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
         }
 
         function abrirSerie(id) {
