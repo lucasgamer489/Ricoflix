@@ -138,25 +138,6 @@
             color: #00E5FF;
         }
 
-        .loader {
-            border: 2px solid rgba(0, 229, 255, 0.05);
-            border-top: 2px solid #00E5FF;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            animation: spin 0.9s linear infinite;
-            margin: 2rem auto;
-            display: none;
-        }
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
         #player-container {
             background: #0a0a0a;
             border-radius: 24px;
@@ -248,7 +229,7 @@
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
-                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" onkeyup="filterMovies()" />
+                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" />
             </div>
             <button class="btn" onclick="filterMovies()">Ir</button>
         </div>
@@ -265,7 +246,6 @@
     <!-- GRADE -->
     <section class="mb-6 max-w-7xl mx-auto px-4 md:px-6">
         <div id="movieGrid" class="scroll"></div>
-        <div id="loaderGrid" class="loader"></div>
         <p id="noResults" class="text-center text-[#445566] py-6 hidden">Nenhum título encontrado.</p>
     </section>
 
@@ -301,7 +281,7 @@
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         // ================================================================
-        //  CATÁLOGO
+        //  CATÁLOGO - SONIC 3 JÁ ESTÁ DUBLADO!
         // ================================================================
         const MOVIES = [{
             id: 'sonic3',
@@ -348,9 +328,7 @@
         }];
 
         let currentFilter = 'all';
-        let currentMovie = null;
         let playerInstance = null;
-        let filteredMovies = [...MOVIES];
 
         // ================================================================
         //  INICIALIZAR PLYR
@@ -377,26 +355,24 @@
             const grid = document.getElementById('movieGrid');
             grid.innerHTML = '';
 
-            // Aplica filtro
-            filteredMovies = MOVIES.filter(movie => {
+            let filtered = MOVIES.filter(movie => {
                 if (currentFilter === 'movie') return movie.type === 'movie';
                 if (currentFilter === 'tv') return movie.type === 'tv';
                 return true;
             });
 
-            // Aplica busca
             const search = document.getElementById('searchInput').value.toLowerCase();
             if (search) {
-                filteredMovies = filteredMovies.filter(m => m.title.toLowerCase().includes(search));
+                filtered = filtered.filter(m => m.title.toLowerCase().includes(search));
             }
 
-            if (filteredMovies.length === 0) {
+            if (filtered.length === 0) {
                 document.getElementById('noResults').classList.remove('hidden');
                 return;
             }
             document.getElementById('noResults').classList.add('hidden');
 
-            filteredMovies.forEach(movie => {
+            filtered.forEach(movie => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.innerHTML = `
@@ -427,8 +403,6 @@
         //  CARREGAR FILME
         // ================================================================
         function loadMovie(movie) {
-            currentMovie = movie;
-
             const videoElement = document.getElementById('player');
             const placeholder = document.getElementById('fallbackMessage');
             const titleDisplay = document.getElementById('movieTitleDisplay');
@@ -491,12 +465,10 @@
         // ================================================================
         //  INIT
         // ================================================================
-        function init() {
+        document.addEventListener('DOMContentLoaded', function() {
             initPlayer();
             renderMovies();
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+        });
     </script>
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
