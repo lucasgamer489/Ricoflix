@@ -3,51 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Player Infalível</title>
+    <title>Ricoflix - Catálogo Profissional</title>
     <style>
-        body { background-color: #0f0f0f; color: #fff; font-family: sans-serif; margin: 0; padding: 0; }
-        header { padding: 20px 40px; background-color: #141414; }
-        .logo { font-size: 28px; font-weight: bold; color: #00bcd4; }
+        /* ===== ESTILO GERAL ===== */
+        body {
+            background-color: #0b0b0b;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: #141414;
+            border-bottom: 1px solid #2a2a2a;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00bcd4;
+            letter-spacing: 1px;
+        }
+
+        /* ===== CATÁLOGO ===== */
         .catalogo-section { padding: 40px; }
-        .grid-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .card { background: #1a1a1a; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.3s; }
-        .card:hover { transform: scale(1.05); border: 1px solid #00bcd4; }
-        .card img { width: 100%; height: 280px; object-fit: cover; }
-        .card-info { padding: 15px; }
-        .card-title { font-weight: bold; margin-bottom: 5px; }
+
+        .filtros {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .filtro-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .filtro-btn.active { background: #00bcd4; border-color: #00bcd4; color: #000; font-weight: bold; }
+
+        .grid-catalogo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 25px;
+        }
+
+        /* Estilo dos Cards (Capa grande por cima) */
+        .card {
+            background-color: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            border: 1px solid #00bcd4;
+        }
+
+        .card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
         .card-meta { color: #888; font-size: 13px; }
 
+        /* ===== ÁREA DA SÉRIE ===== */
         .serie-area { display: none; padding: 40px; }
-        .voltar-btn { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 20px; }
+        
+        .voltar-btn {
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .voltar-btn:hover { background: #333; }
+
         .temp-buttons { display: flex; gap: 10px; margin-bottom: 30px; }
         .temp-btn { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        .temp-btn.active { background: #00bcd4; color: #000; font-weight: bold; }
+        .temp-btn.active { background: #00bcd4; border-color: #00bcd4; color: #000; font-weight: bold; }
+
         .grid-episodios { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .ep-card { background: #1a1a1a; border-radius: 6px; padding: 15px; cursor: pointer; }
-        .ep-card:hover { border: 1px solid #00bcd4; }
+        .ep-card { background: #1a1a1a; border-radius: 6px; padding: 15px; cursor: pointer; transition: 0.3s; }
+        .ep-card:hover { background: #222; border: 1px solid #00bcd4; }
         .ep-num { color: #00bcd4; font-weight: bold; }
         .ep-title { font-weight: bold; margin: 8px 0; }
         .ep-desc { font-size: 13px; color: #888; }
 
+        /* ===== PLAYER ===== */
         .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
         .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; }
-        
-        /* Player HTML5 */
-        .player-box video { width: 100%; height: 100%; background: black; }
+        .player-box video { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 
-    <header><div class="logo">Ricoflix</div></header>
+    <header>
+        <div class="logo">Ricoflix</div>
+    </header>
 
     <div id="tela-catalogo" class="catalogo-section">
+        <div class="filtros">
+            <button class="filtro-btn active" onclick="filtrar('tudo')">Tudo</button>
+            <button class="filtro-btn" onclick="filtrar('filme')">Filmes</button>
+            <button class="filtro-btn" onclick="filtrar('serie')">Séries</button>
+        </div>
         <div class="grid-catalogo" id="grid-catalogo"></div>
     </div>
 
     <div id="tela-serie" class="serie-area">
-        <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
-        <h1 id="titulo-serie"></h1>
+        <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar ao Catálogo</button>
+        <h1 id="titulo-serie" style="margin-bottom: 20px;"></h1>
         <div class="temp-buttons" id="botoes-temporada"></div>
         <div class="grid-episodios" id="lista-episodios"></div>
     </div>
@@ -60,18 +153,20 @@
     </div>
 
     <script>
-        // ================= DADOS =================
+        // ================= DADOS COM CAPAS REAIS =================
+        // (Se quiser trocar as capas, é só trocar o link em "img". 
+        //  Você pode baixar as imagens e hospedar no Vercel também!)
         const filmes = [
-            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
-              // ✅ O LINK MÁGICO PARA ARQUIVOS GRANDES (uc?export=download)
-              video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' 
-            },
+            { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', 
+              img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
+              video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' },
             
-            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', img: 'https://image.tmdb.org/t/p/w500/cdNA3GO8tXgC7WnYgG3RzT0oG8F.jpg', 
-              video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' 
-            },
+            { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', 
+              img: 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', 
+              video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' },
             
-            { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', img: 'https://image.tmdb.org/t/p/w500/1d8Z1z5v7WcG7nJ0y2z0x5f0b8.jpg' }
+            { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', 
+              img: 'https://image.tmdb.org/t/p/w500/u9x4eTYnCehW4zW5Rq4KpD8qL6U.jpg' }
         ];
 
         const seriesData = {
@@ -92,8 +187,30 @@
             grid.innerHTML = '';
             filmes.forEach(item => {
                 grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
-                    <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/222/555?text=Ricoflix'">
-                    <div class="card-info"><div class="card-title">${item.titulo}</div><div class="card-meta"><span>${item.ano}</span></div></div>
+                    <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/1a1a1a/555?text=Ricoflix'">
+                    <div class="card-info">
+                        <div class="card-title">${item.titulo}</div>
+                        <div class="card-meta"><span>${item.ano}</span></div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        function filtrar(tipo) {
+            document.querySelectorAll('.filtro-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const grid = document.getElementById('grid-catalogo');
+            grid.innerHTML = '';
+            const listaFiltrada = tipo === 'tudo' ? filmes : filmes.filter(f => f.tipo === tipo);
+            
+            listaFiltrada.forEach(item => {
+                grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
+                    <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/1a1a1a/555?text=Ricoflix'">
+                    <div class="card-info">
+                        <div class="card-title">${item.titulo}</div>
+                        <div class="card-meta"><span>${item.ano}</span></div>
+                    </div>
                 </div>`;
             });
         }
@@ -104,7 +221,6 @@
             else abrirSerie(id);
         }
 
-        // AQUI ESTÁ A MUDANÇA: Usamos a tag <video> com o link de download direto
         function abrirPlayer(linkVideo) {
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-serie').style.display = 'none';
@@ -113,7 +229,6 @@
             document.getElementById('player-box').innerHTML = `
                 <video controls autoplay>
                     <source src="${linkVideo}" type="video/mp4">
-                    Seu navegador não suporta a tag de vídeo.
                 </video>
             `;
         }
