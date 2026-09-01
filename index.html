@@ -3,56 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Profissional</title>
+    <title>Ricoflix - Streaming</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: #0b0b0b; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* Header */
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: #141414; position: sticky; top: 0; z-index: 100; }
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: #141414; position: sticky; top: 0; z-index: 100; }
         .logo { font-size: 32px; font-weight: 900; color: #00bcd4; letter-spacing: -1px; }
         
         .search-box { display: flex; gap: 10px; }
         .search-box input { background: #222; border: 1px solid #444; color: white; padding: 10px 15px; border-radius: 20px; outline: none; font-size: 14px; width: 250px; }
         .search-box input:focus { border-color: #00bcd4; }
 
-        /* Catálogo */
-        .container { max-width: 1400px; margin: 0 auto; padding: 40px; }
-        .filtros { display: flex; gap: 15px; margin-bottom: 30px; }
-        .filtro-btn { background: transparent; border: none; color: #888; font-size: 16px; padding: 10px 20px; cursor: pointer; font-weight: bold; }
-        .filtro-btn.active { color: #00bcd4; border-bottom: 3px solid #00bcd4; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 50px; }
         
+        .filtros { display: flex; gap: 15px; margin-bottom: 40px; }
+        .filtro-btn { background: transparent; border: none; color: #888; font-size: 16px; padding: 10px 20px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+        .filtro-btn.active { color: #00bcd4; border-bottom: 3px solid #00bcd4; }
+
         .grid-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+        
         .card { position: relative; background: #141414; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
         .card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0, 188, 212, 0.2); }
         .card img { width: 100%; height: 300px; object-fit: cover; }
+        
         .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%); }
+        
         .card-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; }
         .card-title { font-size: 18px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
         .card-meta { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; }
         .card-year { color: #bbb; font-size: 14px; }
         .card-badge { background: #00bcd4; color: #000; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
 
-        /* ===== TELA DE DETALHES (NOVO) ===== */
-        .details-area { display: none; padding: 40px; }
-        .details-header { display: flex; gap: 40px; margin-bottom: 30px; }
-        .details-poster { width: 300px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .details-poster img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .details-info { flex: 1; }
-        .details-title { font-size: 48px; font-weight: 900; margin-bottom: 10px; }
-        .details-meta { display: flex; gap: 15px; color: #aaa; margin-bottom: 20px; font-size: 16px; }
-        .details-overview { font-size: 18px; line-height: 1.6; color: #ccc; margin-bottom: 30px; }
-        
-        .details-buttons { display: flex; gap: 15px; }
-        .btn-play { background: #00bcd4; color: #000; border: none; padding: 15px 30px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-play:hover { background: #00e5ff; }
-        .btn-back { background: #333; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-size: 18px; cursor: pointer; transition: 0.3s; }
-        .btn-back:hover { background: #555; }
-
-        /* ===== ÁREA DA SÉRIE ===== */
-        .serie-area { display: none; padding: 40px; }
+        /* ===== ÁREA DA SÉRIE (EPISÓDIOS) ===== */
+        .serie-area { display: none; padding: 40px 50px; max-width: 1400px; margin: 0 auto; }
         .voltar-btn { background: #333; border: none; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 30px; }
+        .voltar-btn:hover { background: #555; }
         .temp-buttons { display: flex; gap: 10px; margin-bottom: 40px; }
         .temp-btn { background: #1a1a1a; border: 1px solid #333; color: #aaa; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; }
         .temp-btn.active { background: #fff; color: #000; border-color: #fff; }
@@ -60,8 +46,10 @@
         .grid-episodios { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
         .ep-card { cursor: pointer; transition: transform 0.3s; }
         .ep-card:hover { transform: scale(1.03); }
+        
         .ep-thumb-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #222; margin-bottom: 15px; }
         .ep-thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
         .ep-num { color: #00bcd4; font-weight: bold; margin-bottom: 5px; }
         .ep-title { font-size: 18px; font-weight: bold; }
         .ep-desc { font-size: 14px; color: #888; line-height: 1.5; margin-top: 5px; }
@@ -81,7 +69,6 @@
         </div>
     </header>
 
-    <!-- CATÁLOGO -->
     <div class="container" id="tela-catalogo">
         <div class="filtros">
             <button class="filtro-btn active" onclick="filtrar('tudo')">Tudo</button>
@@ -91,31 +78,6 @@
         <div class="grid-catalogo" id="grid-catalogo"></div>
     </div>
 
-    <!-- TELA DE DETALHES -->
-    <div id="tela-detalhes" class="details-area">
-        <button class="btn-back" onclick="voltarCatalogo()">← Voltar</button>
-        <div class="details-header">
-            <div class="details-poster">
-                <img id="detalhe-img" src="" alt="Poster">
-            </div>
-            <div class="details-info">
-                <h1 class="details-title" id="detalhe-titulo"></h1>
-                <div class="details-meta">
-                    <span id="detalhe-ano"></span>
-                    <span>•</span>
-                    <span id="detalhe-tipo"></span>
-                </div>
-                <p class="details-overview" id="detalhe-sinopse"></p>
-                
-                <div class="details-buttons">
-                    <button class="btn-play" onclick="assistirItem()">▶ Assistir</button>
-                    <button class="btn-back" onclick="voltarCatalogo()">Minha Lista</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ÁREA DA SÉRIE -->
     <div id="tela-serie" class="serie-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
         <h1 id="titulo-serie" style="font-size: 40px; font-weight: 900; margin-bottom: 20px;"></h1>
@@ -123,9 +85,8 @@
         <div class="grid-episodios" id="lista-episodios"></div>
     </div>
 
-    <!-- PLAYER -->
     <div id="tela-player" class="player-area">
-        <button class="voltar-btn" onclick="voltarDetalhes()">← Voltar</button>
+        <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
         <div class="player-box" id="player-box">
             <p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>
         </div>
@@ -136,20 +97,17 @@
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', 
               img: 'https://upload.wikimedia.org/wikipedia/pt/8/89/Sonic_The_Hedgehog_3_p%C3%B4ster.png?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original', 
-              video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q',
-              sinopse: 'Sonic, Knuckles e Tails se reúnem para enfrentar um novo e poderoso inimigo, Shadow, um vilão misterioso com poderes que nunca viram antes. Em sua jornada, eles terão que descobrir os segredos do passado e lutar para salvar o planeta.' },
+              video: 'https://drive.google.com/uc?export=download&id=1f0Dtk0OiaziKH7QPftkP3jEuI2lU7x3Q' },
             
             { id: 'filme2', titulo: 'Deadpool 3', ano: 2024, tipo: 'filme', 
-              img: 'https://m.media-amazon.com/images/I/810zZ6ger0L._AC_UF894,1000_QL80_.jpg', 
-              video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI',
-              sinopse: 'Deadpool e Wolverine se unem para uma aventura caótica e cheia de ação. Um encontro explosivo que vai mudar o destino do universo Marvel para sempre.' },
+              img: 'deadpool.jpg', 
+              video: 'https://drive.google.com/uc?export=download&id=SEU_ID_DEADPOOL_AQUI' },
             
             { id: 'serie1', titulo: 'O Incrível Mundo de Gumball', ano: 2011, tipo: 'serie', 
-              img: 'https://br.web.img3.acsta.net/r_1280_720/pictures/23/10/09/19/22/1150330.jpg',
-              video: '', 
-              sinopse: 'Acompanhe as aventuras do gato azul de 12 anos, Gumball Watterson, e seu irmão adotivo peixe, Darwin, enquanto enfrentam o caos da escola, da família e da vida na cidade de Elmore.' }
+              img: 'gumball.jpg' }
         ];
 
+        // ================= EPISÓDIOS COMPLETOS DA 1ª TEMPORADA =================
         const seriesData = {
             'serie1': {
                 nome: 'O Incrível Mundo de Gumball',
@@ -157,14 +115,44 @@
                     1: [
                         { num: 1, titulo: 'O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável", enquanto inundam a casa.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP1_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d8a97b35-2578-44e9-835e-296095eb76cc/53d62f56599a91c276fcd83a6822ec175591683c.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
                         { num: 2, titulo: 'Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e se perdeu.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/c2b6a2d8-08b9-43ae-9721-e0b05496959e/619f40e4ce41d8672a1d5452285356f6493100fe.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
-                        { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo amigo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP3_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d2f6f5de-1c9e-40ca-9fbc-f4dbab8e9c16/e4ea763d35bb7e5212a4206e5f225b1592209414.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' }
+                        { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo amigo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP3_AQUI', img: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d2f6f5de-1c9e-40ca-9fbc-f4dbab8e9c16/e4ea763d35bb7e5212a4206e5f225b1592209414.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=320' },
+                        { num: 4, titulo: 'A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP4_AQUI' },
+                        { num: 5, titulo: 'O Fim', desc: 'Gumball e Darwin estão convencidos de que o mundo acabará em 24 horas.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP5_AQUI' },
+                        { num: 6, titulo: 'O Vestido', desc: 'Gumball vai para a escola de vestido e se torna a atração da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP6_AQUI' },
+                        { num: 7, titulo: 'A Busca', desc: 'Gumball e Darwin ajudam Anais a resgatar sua guia de uma loja de brinquedos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP7_AQUI' },
+                        { num: 8, titulo: 'A Colher', desc: 'Gumball e Darwin querem virar cúmplices de um roubo em um posto de gasolina.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP8_AQUI' },
+                        { num: 9, titulo: 'A Pressão', desc: 'Gumball tenta impressionar sua paixão, Penny, com um truque de mágica.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP9_AQUI' },
+                        { num: 10, titulo: 'O Desenho', desc: 'Gumball fica com ciúmes quando o desenho da sua família fica feio.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP10_AQUI' },
+                        { num: 11, titulo: 'O Preguiçoso', desc: 'Gumball e Darwin decidem fazer tudo o que o outro diz, causando caos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP11_AQUI' },
+                        { num: 12, titulo: 'O Fantasma', desc: 'Gumball tenta provar que a escola é assombrada por um fantasma.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP12_AQUI' },
+                        { num: 13, titulo: 'O Mistério', desc: 'A escola inteira está de olho em Gumball quando ele se torna um detetive.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP13_AQUI' },
+                        { num: 14, titulo: 'A Partida', desc: 'Gumball fica triste quando pensa que Darwin vai voltar para o oceano.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP14_AQUI' },
+                        { num: 15, titulo: 'O Karateca', desc: 'Gumball tenta aprender karatê para se defender de um valentão.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP15_AQUI' },
+                        { num: 16, titulo: 'O Beijo', desc: 'Gumball tenta beijar Penny, mas as coisas saem do controle.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP16_AQUI' },
+                        { num: 17, titulo: 'A Festa', desc: 'Gumball e Darwin vão a uma festa do pijama na casa da Srta. Simian.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP17_AQUI' },
+                        { num: 18, titulo: 'O Reembolso', desc: 'Gumball tenta devolver um brinquedo quebrado em uma loja.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP18_AQUI' },
+                        { num: 19, titulo: 'O Robô', desc: 'Gumball e Darwin constroem um robô para fazer as tarefas de casa.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP19_AQUI' },
+                        { num: 20, titulo: 'O Piquenique', desc: 'A família Watterson vai acampar e tudo dá errado.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP20_AQUI' },
+                        { num: 21, titulo: 'Os Tolos', desc: 'Gumball e Darwin tentam fazer uma pegadinha no Dia da Mentira.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP21_AQUI' },
+                        { num: 22, titulo: 'O Segredo', desc: 'Darwin não consegue guardar um segredo e acaba contando para todos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP22_AQUI' },
+                        { num: 23, titulo: 'A Meia', desc: 'Gumball e Darwin tem uma missão secreta para encontrar uma meia perdida.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP23_AQUI' },
+                        { num: 24, titulo: 'O Génio', desc: 'Gumball tenta provar que é um gênio para impressionar a escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP24_AQUI' },
+                        { num: 25, titulo: 'O Poltergeist', desc: 'A família Watterson começa a ser assombrada por um poltergeist.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP25_AQUI' },
+                        { num: 26, titulo: 'O Bigode', desc: 'Gumball e Darwin tentam fazer um bigode crescer no rosto de Richard.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP26_AQUI' },
+                        { num: 27, titulo: 'O Encontro', desc: 'Nicole e Richard tentam ter um encontro romântico, mas as crianças atrapalham.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP27_AQUI' },
+                        { num: 28, titulo: 'O Clube', desc: 'Gumball é expulso do clube da escola e decide criar o seu próprio.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP28_AQUI' },
+                        { num: 29, titulo: 'A Varinha', desc: 'Gumball encontra uma varinha mágica e decide mudar o mundo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP29_AQUI' },
+                        { num: 30, titulo: 'O Primata', desc: 'Darwin começa a agir como um macaco e Gumball tenta mudá-lo de volta.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP30_AQUI' },
+                        { num: 31, titulo: 'O Carro', desc: 'O carro da família Watterson quebra e eles tentam consertá-lo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP31_AQUI' },
+                        { num: 32, titulo: 'A Maldição', desc: 'Gumball tenta quebrar uma maldição que ele acha que colocou em si mesmo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP32_AQUI' },
+                        { num: 33, titulo: 'O Micro-ondas', desc: 'Gumball e Darwin usam um micro-ondas para viajar no tempo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP33_AQUI' },
+                        { num: 34, titulo: 'A Intrometida', desc: 'Gumball e Darwin tentam se livrar de uma visita indesejada.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP34_AQUI' },
+                        { num: 35, titulo: 'O Capacete', desc: 'Gumball ganha um capacete de bicicleta que o deixa com superpoderes.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP35_AQUI' },
+                        { num: 36, titulo: 'A Luta', desc: 'Gumball decide enfrentar Tobias em uma luta na escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP36_AQUI' }
                     ]
                 }
             }
         };
-
-        // Guarda o item que está sendo assistido ou detalhado
-        let itemAtual = null;
 
         // ================= LÓGICA =================
         function renderizarCatalogo() {
@@ -172,7 +160,7 @@
             grid.innerHTML = '';
             filmes.forEach(item => {
                 const tipoBadge = item.tipo === 'filme' ? 'FILME' : 'SÉRIE';
-                grid.innerHTML += `<div class="card" onclick="abrirDetalhes('${item.id}')">
+                grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
                     <img src="${item.img}" onerror="this.src='https://placehold.co/400x600/1a1a1a/00bcd4?text=${item.titulo}'">
                     <div class="card-overlay"></div>
                     <div class="card-info">
@@ -186,7 +174,6 @@
             });
         }
 
-        // Função de Pesquisa
         function buscarConteudo() {
             let termo = document.getElementById('campo-busca').value.toLowerCase();
             const grid = document.getElementById('grid-catalogo');
@@ -201,7 +188,7 @@
             
             resultados.forEach(item => {
                 const tipoBadge = item.tipo === 'filme' ? 'FILME' : 'SÉRIE';
-                grid.innerHTML += `<div class="card" onclick="abrirDetalhes('${item.id}')">
+                grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
                     <img src="${item.img}" onerror="this.src='https://placehold.co/400x600/1a1a1a/00bcd4?text=${item.titulo}'">
                     <div class="card-overlay"></div>
                     <div class="card-info">
@@ -225,7 +212,7 @@
             
             listaFiltrada.forEach(item => {
                 const tipoBadge = item.tipo === 'filme' ? 'FILME' : 'SÉRIE';
-                grid.innerHTML += `<div class="card" onclick="abrirDetalhes('${item.id}')">
+                grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
                     <img src="${item.img}" onerror="this.src='https://placehold.co/400x600/1a1a1a/00bcd4?text=${item.titulo}'">
                     <div class="card-overlay"></div>
                     <div class="card-info">
@@ -239,36 +226,15 @@
             });
         }
 
-        // Função para abrir Detalhes
-        function abrirDetalhes(id) {
-            itemAtual = filmes.find(f => f.id === id);
-            
-            document.getElementById('tela-catalogo').style.display = 'none';
-            document.getElementById('tela-serie').style.display = 'none';
-            document.getElementById('tela-player').style.display = 'none';
-            
-            document.getElementById('detalhe-img').src = itemAtual.img;
-            document.getElementById('detalhe-titulo').innerText = itemAtual.titulo;
-            document.getElementById('detalhe-ano').innerText = itemAtual.ano;
-            document.getElementById('detalhe-tipo').innerText = itemAtual.tipo === 'filme' ? 'FILME' : 'SÉRIE';
-            document.getElementById('detalhe-sinopse').innerText = itemAtual.sinopse;
-            
-            document.getElementById('tela-detalhes').style.display = 'block';
-        }
-
-        // Função Assistir (chama o player ou a série)
-        function assistirItem() {
-            if (itemAtual.tipo === 'filme') {
-                abrirPlayer(itemAtual.video);
-            } else {
-                abrirSerie(itemAtual.id);
-            }
+        function abrirItem(id) {
+            const item = filmes.find(f => f.id === id);
+            if (item.tipo === 'filme') abrirPlayer(item.video);
+            else abrirSerie(id);
         }
 
         function abrirPlayer(linkVideo) {
-            document.getElementById('tela-detalhes').style.display = 'none';
-            document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-catalogo').style.display = 'none';
+            document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'block';
             
             document.getElementById('player-box').innerHTML = `
@@ -279,7 +245,7 @@
         }
 
         function abrirSerie(id) {
-            document.getElementById('tela-detalhes').style.display = 'none';
+            document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-player').style.display = 'none';
             
             const serie = seriesData[id];
@@ -303,32 +269,26 @@
             const lista = document.getElementById('lista-episodios');
             lista.innerHTML = '';
 
+            // Lógica especial: Se tiver imagem, usa; senão, gera uma capa automática bem bonita
             eps.forEach(ep => {
                 const thumbSrc = ep.img ? ep.img : `https://placehold.co/640x360/222/00bcd4?text=Epis%C3%B3dio+${ep.num}`;
                 
-                lista.innerHTML += `<div class="ep-card" onclick="abrirPlayer('${ep.video}')">
-                    <div class="ep-thumb-wrapper">
-                        <img src="${thumbSrc}" onerror="this.src='https://placehold.co/640x360/222/00bcd4?text=Epis%C3%B3dio+${ep.num}'">
+                lista.innerHTML += `
+                    <div class="ep-card" onclick="abrirPlayer('${ep.video}')">
+                        <div class="ep-thumb-wrapper">
+                            <img src="${thumbSrc}" onerror="this.src='https://placehold.co/640x360/222/00bcd4?text=Epis%C3%B3dio+${ep.num}'">
+                        </div>
+                        <div class="ep-num">Episódio ${ep.num}</div>
+                        <div class="ep-title">${ep.titulo}</div>
+                        <div class="ep-desc">${ep.desc}</div>
                     </div>
-                    <div class="ep-num">Episódio ${ep.num}</div>
-                    <div class="ep-title">${ep.titulo}</div>
-                    <div class="ep-desc">${ep.desc}</div>
-                </div>`;
+                `;
             });
-        }
-
-        // Voltar para detalhes ou catálogo
-        function voltarDetalhes() {
-            document.getElementById('tela-player').style.display = 'none';
-            if (itemAtual) {
-                document.getElementById('tela-detalhes').style.display = 'block';
-            }
         }
 
         function voltarCatalogo() {
             document.getElementById('player-box').innerHTML = '<p style="color:#555; text-align:center; padding-top: 200px;">Carregando...</p>';
             document.getElementById('tela-serie').style.display = 'none';
-            document.getElementById('tela-detalhes').style.display = 'none';
             document.getElementById('tela-player').style.display = 'none';
             document.getElementById('tela-catalogo').style.display = 'block';
             renderizarCatalogo();
