@@ -3,216 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Moderno</title>
+    <title>Ricoflix - Catálogo e Séries</title>
     <style>
-        /* ===== RESET E FONTE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #0a0a0a;
-            color: #fff;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-image: radial-gradient(circle at 50% -20%, #1c2a3a 0%, #0a0a0a 50%);
-            min-height: 100vh;
-        }
-
-        /* ===== HEADER ===== */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 25px 50px;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .logo {
-            font-size: 32px;
-            font-weight: 900;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #00e5ff, #00bcd4, #0097a7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #0a0a0a; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; background: #0f0f0f; border-bottom: 1px solid #222; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 32px; font-weight: 900; color: #00bcd4; letter-spacing: -1px; }
 
         /* ===== CATÁLOGO ===== */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 40px 50px;
-        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 50px; }
+        
+        .filtros { display: flex; gap: 15px; margin-bottom: 40px; }
+        .filtro-btn { background: transparent; border: 1px solid #444; color: #888; font-size: 16px; padding: 8px 20px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .filtro-btn.active { background: #00bcd4; color: #000; border-color: #00bcd4; font-weight: bold; }
 
-        .filtros {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 40px;
-        }
+        .grid-catalogo { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+        .card { background: #141414; border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card img { width: 100%; height: 300px; object-fit: cover; }
+        .card-info { padding: 15px; }
+        .card-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+        .card-meta { color: #888; font-size: 13px; }
 
-        .filtro-btn {
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 18px;
-            font-weight: 600;
-            padding: 10px 20px;
-            cursor: pointer;
-            position: relative;
-            transition: 0.3s;
-        }
+        /* ===== ÁREA DA SÉRIE (ESTILO HBO MAX) ===== */
+        .serie-area { display: none; padding: 40px 50px; max-width: 1400px; margin: 0 auto; }
+        
+        .voltar-btn { background: #333; border: none; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 30px; }
+        .voltar-btn:hover { background: #555; }
 
-        .filtro-btn:hover { color: #fff; }
+        .serie-header { margin-bottom: 30px; }
+        .serie-header h1 { font-size: 48px; font-weight: 900; letter-spacing: -1px; margin-bottom: 20px; }
 
-        .filtro-btn.active {
-            color: #00e5ff;
-        }
+        .temp-buttons { display: flex; gap: 10px; margin-bottom: 40px; }
+        .temp-btn { background: #1a1a1a; border: 1px solid #333; color: #aaa; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .temp-btn.active { background: #fff; color: #000; border-color: #fff; }
 
-        .filtro-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: #00e5ff;
-            border-radius: 3px;
-        }
-
-        /* ===== CARDS MODERNOS ===== */
-        .grid-catalogo {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 30px;
-        }
-
-        .card {
-            position: relative;
-            background: #141414;
-            border-radius: 16px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .card:hover {
-            transform: translateY(-10px) scale(1.03);
-            box-shadow: 0 20px 40px rgba(0, 229, 255, 0.15);
-        }
-
-        .card-img-wrapper {
-            width: 100%;
-            height: 320px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .card:hover img {
-            transform: scale(1.1);
-        }
-
-        /* Overlay de gradiente no card */
-        .card-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(10, 10, 10, 1) 0%, rgba(10, 10, 10, 0.4) 50%, transparent 100%);
-        }
-
-        .card-info {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            z-index: 2;
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }
-
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        .card-badge {
-            background: rgba(0, 229, 255, 0.2);
-            color: #00e5ff;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            backdrop-filter: blur(5px);
-        }
-
-        /* ===== SÉRIE E PLAYER ===== */
-        .serie-area, .player-area { 
-            display: none; 
-            padding: 40px 50px; 
-            max-width: 1400px; 
-            margin: 0 auto; 
-        }
-
-        .voltar-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 30px;
-            transition: 0.3s;
-            backdrop-filter: blur(5px);
-        }
-
-        .voltar-btn:hover { background: #00e5ff; color: #000; border-color: #00e5ff; }
-
-        .player-box {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: black;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            margin-bottom: 30px;
-        }
-
-        .player-box video { width: 100%; height: 100%; }
-
-        .temp-buttons { display: flex; gap: 10px; margin-bottom: 30px; }
-        .temp-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .temp-btn.active { background: #00e5ff; color: #000; }
-
-        .grid-episodios { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .ep-card { background: #1a1a1a; border-radius: 12px; padding: 20px; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
-        .ep-card:hover { border-color: #00e5ff; background: #222; }
-        .ep-num { color: #00e5ff; font-weight: bold; margin-bottom: 10px; }
+        /* Grade estilo HBO Max */
+        .grid-episodios { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        
+        .ep-card { cursor: pointer; transition: transform 0.3s; }
+        .ep-card:hover { transform: scale(1.03); }
+        
+        .ep-thumb-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; background: #222; margin-bottom: 15px; }
+        .ep-thumb-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .ep-num-overlay { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 5px; font-size: 14px; font-weight: bold; }
+        
+        .ep-info { padding: 0 5px; }
         .ep-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
-        .ep-desc { font-size: 14px; color: #888; }
+        .ep-desc { font-size: 14px; color: #888; line-height: 1.5; margin-bottom: 10px; }
+        .ep-link { color: #00bcd4; font-size: 14px; font-weight: bold; cursor: pointer; }
+
+        /* ===== PLAYER ===== */
+        .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .player-box video { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -221,6 +67,7 @@
         <div class="logo">Ricoflix</div>
     </header>
 
+    <!-- CATÁLOGO -->
     <div class="container" id="tela-catalogo">
         <div class="filtros">
             <button class="filtro-btn active" onclick="filtrar('tudo')">Tudo</button>
@@ -230,13 +77,17 @@
         <div class="grid-catalogo" id="grid-catalogo"></div>
     </div>
 
+    <!-- ÁREA DA SÉRIE -->
     <div id="tela-serie" class="serie-area">
-        <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar ao Catálogo</button>
-        <h1 id="titulo-serie" style="margin-bottom: 30px; font-size: 40px; font-weight: 900;"></h1>
-        <div class="temp-buttons" id="botoes-temporada"></div>
+        <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
+        <div class="serie-header">
+            <h1 id="titulo-serie"></h1>
+            <div class="temp-buttons" id="botoes-temporada"></div>
+        </div>
         <div class="grid-episodios" id="lista-episodios"></div>
     </div>
 
+    <!-- PLAYER -->
     <div id="tela-player" class="player-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar</button>
         <div class="player-box" id="player-box">
@@ -245,10 +96,7 @@
     </div>
 
     <script>
-        // ================= DADOS COM CAPAS REAIS =================
-        // Para as capas nunca mais quebrarem, o ideal é você baixar as imagens e colocar na pasta do projeto.
-        // Mas para garantir que funcione agora, usei uma lógica: se a imagem do Google quebrar, ele puxa uma capa gerada automaticamente.
-        
+        // ================= DADOS =================
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', 
               img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
@@ -267,8 +115,14 @@
                 nome: 'O Incrível Mundo de Gumball',
                 temporadas: {
                     1: [
-                        { num: 1, titulo: 'O Fantasma', desc: 'Gumball prova que a escola é assombrada.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP1_AQUI' },
-                        { num: 2, titulo: 'A Calculadora', desc: 'Darwin tenta ser esperto.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI' }
+                        { num: 1, titulo: 'O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável", enquanto inundam a casa.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP1_AQUI' },
+                        { num: 2, titulo: 'Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e se perdeu.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP2_AQUI' },
+                        { num: 3, titulo: 'O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo melhor amigo.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP3_AQUI' },
+                        { num: 4, titulo: 'A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da Escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP4_AQUI' },
+                        { num: 5, titulo: 'O Fim', desc: 'Gumball e Darwin estão convencidos de que o mundo acabará em 24 horas.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP5_AQUI' },
+                        { num: 6, titulo: 'O Vestido', desc: 'Gumball vai para a escola de vestido e se torna a atração da escola.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP6_AQUI' },
+                        { num: 7, titulo: 'A Busca', desc: 'Gumball e Darwin ajudam Anais a resgatar sua guia de uma loja de brinquedos.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP7_AQUI' },
+                        { num: 8, titulo: 'A Colher', desc: 'Gumball e Darwin querem virar cúmplices de um roubo em um posto de gasolina.', video: 'https://drive.google.com/uc?export=download&id=SEU_ID_EP8_AQUI' }
                     ]
                 }
             }
@@ -276,9 +130,9 @@
 
         // ================= LÓGICA =================
 
-        // Função para gerar capa colorida se a imagem quebrar (nunca mais fica preto!)
-        function gerarCapaFallback(titulo) {
-            return `https://placehold.co/400x600/1a1a1a/00e5ff?text=${encodeURIComponent(titulo)}`;
+        // Função para gerar miniaturas caso não tenha imagem
+        function gerarThumb(epNum) {
+            return `https://placehold.co/640x360/222/00bcd4?text=Epis%C3%B3dio+${epNum}`;
         }
 
         function renderizarCatalogo() {
@@ -286,16 +140,10 @@
             grid.innerHTML = '';
             filmes.forEach(item => {
                 grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
-                    <div class="card-img-wrapper">
-                        <img src="${item.img}" onerror="this.src='${gerarCapaFallback(item.titulo)}'">
-                        <div class="card-overlay"></div>
-                    </div>
+                    <img src="${item.img}" onerror="this.src='https://placehold.co/400x600/1a1a1a/00bcd4?text=${item.titulo}'">
                     <div class="card-info">
                         <div class="card-title">${item.titulo}</div>
-                        <div class="card-meta">
-                            <span>${item.ano}</span>
-                            <span class="card-badge">${item.tipo === 'filme' ? 'FILME' : 'SÉRIE'}</span>
-                        </div>
+                        <div class="card-meta"><span>${item.ano}</span></div>
                     </div>
                 </div>`;
             });
@@ -311,16 +159,10 @@
             
             listaFiltrada.forEach(item => {
                 grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
-                    <div class="card-img-wrapper">
-                        <img src="${item.img}" onerror="this.src='${gerarCapaFallback(item.titulo)}'">
-                        <div class="card-overlay"></div>
-                    </div>
+                    <img src="${item.img}" onerror="this.src='https://placehold.co/400x600/1a1a1a/00bcd4?text=${item.titulo}'">
                     <div class="card-info">
                         <div class="card-title">${item.titulo}</div>
-                        <div class="card-meta">
-                            <span>${item.ano}</span>
-                            <span class="card-badge">${item.tipo === 'filme' ? 'FILME' : 'SÉRIE'}</span>
-                        </div>
+                        <div class="card-meta"><span>${item.ano}</span></div>
                     </div>
                 </div>`;
             });
@@ -336,7 +178,7 @@
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-serie').style.display = 'none';
             document.getElementById('tela-player').style.display = 'block';
-
+            
             document.getElementById('player-box').innerHTML = `
                 <video controls autoplay>
                     <source src="${linkVideo}" type="video/mp4">
@@ -347,6 +189,7 @@
         function abrirSerie(id) {
             document.getElementById('tela-catalogo').style.display = 'none';
             document.getElementById('tela-player').style.display = 'none';
+            
             const serie = seriesData[id];
             document.getElementById('titulo-serie').innerText = serie.nome;
             
@@ -368,12 +211,21 @@
             const lista = document.getElementById('lista-episodios');
             lista.innerHTML = '';
 
+            // Lógica estilo HBO Max: Card grande com imagem, número, título e sinopse
             eps.forEach(ep => {
-                lista.innerHTML += `<div class="ep-card" onclick="abrirPlayer('${ep.video}')">
-                    <div class="ep-num">Episódio ${ep.num}</div>
-                    <div class="ep-title">${ep.titulo}</div>
-                    <div class="ep-desc">${ep.desc}</div>
-                </div>`;
+                lista.innerHTML += `
+                    <div class="ep-card" onclick="abrirPlayer('${ep.video}')">
+                        <div class="ep-thumb-wrapper">
+                            <img src="${gerarThumb(ep.num)}" alt="Episódio ${ep.num}">
+                            <div class="ep-num-overlay">${ep.num}. ${ep.titulo}</div>
+                        </div>
+                        <div class="ep-info">
+                            <div class="ep-title">${ep.num}. ${ep.titulo}</div>
+                            <div class="ep-desc">${ep.desc}</div>
+                            <div class="ep-link">Veja mais</div>
+                        </div>
+                    </div>
+                `;
             });
         }
 
