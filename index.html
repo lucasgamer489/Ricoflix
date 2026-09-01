@@ -3,124 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Catálogo Profissional</title>
+    <title>Ricoflix - Moderno</title>
     <style>
-        /* ===== ESTILO GERAL ===== */
-        body {
-            background-color: #0b0b0b;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* ===== RESET E FONTE ===== */
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
+        body {
+            background-color: #0a0a0a;
+            color: #fff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1c2a3a 0%, #0a0a0a 50%);
+            min-height: 100vh;
+        }
+
+        /* ===== HEADER ===== */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 40px;
-            background-color: #141414;
-            border-bottom: 1px solid #2a2a2a;
+            padding: 25px 50px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #00bcd4;
-            letter-spacing: 1px;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #00e5ff, #00bcd4, #0097a7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* ===== CATÁLOGO ===== */
-        .catalogo-section { padding: 40px; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 50px;
+        }
 
         .filtros {
-            margin-bottom: 30px;
             display: flex;
-            gap: 10px;
+            gap: 15px;
+            margin-bottom: 40px;
         }
 
         .filtro-btn {
             background: transparent;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 8px 20px;
-            border-radius: 20px;
+            border: none;
+            color: #888;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px 20px;
             cursor: pointer;
+            position: relative;
             transition: 0.3s;
         }
 
-        .filtro-btn.active { background: #00bcd4; border-color: #00bcd4; color: #000; font-weight: bold; }
+        .filtro-btn:hover { color: #fff; }
 
-        .grid-catalogo {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 25px;
+        .filtro-btn.active {
+            color: #00e5ff;
         }
 
-        /* Estilo dos Cards (Capa grande por cima) */
+        .filtro-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #00e5ff;
+            border-radius: 3px;
+        }
+
+        /* ===== CARDS MODERNOS ===== */
+        .grid-catalogo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 30px;
+        }
+
         .card {
-            background-color: #1a1a1a;
-            border-radius: 10px;
+            position: relative;
+            background: #141414;
+            border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
 
         .card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
-            border: 1px solid #00bcd4;
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0, 229, 255, 0.15);
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            height: 320px;
+            position: relative;
+            overflow: hidden;
         }
 
         .card img {
             width: 100%;
-            height: 280px;
+            height: 100%;
             object-fit: cover;
-            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Overlay de gradiente no card */
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10, 10, 10, 1) 0%, rgba(10, 10, 10, 0.4) 50%, transparent 100%);
         }
 
         .card-info {
-            padding: 15px;
-            text-align: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px;
+            z-index: 2;
         }
 
-        .card-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
-        .card-meta { color: #888; font-size: 13px; }
+        .card-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
 
-        /* ===== ÁREA DA SÉRIE ===== */
-        .serie-area { display: none; padding: 40px; }
-        
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .card-badge {
+            background: rgba(0, 229, 255, 0.2);
+            color: #00e5ff;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+        }
+
+        /* ===== SÉRIE E PLAYER ===== */
+        .serie-area, .player-area { 
+            display: none; 
+            padding: 40px 50px; 
+            max-width: 1400px; 
+            margin: 0 auto; 
+        }
+
         .voltar-btn {
-            background: #222;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             color: white;
-            border: 1px solid #444;
-            padding: 10px 20px;
-            border-radius: 5px;
+            padding: 12px 24px;
+            border-radius: 50px;
             cursor: pointer;
-            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 30px;
             transition: 0.3s;
+            backdrop-filter: blur(5px);
         }
-        .voltar-btn:hover { background: #333; }
+
+        .voltar-btn:hover { background: #00e5ff; color: #000; border-color: #00e5ff; }
+
+        .player-box {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: black;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            margin-bottom: 30px;
+        }
+
+        .player-box video { width: 100%; height: 100%; }
 
         .temp-buttons { display: flex; gap: 10px; margin-bottom: 30px; }
-        .temp-btn { background: #222; border: 1px solid #444; color: white; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-        .temp-btn.active { background: #00bcd4; border-color: #00bcd4; color: #000; font-weight: bold; }
+        .temp-btn { background: rgba(255,255,255,0.1); border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .temp-btn.active { background: #00e5ff; color: #000; }
 
         .grid-episodios { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .ep-card { background: #1a1a1a; border-radius: 6px; padding: 15px; cursor: pointer; transition: 0.3s; }
-        .ep-card:hover { background: #222; border: 1px solid #00bcd4; }
-        .ep-num { color: #00bcd4; font-weight: bold; }
-        .ep-title { font-weight: bold; margin: 8px 0; }
-        .ep-desc { font-size: 13px; color: #888; }
-
-        /* ===== PLAYER ===== */
-        .player-area { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
-        .player-box { width: 100%; aspect-ratio: 16/9; background: black; border-radius: 8px; overflow: hidden; }
-        .player-box video { width: 100%; height: 100%; }
+        .ep-card { background: #1a1a1a; border-radius: 12px; padding: 20px; cursor: pointer; transition: 0.3s; border: 1px solid transparent; }
+        .ep-card:hover { border-color: #00e5ff; background: #222; }
+        .ep-num { color: #00e5ff; font-weight: bold; margin-bottom: 10px; }
+        .ep-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+        .ep-desc { font-size: 14px; color: #888; }
     </style>
 </head>
 <body>
@@ -129,7 +221,7 @@
         <div class="logo">Ricoflix</div>
     </header>
 
-    <div id="tela-catalogo" class="catalogo-section">
+    <div class="container" id="tela-catalogo">
         <div class="filtros">
             <button class="filtro-btn active" onclick="filtrar('tudo')">Tudo</button>
             <button class="filtro-btn" onclick="filtrar('filme')">Filmes</button>
@@ -140,7 +232,7 @@
 
     <div id="tela-serie" class="serie-area">
         <button class="voltar-btn" onclick="voltarCatalogo()">← Voltar ao Catálogo</button>
-        <h1 id="titulo-serie" style="margin-bottom: 20px;"></h1>
+        <h1 id="titulo-serie" style="margin-bottom: 30px; font-size: 40px; font-weight: 900;"></h1>
         <div class="temp-buttons" id="botoes-temporada"></div>
         <div class="grid-episodios" id="lista-episodios"></div>
     </div>
@@ -154,8 +246,9 @@
 
     <script>
         // ================= DADOS COM CAPAS REAIS =================
-        // (Se quiser trocar as capas, é só trocar o link em "img". 
-        //  Você pode baixar as imagens e hospedar no Vercel também!)
+        // Para as capas nunca mais quebrarem, o ideal é você baixar as imagens e colocar na pasta do projeto.
+        // Mas para garantir que funcione agora, usei uma lógica: se a imagem do Google quebrar, ele puxa uma capa gerada automaticamente.
+        
         const filmes = [
             { id: 'filme1', titulo: 'Sonic 3', ano: 2024, tipo: 'filme', 
               img: 'https://image.tmdb.org/t/p/w500/d8Ryb8AunYAuyc35NRxaZ4zM7kI.jpg', 
@@ -182,15 +275,27 @@
         };
 
         // ================= LÓGICA =================
+
+        // Função para gerar capa colorida se a imagem quebrar (nunca mais fica preto!)
+        function gerarCapaFallback(titulo) {
+            return `https://placehold.co/400x600/1a1a1a/00e5ff?text=${encodeURIComponent(titulo)}`;
+        }
+
         function renderizarCatalogo() {
             const grid = document.getElementById('grid-catalogo');
             grid.innerHTML = '';
             filmes.forEach(item => {
                 grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
-                    <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/1a1a1a/555?text=Ricoflix'">
+                    <div class="card-img-wrapper">
+                        <img src="${item.img}" onerror="this.src='${gerarCapaFallback(item.titulo)}'">
+                        <div class="card-overlay"></div>
+                    </div>
                     <div class="card-info">
                         <div class="card-title">${item.titulo}</div>
-                        <div class="card-meta"><span>${item.ano}</span></div>
+                        <div class="card-meta">
+                            <span>${item.ano}</span>
+                            <span class="card-badge">${item.tipo === 'filme' ? 'FILME' : 'SÉRIE'}</span>
+                        </div>
                     </div>
                 </div>`;
             });
@@ -206,10 +311,16 @@
             
             listaFiltrada.forEach(item => {
                 grid.innerHTML += `<div class="card" onclick="abrirItem('${item.id}')">
-                    <img src="${item.img}" onerror="this.src='https://via.placeholder.com/200x280/1a1a1a/555?text=Ricoflix'">
+                    <div class="card-img-wrapper">
+                        <img src="${item.img}" onerror="this.src='${gerarCapaFallback(item.titulo)}'">
+                        <div class="card-overlay"></div>
+                    </div>
                     <div class="card-info">
                         <div class="card-title">${item.titulo}</div>
-                        <div class="card-meta"><span>${item.ano}</span></div>
+                        <div class="card-meta">
+                            <span>${item.ano}</span>
+                            <span class="card-badge">${item.tipo === 'filme' ? 'FILME' : 'SÉRIE'}</span>
+                        </div>
                     </div>
                 </div>`;
             });
