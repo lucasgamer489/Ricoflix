@@ -234,97 +234,103 @@
         }
     </style>
 </head>
-<body class="antialiased p-4 md:p-6 max-w-7xl mx-auto" x-data="app()" x-init="init()">
+<body>
 
-    <header class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-3">
-            <span class="logo">Ricoflix</span>
-            <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">
-                Dublado
+    <div id="app">
+        <header class="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 md:p-6 max-w-7xl mx-auto">
+            <div class="flex items-center gap-3">
+                <span class="logo">Ricoflix</span>
+                <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">
+                    Dublado
+                </span>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#445566;">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" @keyup.enter="performSearch()" />
+                </div>
+                <button class="btn" @click="performSearch()">Ir</button>
+            </div>
+        </header>
+
+        <div class="flex flex-wrap items-center gap-3 mb-6 border-b border-[#00E5FF]/5 pb-3 max-w-7xl mx-auto px-4 md:px-6">
+            <span class="tab" :class="{ active: currentFilter === 'all' }" @click="setFilter('all')">Tudo</span>
+            <span class="tab" :class="{ active: currentFilter === 'movie' }" @click="setFilter('movie')">Filmes</span>
+            <span class="tab" :class="{ active: currentFilter === 'tv' }" @click="setFilter('tv')">Séries</span>
+            <span class="ml-auto text-[10px] text-[#445566]">
+                Dublado PT-BR
             </span>
         </div>
-        <div class="flex items-center gap-3 flex-wrap">
-            <div class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#445566;">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" x-model="searchQuery" @keyup.enter="performSearch()" />
-            </div>
-            <button class="btn" @click="performSearch()">Ir</button>
-        </div>
-    </header>
 
-    <div class="flex flex-wrap items-center gap-3 mb-6 border-b border-[#00E5FF]/5 pb-3">
-        <span class="tab" :class="{ active: currentFilter === 'all' }" @click="setFilter('all')">Tudo</span>
-        <span class="tab" :class="{ active: currentFilter === 'movie' }" @click="setFilter('movie')">Filmes</span>
-        <span class="tab" :class="{ active: currentFilter === 'tv' }" @click="setFilter('tv')">Séries</span>
-        <span class="ml-auto text-[10px] text-[#445566]">
-            Dublado PT-BR
-        </span>
+        <section class="mb-6 max-w-7xl mx-auto px-4 md:px-6">
+            <div class="scroll" id="movieGrid">
+                <template x-for="movie in filteredMovies" :key="movie.id">
+                    <div class="card" @click="loadMovie(movie)">
+                        <div class="poster-wrapper">
+                            <img :src="movie.poster" :alt="movie.title" loading="lazy" />
+                            <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);padding:0.2rem 0.6rem;border-radius:40px;border:1px solid rgba(0,229,255,0.2);">
+                                <span style="font-size:0.5rem;color:#00E5FF;">DUB</span>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <div class="flex justify-between items-start">
+                                <h3 x-text="movie.title"></h3>
+                            </div>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="year" x-text="movie.year"></span>
+                                <span class="badge-type" x-text="movie.type === 'tv' ? 'Série' : 'Filme'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            <div id="loaderGrid" class="flex justify-center py-8" x-show="loading">
+                <div class="loader"></div>
+            </div>
+            <p class="text-center text-[#445566] py-6 hidden" id="noResults">Nenhum título encontrado.</p>
+        </section>
+
+        <section id="player-section" class="mt-6 max-w-7xl mx-auto px-4 md:px-6">
+            <div id="player-container">
+                <div class="placeholder" id="fallbackMessage" x-show="!currentMovie">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
+                            <rect x="2" y="2" width="20" height="20" rx="2.18" />
+                            <line x1="8" y1="2" x2="8" y2="22" />
+                            <line x1="16" y1="2" x2="16" y2="22" />
+                            <line x1="2" y1="8" x2="22" y2="8" />
+                            <line x1="2" y1="16" x2="22" y2="16" />
+                        </svg>
+                    </div>
+                    <div class="title">Selecione um filme</div>
+                    <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir sem anúncios</div>
+                </div>
+                <video id="player" playsinline controls style="display:none;"></video>
+            </div>
+            <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
+                <span class="player-title" id="movieTitlePlayer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:0.5rem;color:#00E5FF;">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    <strong x-text="currentMovie ? currentMovie.title : 'Selecione um filme'"></strong>
+                    <span class="text-[#445566] text-xs ml-2" x-show="currentMovie">Player Nativo · Dublado</span>
+                </span>
+            </div>
+        </section>
+
+        <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
+            <span>© 2026 Ricoflix · Dublado PT-BR</span>
+            <span>Player Nativo · Sem Anúncios</span>
+        </footer>
     </div>
 
-    <section class="mb-6">
-        <div class="scroll" id="movieGrid">
-            <template x-for="movie in filteredMovies" :key="movie.id">
-                <div class="card" @click="loadMovie(movie)">
-                    <div class="poster-wrapper">
-                        <img :src="movie.poster" :alt="movie.title" loading="lazy" />
-                        <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);padding:0.2rem 0.6rem;border-radius:40px;border:1px solid rgba(0,229,255,0.2);">
-                            <span style="font-size:0.5rem;color:#00E5FF;">DUB</span>
-                        </div>
-                    </div>
-                    <div class="info">
-                        <div class="flex justify-between items-start">
-                            <h3 x-text="movie.title"></h3>
-                        </div>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="year" x-text="movie.year"></span>
-                            <span class="badge-type" x-text="movie.type === 'tv' ? 'Série' : 'Filme'"></span>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </div>
-        <div id="loaderGrid" class="flex justify-center py-8" x-show="loading">
-            <div class="loader"></div>
-        </div>
-        <p class="text-center text-[#445566] py-6 hidden" id="noResults">Nenhum título encontrado.</p>
-    </section>
-
-    <section id="player-section" class="mt-6">
-        <div id="player-container">
-            <div class="placeholder" id="fallbackMessage" x-show="!currentMovie">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
-                        <rect x="2" y="2" width="20" height="20" rx="2.18" />
-                        <line x1="8" y1="2" x2="8" y2="22" />
-                        <line x1="16" y1="2" x2="16" y2="22" />
-                        <line x1="2" y1="8" x2="22" y2="8" />
-                        <line x1="2" y1="16" x2="22" y2="16" />
-                    </svg>
-                </div>
-                <div class="title">Selecione um filme</div>
-                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir sem anúncios</div>
-            </div>
-            <video id="player" playsinline controls style="display:none;"></video>
-        </div>
-        <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
-            <span class="player-title" id="movieTitlePlayer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:0.5rem;color:#00E5FF;">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-                <strong x-text="currentMovie ? currentMovie.title : 'Selecione um filme'"></strong>
-                <span class="text-[#445566] text-xs ml-2" x-show="currentMovie">Player Nativo · Dublado</span>
-            </span>
-        </div>
-    </section>
-
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js">
-    </script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
-        function app() {
-            return {
+        document.addEventListener('DOMContentLoaded', function() {
+            const appData = {
                 catalog: [],
                 currentFilter: 'all',
                 searchQuery: '',
@@ -339,7 +345,7 @@
                     } else if (this.currentFilter === 'tv') {
                         filtered = filtered.filter(m => m.type === 'tv');
                     }
-                    if (this.searchQuery.trim()) {
+                    if (this.searchQuery && this.searchQuery.trim()) {
                         const q = this.searchQuery.toLowerCase();
                         filtered = filtered.filter(m => m.title.toLowerCase().includes(q));
                     }
@@ -373,52 +379,48 @@
                 },
 
                 async fetchMovies() {
-                    // ================================================================
-                    //  COLE AQUI OS LINKS DOS SEUS FILMES DUBLADOS
-                    //  Use o formato: video: 'https://anonmp4.art/stream/SEU_ID.mp4'
-                    // ================================================================
                     const MOVIES = [{
                         id: 'sonic3',
                         title: 'Sonic 3',
                         year: '2024',
                         poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
                         type: 'movie',
-                        video: 'https://anonmp4.art/stream/3F23Ihvy1KPOKNe.mp4' // ✅ Sonic 3 DUBLADO
+                        video: 'https://anonmp4.art/stream/3F23Ihvy1KPOKNe.mp4'
                     }, {
                         id: 'deadpool3',
                         title: 'Deadpool 3',
                         year: '2024',
                         poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg',
                         type: 'movie',
-                        video: null // ⬅️ COLE O LINK AQUI DEPOIS DE UPLOAD
+                        video: null
                     }, {
                         id: 'divertidamente2',
                         title: 'Divertida Mente 2',
                         year: '2024',
                         poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg',
                         type: 'movie',
-                        video: null // ⬅️ COLE O LINK AQUI DEPOIS DE UPLOAD
+                        video: null
                     }, {
                         id: 'oppenheimer',
                         title: 'Oppenheimer',
                         year: '2023',
                         poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
                         type: 'movie',
-                        video: null // ⬅️ COLE O LINK AQUI DEPOIS DE UPLOAD
+                        video: null
                     }, {
                         id: 'duna2',
                         title: 'Duna: Parte 2',
                         year: '2024',
                         poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
                         type: 'movie',
-                        video: null // ⬅️ COLE O LINK AQUI DEPOIS DE UPLOAD
+                        video: null
                     }, {
                         id: 'johnwick4',
                         title: 'John Wick 4',
                         year: '2023',
                         poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg',
                         type: 'movie',
-                        video: null // ⬅️ COLE O LINK AQUI DEPOIS DE UPLOAD
+                        video: null
                     }];
 
                     return MOVIES;
@@ -469,13 +471,23 @@
                 performSearch() {
                     // Alpine.js já faz o filtro automaticamente via computed property
                 }
-            }
-        }
+            };
+
+            // Inicializa o Alpine.js
+            const app = Alpine.reactive(appData);
+            document.getElementById('app')._x_dataStack = [app];
+            app.init();
+
+            // Expõe para o console (debug)
+            window.app = app;
+        });
     </script>
 
-    <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
-        <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span>Player Nativo · Sem Anúncios</span>
-    </footer>
+    <script>
+        // Fallback para garantir que o Alpine.js carregue
+        document.addEventListener('alpine:init', () => {
+            console.log('✅ Alpine.js inicializado!');
+        });
+    </script>
 </body>
 </html>
