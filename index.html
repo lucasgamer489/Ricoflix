@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricoflix — Dublado PT-BR</title>
+    <title>Ricoflix — Drag & Drop</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
@@ -161,8 +161,14 @@
             background: #0a0a0a;
             border-radius: 24px;
             overflow: hidden;
-            border: 1px solid rgba(0, 229, 255, 0.06);
+            border: 2px dashed rgba(0, 229, 255, 0.15);
             min-height: 420px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        #player-container.dragover {
+            border-color: #00E5FF;
+            background: rgba(0, 229, 255, 0.02);
         }
         #player-container video {
             width: 100%;
@@ -196,9 +202,10 @@
             padding: 3rem;
             text-align: center;
             color: #445566;
+            min-height: 420px;
         }
         .placeholder .icon {
-            font-size: 3rem;
+            font-size: 4rem;
             color: #00E5FF;
             margin-bottom: 1rem;
         }
@@ -206,6 +213,11 @@
             color: #eef4ff;
             font-size: 1.2rem;
             font-weight: 600;
+        }
+        .placeholder .sub {
+            color: #556677;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
 
         .player-title {
@@ -216,6 +228,19 @@
         .player-title strong {
             color: #00E5FF;
             font-weight: 600;
+        }
+
+        .drop-zone {
+            border: 2px dashed rgba(0, 229, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        .drop-zone.dragover {
+            border-color: #00E5FF;
+            background: rgba(0, 229, 255, 0.02);
         }
 
         @media (max-width: 640px) {
@@ -240,7 +265,7 @@
         <div class="flex items-center gap-3">
             <span class="logo">Ricoflix</span>
             <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">
-                Dublado
+                Drag & Drop
             </span>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
@@ -260,7 +285,7 @@
         <span class="tab" :class="{ active: currentFilter === 'movie' }" @click="setFilter('movie')">Filmes</span>
         <span class="tab" :class="{ active: currentFilter === 'tv' }" @click="setFilter('tv')">Séries</span>
         <span class="ml-auto text-[10px] text-[#445566]">
-            Dublado PT-BR
+            Arraste seu vídeo MP4
         </span>
     </div>
 
@@ -293,10 +318,14 @@
     </section>
 
     <section id="player-section" class="mt-6">
-        <div id="player-container">
-            <div class="placeholder" id="fallbackMessage" x-show="!currentMovie">
+        <div id="player-container" 
+             @dragover.prevent="dragOver = true; $event.dataTransfer.dropEffect = 'copy'"
+             @dragleave.prevent="dragOver = false"
+             @drop.prevent="handleDrop($event)">
+
+            <div class="placeholder" id="fallbackMessage" x-show="!currentMovie && !uploadedVideo">
                 <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
                         <rect x="2" y="2" width="20" height="20" rx="2.18" />
                         <line x1="8" y1="2" x2="8" y2="22" />
                         <line x1="16" y1="2" x2="16" y2="22" />
@@ -304,18 +333,39 @@
                         <line x1="2" y1="16" x2="22" y2="16" />
                     </svg>
                 </div>
-                <div class="title">Selecione um filme</div>
-                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir sem anúncios</div>
+                <div class="title">Arraste seu vídeo MP4</div>
+                <div class="sub">Solte o arquivo aqui ou clique em um card</div>
+                <div class="sub" style="font-size:0.7rem;color:#334455;margin-top:0.3rem;">
+                    Suporte: MP4, MKV, AVI, WebM
+                </div>
             </div>
+
+            <!-- Player nativo -->
             <video id="player" playsinline controls style="display:none;"></video>
         </div>
+
+        <!-- Drop zone alternativa -->
+        <div class="drop-zone" 
+             @dragover.prevent="dragOver = true; $event.dataTransfer.dropEffect = 'copy'"
+             @dragleave.prevent="dragOver = false"
+             @drop.prevent="handleDrop($event)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;margin-right:0.5rem;color:#00E5FF;">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" />
+                <line x1="8" y1="2" x2="8" y2="22" />
+                <line x1="16" y1="2" x2="16" y2="22" />
+                <line x1="2" y1="8" x2="22" y2="8" />
+                <line x1="2" y1="16" x2="22" y2="16" />
+            </svg>
+            <span style="color:#445566;">Solte seu vídeo aqui</span>
+        </div>
+
         <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
             <span class="player-title" id="movieTitlePlayer">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:0.5rem;color:#00E5FF;">
                     <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
-                <strong x-text="currentMovie ? currentMovie.title : 'Selecione um filme'"></strong>
-                <span class="text-[#445566] text-xs ml-2" x-show="currentMovie">Player Nativo · Dublado</span>
+                <strong x-text="currentMovie ? currentMovie.title : (uploadedVideoName ? uploadedVideoName : 'Arraste um vídeo')"></strong>
+                <span class="text-[#445566] text-xs ml-2" x-show="currentMovie || uploadedVideoName">Player Nativo · Sem Anúncios</span>
             </span>
         </div>
     </section>
@@ -329,7 +379,10 @@
                 currentFilter: 'all',
                 searchQuery: '',
                 currentMovie: null,
+                uploadedVideo: null,
+                uploadedVideoName: null,
                 loading: true,
+                dragOver: false,
                 playerInstance: null,
 
                 get filteredMovies() {
@@ -349,6 +402,10 @@
                 async init() {
                     await this.loadCatalog();
                     this.initPlayer();
+
+                    // Setup drag and drop global
+                    document.addEventListener('dragover', (e) => e.preventDefault());
+                    document.addEventListener('drop', (e) => e.preventDefault());
                 },
 
                 initPlayer() {
@@ -366,6 +423,44 @@
                     }
                 },
 
+                handleDrop(event) {
+                    this.dragOver = false;
+                    const files = event.dataTransfer.files;
+
+                    if (files.length === 0) return;
+
+                    const file = files[0];
+
+                    // Verifica se é um vídeo
+                    if (!file.type.startsWith('video/')) {
+                        alert('Por favor, arraste apenas arquivos de vídeo (MP4, MKV, AVI, WebM)');
+                        return;
+                    }
+
+                    // Cria URL do vídeo
+                    const url = URL.createObjectURL(file);
+
+                    // Atualiza o player
+                    this.uploadedVideo = url;
+                    this.uploadedVideoName = file.name;
+                    this.currentMovie = null;
+
+                    const videoElement = document.getElementById('player');
+                    const placeholder = document.getElementById('fallbackMessage');
+
+                    placeholder.style.display = 'none';
+                    videoElement.style.display = 'block';
+
+                    videoElement.src = url;
+                    videoElement.load();
+
+                    if (this.playerInstance) {
+                        setTimeout(() => this.playerInstance.play(), 500);
+                    }
+
+                    document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                },
+
                 async loadCatalog() {
                     this.loading = true;
                     this.catalog = await this.fetchMovies();
@@ -379,7 +474,7 @@
                         year: '2024',
                         poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
                         type: 'movie',
-                        video: 'https://anonmp4.art/stream/3F23Ihvy1KPOKNe.mp4'
+                        video: null
                     }, {
                         id: 'deadpool3',
                         title: 'Deadpool 3',
@@ -422,6 +517,8 @@
 
                 loadMovie(movie) {
                     this.currentMovie = movie;
+                    this.uploadedVideo = null;
+                    this.uploadedVideoName = null;
 
                     const videoElement = document.getElementById('player');
                     const placeholder = document.getElementById('fallbackMessage');
@@ -437,8 +534,8 @@
                                     <line x1="12" y1="16" x2="12.01" y2="16" />
                                 </svg>
                             </div>
-                            <div class="title">Em breve</div>
-                            <div class="sub" style="color:#445566;margin-top:0.5rem;">Este título ainda está sendo hospedado</div>
+                            <div class="title">Vídeo não hospedado</div>
+                            <div class="sub" style="color:#445566;margin-top:0.5rem;">Arraste um arquivo MP4 para assistir</div>
                         `;
                         return;
                     }
@@ -470,8 +567,8 @@
     </script>
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
-        <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span>Player Nativo · Sem Anúncios</span>
+        <span>© 2026 Ricoflix · Drag & Drop</span>
+        <span>Arraste seu vídeo MP4 · Sem Anúncios</span>
     </footer>
 </body>
 </html>
