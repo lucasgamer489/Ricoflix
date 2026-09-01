@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Sala de Cinema</title>
+    <title>Ricoflix</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -104,7 +104,6 @@
     </div>
 
     <script>
-        // SUPABASE
         const SUPABASE_URL = 'https://jqolqvtavnbowlmehzo.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impxb2xxdnRhdm5ib3dsbW5laHpvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyODY0MzksImV4cCI6MjEwMzg2MjQzOX0.AA-ld5Q2HFr213o1RySdEYBeQ-96CQV5LWb2ieSZC7A';
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -255,7 +254,6 @@
             renderizarCatalogo();
         }
 
-        // CHAT & SYNC
         async function carregarMensagens() {
             if (!salaAtual) return;
             const { data } = await supabase.from('messages').select('*').eq('room_id', salaAtual).order('id', { ascending: true });
