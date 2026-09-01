@@ -1,480 +1,173 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricoflix — Dublado PT-BR</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricoflix - Assistir Sonic 3</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
+        /* CSS - Estilização igual ao site */
         body {
-            background: #0a0a0a;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: #e0e0e0;
-            min-height: 100vh;
+            background-color: #0f0f0f;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .card {
-            width: 200px;
-            background: #111;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.3s;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .card:hover {
-            transform: translateY(-4px) scale(1.01);
-            border-color: #00E5FF;
-        }
-        .card .poster-wrapper {
-            position: relative;
+        h1 { margin-bottom: 20px; }
+
+        .player-container {
             width: 100%;
-            height: 280px;
-            background: #0a0a0a;
+            max-width: 1000px;
+            background-color: #000;
+            border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            position: relative;
         }
-        .card .poster-wrapper img {
+
+        /* A área onde o filme aparece */
+        #video-area {
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Mantém proporção de vídeo */
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        iframe {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .card .info {
-            padding: 0.9rem;
-        }
-        .card .info h3 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #eef4ff;
-        }
-        .card .info .year {
-            font-size: 0.75rem;
-            color: #6688aa;
-        }
-        .card .badge-type {
-            font-size: 0.6rem;
-            background: rgba(0, 229, 255, 0.06);
-            border: 1px solid rgba(0, 229, 255, 0.08);
-            padding: 0.15rem 0.7rem;
-            border-radius: 40px;
-            color: #88ccff;
+            border: none;
         }
 
-        .scroll {
+        /* Estilo dos botões de canais */
+        .player-controls {
+            background-color: #1a1a1a;
+            padding: 15px;
+            text-align: center;
+            border-top: 2px solid #333;
+        }
+
+        .tabs {
             display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 1.2rem;
-            padding: 0.8rem 0.2rem 2rem 0.2rem;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
-        .scroll>* {
-            flex: 0 0 auto;
-            scroll-snap-align: start;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .logo {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #00E5FF;
-            letter-spacing: -0.5px;
-        }
-
-        .btn {
-            background: rgba(0, 229, 255, 0.04);
-            border: 1px solid rgba(0, 229, 255, 0.12);
-            color: #00E5FF;
-            padding: 0.5rem 1.4rem;
-            border-radius: 60px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        .btn:hover {
-            background: rgba(0, 229, 255, 0.08);
-            border-color: #00E5FF;
-        }
-
-        .search {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(0, 229, 255, 0.12);
-            border-radius: 60px;
-            padding: 0.5rem 1.2rem 0.5rem 2.8rem;
-            color: #f0f0f0;
-            width: 260px;
-            transition: all 0.3s;
-        }
-        .search:focus {
-            outline: none;
-            border-color: #00E5FF;
-        }
-        .search::placeholder {
-            color: #556677;
-        }
-
-        .tab {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 40px;
-            padding: 0.5rem 1.2rem;
-            color: #8899aa;
-            transition: all 0.25s;
+        .tab-btn {
+            background-color: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 4px;
             cursor: pointer;
-        }
-        .tab.active {
-            background: rgba(0, 229, 255, 0.06);
-            border-color: #00E5FF;
-            color: #00E5FF;
+            font-weight: bold;
         }
 
-        #player-container {
-            background: #0a0a0a;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 229, 255, 0.06);
-            min-height: 420px;
-        }
-        #player-container video {
-            width: 100%;
-            height: 420px;
-            background: #000;
-            display: block;
-        }
-        #player-container .plyr {
-            border-radius: 24px;
-            background: #000;
-            width: 100%;
-        }
-        #player-container .plyr__controls {
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(0, 229, 255, 0.05);
-        }
-        .plyr__control--overlaid {
-            background: rgba(0, 229, 255, 0.15) !important;
-            border: 2px solid rgba(0, 229, 255, 0.3) !important;
-        }
-        .plyr__control--overlaid svg {
-            fill: #00E5FF !important;
+        .tab-btn.active {
+            background-color: #006400; /* Verde escuro */
+            border-color: #00ff00;
         }
 
-        .placeholder {
+        .channel-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .channel-btn {
+            background-color: #006400;
+            border: 1px solid #00ff00;
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
             display: flex;
             align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            padding: 3rem;
-            text-align: center;
-            color: #445566;
-        }
-        .placeholder .icon {
-            font-size: 3rem;
-            color: #00E5FF;
-            margin-bottom: 1rem;
-        }
-        .placeholder .title {
-            color: #eef4ff;
-            font-size: 1.2rem;
-            font-weight: 600;
+            gap: 5px;
         }
 
-        .player-title {
-            color: #aabbdd;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-        .player-title strong {
-            color: #00E5FF;
-            font-weight: 600;
-        }
-
-        @media (max-width: 640px) {
-            .card {
-                width: 160px;
-            }
-            .card .poster-wrapper {
-                height: 220px;
-            }
-            .search {
-                width: 180px;
-            }
-            #player-container video {
-                height: 280px;
-            }
+        .channel-btn:hover {
+            background-color: #008000;
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header class="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 md:p-6 max-w-7xl mx-auto">
-        <div class="flex items-center gap-3">
-            <span class="logo">Ricoflix</span>
-            <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">Dublado</span>
-        </div>
-        <div class="flex items-center gap-3 flex-wrap">
-            <div class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#445566;">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" />
-            </div>
-            <button class="btn" onclick="filterMovies()">Ir</button>
-        </div>
-    </header>
+    <h1>Assistir Sonic 3: O Filme</h1>
 
-    <!-- TABS -->
-    <div class="flex flex-wrap items-center gap-3 mb-6 border-b border-[#00E5FF]/5 pb-3 max-w-7xl mx-auto px-4 md:px-6">
-        <span class="tab active" data-filter="all" onclick="setFilter('all')">Tudo</span>
-        <span class="tab" data-filter="movie" onclick="setFilter('movie')">Filmes</span>
-        <span class="tab" data-filter="tv" onclick="setFilter('tv')">Séries</span>
-        <span class="ml-auto text-[10px] text-[#445566]">Dublado PT-BR</span>
+    <!-- O Player -->
+    <div class="player-container">
+        <div id="video-area">
+            <!-- O vídeo será injetado aqui pelo JavaScript -->
+            <p style="color: #555;">Escolha um canal para começar</p>
+        </div>
+
+        <div class="player-controls">
+            <!-- Abas Dublado/Legendado -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="mudarIdioma('dublado')">DUBLADO</button>
+                <button class="tab-btn" onclick="mudarIdioma('legendado')">LEGENDADO</button>
+            </div>
+
+            <!-- Botões de Canal -->
+            <div class="channel-buttons">
+                <button class="channel-btn" onclick="trocarVideo('1')">▶ Canal 1</button>
+                <button class="channel-btn" onclick="trocarVideo('2')">▶ Canal 2</button>
+                <button class="channel-btn" onclick="trocarVideo('3')">▶ Canal 3</button>
+            </div>
+        </div>
     </div>
 
-    <!-- GRADE -->
-    <section class="mb-6 max-w-7xl mx-auto px-4 md:px-6">
-        <div id="movieGrid" class="scroll"></div>
-        <p id="noResults" class="text-center text-[#445566] py-6 hidden">Nenhum título encontrado.</p>
-    </section>
-
-    <!-- PLAYER -->
-    <section id="player-section" class="mt-6 max-w-7xl mx-auto px-4 md:px-6">
-        <div id="player-container">
-            <div id="fallbackMessage" class="placeholder">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
-                        <rect x="2" y="2" width="20" height="20" rx="2.18" />
-                        <line x1="8" y1="2" x2="8" y2="22" />
-                        <line x1="16" y1="2" x2="16" y2="22" />
-                        <line x1="2" y1="8" x2="22" y2="8" />
-                        <line x1="2" y1="16" x2="22" y2="16" />
-                    </svg>
-                </div>
-                <div class="title">Selecione um filme</div>
-                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir sem anúncios</div>
-            </div>
-            <video id="player" playsinline controls style="display:none;"></video>
-        </div>
-        <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
-            <span class="player-title" id="movieTitlePlayer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:0.5rem;color:#00E5FF;">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-                <strong id="movieTitleDisplay">Selecione um filme</strong>
-                <span class="text-[#445566] text-xs ml-2" id="playerStatus" style="display:none;">Player Nativo · Dublado</span>
-            </span>
-        </div>
-    </section>
-
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
-        // ================================================================
-        //  CATÁLOGO - SONIC 3 JÁ ESTÁ DUBLADO!
-        // ================================================================
-        const MOVIES = [{
-            id: 'sonic3',
-            title: 'Sonic 3',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
-            type: 'movie',
-            video: 'https://anonmp4.art/stream/3F23Ihvy1KPOKNe.mp4'
-        }, {
-            id: 'deadpool3',
-            title: 'Deadpool 3',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg',
-            type: 'movie',
-            video: null
-        }, {
-            id: 'divertidamente2',
-            title: 'Divertida Mente 2',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg',
-            type: 'movie',
-            video: null
-        }, {
-            id: 'oppenheimer',
-            title: 'Oppenheimer',
-            year: '2023',
-            poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
-            type: 'movie',
-            video: null
-        }, {
-            id: 'duna2',
-            title: 'Duna: Parte 2',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
-            type: 'movie',
-            video: null
-        }, {
-            id: 'johnwick4',
-            title: 'John Wick 4',
-            year: '2023',
-            poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg',
-            type: 'movie',
-            video: null
-        }];
-
-        let currentFilter = 'all';
-        let playerInstance = null;
-
-        // ================================================================
-        //  INICIALIZAR PLYR
-        // ================================================================
-        function initPlayer() {
-            const videoElement = document.getElementById('player');
-            if (videoElement) {
-                playerInstance = new Plyr(videoElement, {
-                    controls: [
-                        'play-large', 'play', 'progress', 'current-time', 'duration',
-                        'mute', 'volume', 'captions', 'settings', 'pip', 'fullscreen'
-                    ],
-                    settings: ['quality', 'speed'],
-                    quality: { default: 720, options: [1080, 720, 480, 360] },
-                    i18n: { quality: 'Qualidade', speed: 'Velocidade' }
-                });
-            }
+        // ID do filme Sonic 3 no IMDB
+        const IMDB_ID = 'tt18259086';
+        
+        // Função para trocar o idioma (visual apenas, mas mantém o mesmo link por enquanto)
+        function mudarIdioma(idioma) {
+            // Aqui você poderia trocar o link se tiver versões dubladas ou legendadas diferentes
+            alert("Você selecionou: " + idioma.toUpperCase());
         }
 
-        // ================================================================
-        //  RENDER CARDS
-        // ================================================================
-        function renderMovies() {
-            const grid = document.getElementById('movieGrid');
-            grid.innerHTML = '';
+        // A FUNÇÃO PRINCIPAL: Troca o vídeo na tela
+        function trocarVideo(canal) {
+            const videoArea = document.getElementById('video-area');
+            
+            // Deixa a tela preta e mostra "Carregando"
+            videoArea.innerHTML = '<p style="color: #fff;">Carregando Canal ' + canal + '...</p>';
 
-            let filtered = MOVIES.filter(movie => {
-                if (currentFilter === 'movie') return movie.type === 'movie';
-                if (currentFilter === 'tv') return movie.type === 'tv';
-                return true;
-            });
+            // Lógica para pegar o link correto dependendo do canal
+            // Aqui você coloca os links que achou no Inspecionar!
+            let linkDoVideo = '';
 
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            if (search) {
-                filtered = filtered.filter(m => m.title.toLowerCase().includes(search));
+            if (canal === '1') {
+                linkDoVideo = 'https://vidsrc.me/embed/movie?tt18259086'; // Link mais estável
+            } else if (canal === '2') {
+                linkDoVideo = 'https://vidsrc.to/embed/movie/tt18259086'; // Link alternativo
+            } else {
+                linkDoVideo = 'https://embed.su/embed/movie/tt18259086'; // Link reserva
             }
 
-            if (filtered.length === 0) {
-                document.getElementById('noResults').classList.remove('hidden');
-                return;
-            }
-            document.getElementById('noResults').classList.add('hidden');
-
-            filtered.forEach(movie => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="poster-wrapper">
-                        <img src="${movie.poster}" alt="${movie.title}" loading="lazy" />
-                        <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);padding:0.2rem 0.6rem;border-radius:40px;border:1px solid rgba(0,229,255,0.2);">
-                            <span style="font-size:0.5rem;color:#00E5FF;">DUB</span>
-                        </div>
-                    </div>
-                    <div class="info">
-                        <div class="flex justify-between items-start">
-                            <h3>${movie.title}</h3>
-                        </div>
-                        <div class="flex justify-between items-center mt-1">
-                            <span class="year">${movie.year}</span>
-                            <span class="badge-type">${movie.type === 'tv' ? 'Série' : 'Filme'}</span>
-                        </div>
-                    </div>
-                `;
-                card.addEventListener('click', function() {
-                    loadMovie(movie);
-                });
-                grid.appendChild(card);
-            });
+            // Injeta o Iframe na tela
+            videoArea.innerHTML = `
+                <iframe 
+                    src="${linkDoVideo}" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
         }
-
-        // ================================================================
-        //  CARREGAR FILME
-        // ================================================================
-        function loadMovie(movie) {
-            const videoElement = document.getElementById('player');
-            const placeholder = document.getElementById('fallbackMessage');
-            const titleDisplay = document.getElementById('movieTitleDisplay');
-            const statusDisplay = document.getElementById('playerStatus');
-
-            if (!movie.video) {
-                placeholder.style.display = 'flex';
-                videoElement.style.display = 'none';
-                statusDisplay.style.display = 'none';
-                placeholder.innerHTML = `
-                    <div class="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="8" x2="12" y2="12" />
-                            <line x1="12" y1="16" x2="12.01" y2="16" />
-                        </svg>
-                    </div>
-                    <div class="title">Em breve</div>
-                    <div class="sub" style="color:#445566;margin-top:0.5rem;">Este título ainda não foi hospedado</div>
-                `;
-                titleDisplay.textContent = movie.title + ' (Em breve)';
-                return;
-            }
-
-            placeholder.style.display = 'none';
-            videoElement.style.display = 'block';
-            statusDisplay.style.display = 'inline';
-
-            videoElement.src = movie.video;
-            videoElement.poster = movie.poster || '';
-            videoElement.load();
-
-            titleDisplay.textContent = movie.title;
-
-            if (playerInstance) {
-                setTimeout(() => playerInstance.play(), 500);
-            }
-
-            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        // ================================================================
-        //  FILTROS
-        // ================================================================
-        function setFilter(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.dataset.filter === filter) {
-                    tab.classList.add('active');
-                }
-            });
-            renderMovies();
-        }
-
-        function filterMovies() {
-            renderMovies();
-        }
-
-        // ================================================================
-        //  INIT
-        // ================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            initPlayer();
-            renderMovies();
-        });
     </script>
-
-    <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
-        <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span>Player Nativo · Sem Anúncios</span>
-    </footer>
 
 </body>
 </html>
