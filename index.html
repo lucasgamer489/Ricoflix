@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricoflix — Sem Anúncios</title>
+    <title>Ricoflix — Torrent Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
@@ -37,19 +38,28 @@
         .loader-neon { border: 2px solid rgba(0, 229, 255, 0.05); border-top: 2px solid #00E5FF; border-radius: 50%; width: 36px; height: 36px; animation: spin 0.9s linear infinite; margin: 2rem auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); min-height: 420px; }
-        #player-container iframe { width: 100%; height: 420px; border: none; background: #000; display: block; }
+        #player-container { background: #0a0a0a; border-radius: 28px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.08); min-height: 420px; padding: 1rem; }
+        #player-container .plyr { border-radius: 20px; background: #000; }
+        #player-container .plyr__controls { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(12px); border-top: 1px solid rgba(0, 229, 255, 0.05); }
+        .plyr__control--overlaid { background: rgba(0, 229, 255, 0.15) !important; border: 2px solid rgba(0, 229, 255, 0.3) !important; }
+        .plyr__control--overlaid svg { fill: #00E5FF !important; }
         
         .fallback-message { display: flex; align-items: center; justify-content: center; flex-direction: column; padding: 3rem; text-align: center; color: #445566; }
         .fallback-message i { font-size: 3rem; color: #00E5FF; margin-bottom: 1rem; }
         .fallback-message .title { color: #eef4ff; font-size: 1.2rem; font-weight: 600; }
+        .fallback-message .sub { color: #556677; margin-top: 0.5rem; font-size: 0.9rem; }
+        
+        .progress-bar { width: 100%; height: 4px; background: #1a1a1a; border-radius: 4px; margin-top: 1rem; overflow: hidden; }
+        .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #00E5FF, #b000ff); width: 0%; transition: width 0.5s; border-radius: 4px; }
+        
+        .torrent-status { display: flex; align-items: center; gap: 1rem; color: #556677; font-size: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap; justify-content: center; }
+        .torrent-status .dot { width: 8px; height: 8px; border-radius: 50%; background: #00E5FF; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         
         .source-selector { background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 40px; padding: 0.4rem 1rem; color: #aabbdd; font-size: 0.8rem; cursor: pointer; min-width: 180px; }
         .source-selector option { background: #0a0a0a; color: #e0e0e0; }
-        .dub-badge { background: rgba(0, 229, 255, 0.06); border: 1px solid rgba(0, 229, 255, 0.08); padding: 0.1rem 0.6rem; border-radius: 40px; color: #00E5FF; font-size: 0.6rem; }
-        .no-ads { background: rgba(0, 229, 255, 0.03); border: 1px solid rgba(0, 229, 255, 0.05); padding: 0.1rem 0.6rem; border-radius: 40px; color: #445566; font-size: 0.55rem; }
         
-        @media (max-width: 640px) { .card-cyber { width: 160px; } .card-cyber .poster-wrapper { height: 220px; } .search-cyber { width: 180px; } #player-container iframe { height: 280px; } }
+        @media (max-width: 640px) { .card-cyber { width: 160px; } .card-cyber .poster-wrapper { height: 220px; } .search-cyber { width: 180px; } }
     </style>
 </head>
 <body class="antialiased p-4 md:p-6 max-w-7xl mx-auto">
@@ -58,7 +68,7 @@
         <div class="flex items-center gap-3">
             <span class="logo-glitch">Ricoflix</span>
             <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">
-                <i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Sem Anúncios
+                <i class="fas fa-download text-[#00E5FF] mr-1"></i> Torrent
             </span>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
@@ -75,8 +85,7 @@
         <span class="tab-neon" data-filter="movie">🎬 Filmes</span>
         <span class="tab-neon" data-filter="tv">📺 Séries</span>
         <span class="ml-auto text-[10px] text-[#445566]">
-            <i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> Dublado PT-BR
-            <span class="no-ads ml-2"><i class="fas fa-ban mr-1"></i>Sem Pop-ups</span>
+            <i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> Dublado PT-BR · Torrent
         </span>
     </div>
 
@@ -91,59 +100,134 @@
     <section id="player-section" class="mt-6">
         <div id="player-container">
             <div id="fallbackMessage" class="fallback-message">
-                <i class="fas fa-shield-alt"></i>
-                <div class="title">🎬 Player Sem Anúncios</div>
-                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir</div>
-                <div class="sub" style="color:#334455;font-size:0.7rem;margin-top:0.3rem;">
+                <i class="fas fa-magnet"></i>
+                <div class="title">🎬 Player Torrent</div>
+                <div class="sub">Clique em um card para assistir via torrent</div>
+                <div class="sub" style="font-size:0.7rem;color:#334455;margin-top:0.3rem;">
                     <i class="fas fa-check-circle text-[#00E5FF] mr-1"></i> 
-                    Dublagem em português · Sem pop-ups
+                    Dublagem em português · Download progressivo
                 </div>
             </div>
-            <iframe id="playerIframe" src="about:blank" allowfullscreen="true" allow="autoplay; encrypted-media; picture-in-picture" style="display:none;"></iframe>
+            <video id="player" playsinline controls style="display:none;"></video>
+            <div id="torrentStatus" style="display:none;">
+                <div class="torrent-status">
+                    <span class="dot"></span>
+                    <span id="statusText">Conectando aos pares...</span>
+                    <span id="progressText">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="fill" id="progressFill"></div>
+                </div>
+            </div>
         </div>
         <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
             <span id="movieTitlePlayer" class="player-title"><i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>Selecione</strong> um filme</span>
             <div class="flex items-center gap-2">
                 <span class="text-[10px] text-[#445566]"><i class="fas fa-plug mr-1"></i>Fonte:</span>
                 <select id="sourceSelector" class="source-selector">
+                    <option value="torrent">⚡ Torrent (Dublado)</option>
                     <option value="multiembed">🔴 MultiEmbed</option>
                     <option value="vidsrc">🟢 VidSrc</option>
-                    <option value="superembed">🟣 SuperEmbed</option>
-                    <option value="2embed">🟠 2Embed</option>
                 </select>
             </div>
         </div>
     </section>
 
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webtorrent@0.128.1/webtorrent.min.js"></script>
     <script>
     (function() {
         'use strict';
 
         // ================================================================
-        //  CATÁLOGO
+        //  CATÁLOGO COM MAGNET LINKS (EXEMPLOS DUBLADOS)
+        //  VOCÊ PODE ADICIONAR MAIS LINKs AQUI
         // ================================================================
         const CATALOG = [
-            { id: '939243', title: 'Sonic 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', type: 'movie' },
-            { id: '533535', title: 'Deadpool 3', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', type: 'movie' },
-            { id: '1022789', title: 'Divertida Mente 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', type: 'movie' },
-            { id: '872585', title: 'Oppenheimer', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', type: 'movie' },
-            { id: '693134', title: 'Duna: Parte 2', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg', type: 'movie' },
-            { id: '603692', title: 'John Wick 4', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg', type: 'movie' },
-            { id: '245891', title: 'John Wick', year: '2014', poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', type: 'movie' },
-            { id: '324852', title: 'John Wick 2', year: '2017', poster: 'https://image.tmdb.org/t/p/w342/3bN7V5X9nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
-            { id: '458576', title: 'John Wick 3', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', type: 'movie' },
-            { id: '123456', title: 'Godzilla x Kong', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', type: 'movie' },
-            { id: '151667', title: 'Aranhaverso', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/xD1l6vW0V8K9W6X8p8A0zJ2fL.jpg', type: 'movie' },
-            { id: '234567', title: 'Furiosa', year: '2024', poster: 'https://image.tmdb.org/t/p/w342/iDdF3vF0nK5D5kF0v5L5h5mN5jM.jpg', type: 'movie' },
-            { id: '100088', title: 'The Last of Us', year: '2023', poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', type: 'tv' },
-            { id: '115713', title: 'The Bear', year: '2022', poster: 'https://image.tmdb.org/t/p/w342/7H8Hk2W0U8V4K9W6X8p8A0zJ2fL.jpg', type: 'tv' },
-            { id: '76479', title: 'The Boys', year: '2019', poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', type: 'tv' },
-            { id: '67744', title: 'Succession', year: '2018', poster: 'https://image.tmdb.org/t/p/w342/7rTllR2Tx2UMj17HwDfB9TZ67jM.jpg', type: 'tv' },
-            { id: '66732', title: 'Stranger Things', year: '2016', poster: 'https://image.tmdb.org/t/p/w342/49WJfeN0E1p5R0Y2Q8yN1z3X9fA.jpg', type: 'tv' }
+            { 
+                id: 'sonic3', 
+                title: 'Sonic 3', 
+                year: '2024', 
+                poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:SONIC3DUBLADO2024&dn=Sonic+3+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'deadpool3', 
+                title: 'Deadpool 3', 
+                year: '2024', 
+                poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:DEADPOOL3DUBLADO2024&dn=Deadpool+3+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'divertidamente2', 
+                title: 'Divertida Mente 2', 
+                year: '2024', 
+                poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:INSIDEOUT2DUBLADO2024&dn=Divertida+Mente+2+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'oppenheimer', 
+                title: 'Oppenheimer', 
+                year: '2023', 
+                poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:OPPENHEIMERDUBLADO2023&dn=Oppenheimer+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'johnwick', 
+                title: 'John Wick', 
+                year: '2014', 
+                poster: 'https://image.tmdb.org/t/p/w342/fZPSd2r4S1M6NdP5p5pK5G5mN5jM.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:JWICK1DUBLADO2014&dn=John+Wick+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'johnwick2', 
+                title: 'John Wick 2', 
+                year: '2017', 
+                poster: 'https://image.tmdb.org/t/p/w342/3bN7V5X9nK5D5kF0v5L5h5mN5jM.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:JWICK2DUBLADO2017&dn=John+Wick+2+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'johnwick3', 
+                title: 'John Wick 3', 
+                year: '2019', 
+                poster: 'https://image.tmdb.org/t/p/w342/5Y5WZ7Y8Z9W6X8p8A0zJ2fL.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:JWICK3DUBLADO2019&dn=John+Wick+3+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'godzillaxkong', 
+                title: 'Godzilla x Kong', 
+                year: '2024', 
+                poster: 'https://image.tmdb.org/t/p/w342/z1p34fs7E0nPkH0j3l7M0wZ9qE6.jpg', 
+                type: 'movie',
+                magnet: 'magnet:?xt=urn:btih:GODZILLAKONGDUBLADO2024&dn=Godzilla+x+Kong+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'thelastofus', 
+                title: 'The Last of Us', 
+                year: '2023', 
+                poster: 'https://image.tmdb.org/t/p/w342/uKvVjHNqB5VmOrdxqAt2F7JfEDB.jpg', 
+                type: 'tv',
+                magnet: 'magnet:?xt=urn:btih:TLOUDUBLADO2023&dn=The+Last+of+Us+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            },
+            { 
+                id: 'theboys', 
+                title: 'The Boys', 
+                year: '2019', 
+                poster: 'https://image.tmdb.org/t/p/w342/mC3I0eghP1g5Kb3rWxbB9qkN4sE.jpg', 
+                type: 'tv',
+                magnet: 'magnet:?xt=urn:btih:THEBOYSDUBLADO2019&dn=The+Boys+Dublado&tr=udp://tracker.opentrackr.org:1337/announce'
+            }
         ];
 
         // ================================================================
-        //  FONTES
+        //  FONTES DE EMBED (FALLBACK)
         // ================================================================
         const SOURCES = {
             'multiembed': {
@@ -163,24 +247,6 @@
                     }
                     return `https://vidsrc.xyz/embed/movie/${id}?lang=pt`;
                 }
-            },
-            'superembed': {
-                name: 'SuperEmbed',
-                url: (id, type, season, episode) => {
-                    if (type === 'tv') {
-                        return `https://superembed.stream/tv/${id}/${season}/${episode}?lang=pt`;
-                    }
-                    return `https://superembed.stream/movie/${id}?lang=pt`;
-                }
-            },
-            '2embed': {
-                name: '2Embed',
-                url: (id, type, season, episode) => {
-                    if (type === 'tv') {
-                        return `https://www.2embed.cc/embedtv/${id}&s=${season}&e=${episode}&lang=pt`;
-                    }
-                    return `https://www.2embed.cc/embed/${id}?lang=pt`;
-                }
             }
         };
 
@@ -192,21 +258,130 @@
         const noResults = document.getElementById('noResults');
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
-        const playerIframe = document.getElementById('playerIframe');
+        const videoElement = document.getElementById('player');
         const fallbackMessage = document.getElementById('fallbackMessage');
         const movieTitlePlayer = document.getElementById('movieTitlePlayer');
         const sourceSelector = document.getElementById('sourceSelector');
-        
+        const torrentStatus = document.getElementById('torrentStatus');
+        const statusText = document.getElementById('statusText');
+        const progressText = document.getElementById('progressText');
+        const progressFill = document.getElementById('progressFill');
+
+        let plyrInstance = null;
         let currentFilter = 'all';
         let currentMovie = null;
+        let client = null;
+        let torrent = null;
 
         // ================================================================
-        //  CARREGAR FILME
+        //  INICIALIZAR PLYR
+        // ================================================================
+        function initPlyr() {
+            if (plyrInstance) {
+                plyrInstance.destroy();
+            }
+            plyrInstance = new Plyr(videoElement, {
+                controls: [
+                    'play-large', 'play', 'progress', 'current-time', 'duration',
+                    'mute', 'volume', 'captions', 'settings', 'pip', 'fullscreen'
+                ],
+                settings: ['quality', 'speed'],
+                quality: { default: 720, options: [1080, 720, 480, 360] },
+                i18n: { quality: 'Qualidade', speed: 'Velocidade' }
+            });
+        }
+
+        // ================================================================
+        //  CARREGAR VIA TORRENT
+        // ================================================================
+        function loadTorrent(movie) {
+            if (!movie.magnet) {
+                fallbackMessage.style.display = 'flex';
+                fallbackMessage.innerHTML = `
+                    <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
+                    <div class="title">⚠️ Magnet Link não disponível</div>
+                    <div class="sub">Este título não tem link de torrent disponível</div>
+                `;
+                videoElement.style.display = 'none';
+                torrentStatus.style.display = 'none';
+                return;
+            }
+
+            // Mostra status do torrent
+            fallbackMessage.style.display = 'none';
+            videoElement.style.display = 'none';
+            torrentStatus.style.display = 'block';
+            statusText.textContent = '🔄 Iniciando download...';
+            progressText.textContent = '0%';
+            progressFill.style.width = '0%';
+
+            // Inicializa cliente WebTorrent
+            if (!client) {
+                client = new WebTorrent();
+            }
+
+            // Para torrent anterior
+            if (torrent) {
+                client.remove(torrent);
+                torrent = null;
+            }
+
+            // Adiciona o magnet
+            client.add(movie.magnet, (torrentData) => {
+                torrent = torrentData;
+                statusText.textContent = `📥 Baixando: ${torrentData.name}`;
+                
+                // Monitora progresso
+                const interval = setInterval(() => {
+                    const progress = Math.round(torrentData.progress * 100);
+                    progressText.textContent = `${progress}%`;
+                    progressFill.style.width = `${progress}%`;
+                    
+                    if (torrentData.progress >= 1) {
+                        clearInterval(interval);
+                        statusText.textContent = '✅ Download completo! Iniciando player...';
+                    }
+                }, 1000);
+
+                // Quando o primeiro arquivo de vídeo estiver disponível
+                torrentData.files.forEach((file) => {
+                    if (file.name.match(/\.(mp4|mkv|avi|mov)$/i)) {
+                        file.renderTo(videoElement, (err) => {
+                            if (err) {
+                                statusText.textContent = '❌ Erro ao renderizar vídeo';
+                                return;
+                            }
+                            
+                            // Esconde status, mostra player
+                            torrentStatus.style.display = 'none';
+                            videoElement.style.display = 'block';
+                            
+                            if (plyrInstance) {
+                                plyrInstance.play();
+                            }
+                            
+                            // Atualiza título
+                            movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${movie.title}</strong> <span class="text-[#445566] text-xs ml-2">⚡ Torrent · Dublado</span>`;
+                        });
+                    }
+                });
+            });
+        }
+
+        // ================================================================
+        //  CARREGAR FILME (TORRENT OU EMBED)
         // ================================================================
         function loadMovie(movie) {
             currentMovie = movie;
             
             const sourceKey = sourceSelector.value;
+            
+            if (sourceKey === 'torrent') {
+                loadTorrent(movie);
+                return;
+            }
+            
+            // Fallback para embed
             const source = SOURCES[sourceKey] || SOURCES['multiembed'];
             
             let url;
@@ -216,27 +391,31 @@
                 url = source.url(movie.id, 'movie');
             }
             
-            // Mostra o player
+            // Mostra player embed
             fallbackMessage.style.display = 'none';
-            playerIframe.style.display = 'block';
-            playerIframe.src = url;
+            videoElement.style.display = 'none';
+            torrentStatus.style.display = 'none';
             
-            // Atualiza título
+            // Cria iframe para embed
+            const container = document.getElementById('player-container');
+            
+            // Remove iframe antigo se existir
+            const oldIframe = container.querySelector('iframe');
+            if (oldIframe) oldIframe.remove();
+            
+            const iframe = document.createElement('iframe');
+            iframe.src = url;
+            iframe.width = '100%';
+            iframe.height = '420px';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '20px';
+            iframe.style.background = '#000';
+            iframe.allowFullscreen = true;
+            iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+            
+            container.appendChild(iframe);
+            
             movieTitlePlayer.innerHTML = `<i class="fas fa-play-circle text-[#00E5FF] mr-2"></i> <strong>${movie.title}</strong> <span class="text-[#445566] text-xs ml-2">⚡ ${source.name} · Dublado</span>`;
-            
-            // Loading
-            fallbackMessage.innerHTML = `
-                <i class="fas fa-spinner fa-spin" style="color:#00E5FF;"></i>
-                <div class="title">🔄 Carregando...</div>
-                <div class="sub" style="color:#445566;margin-top:0.5rem;">Sem anúncios · Player limpo</div>
-            `;
-            fallbackMessage.style.display = 'flex';
-            playerIframe.style.display = 'none';
-            
-            setTimeout(() => {
-                fallbackMessage.style.display = 'none';
-                playerIframe.style.display = 'block';
-            }, 1500);
             
             document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -329,6 +508,11 @@
         // ================================================================
         sourceSelector.addEventListener('change', function() {
             if (currentMovie) {
+                // Remove iframe antigo
+                const container = document.getElementById('player-container');
+                const oldIframe = container.querySelector('iframe');
+                if (oldIframe) oldIframe.remove();
+                
                 loadMovie(currentMovie);
             }
         });
@@ -337,6 +521,7 @@
         //  INIT
         // ================================================================
         function init() {
+            initPlyr();
             loadCatalog('all');
 
             document.querySelectorAll('.tab-neon').forEach(tab => {
@@ -361,8 +546,8 @@
     </script>
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] flex justify-between items-center">
-        <span>© 2026 Ricoflix · Sem Anúncios</span>
-        <span><i class="fas fa-shield-alt text-[#00E5FF] mr-1"></i> Player Limpo · Dublado PT-BR</span>
+        <span>© 2026 Ricoflix · Torrent Player</span>
+        <span><i class="fas fa-magnet text-[#00E5FF] mr-1"></i> Dublado PT-BR · Download Progressivo</span>
     </footer>
 </body>
 </html>
