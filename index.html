@@ -217,7 +217,6 @@
 </head>
 <body>
 
-    <!-- HEADER -->
     <header class="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 md:p-6 max-w-7xl mx-auto">
         <div class="flex items-center gap-3">
             <span class="logo">Ricoflix</span>
@@ -229,13 +228,12 @@
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
-                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" />
+                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" onkeyup="filterMovies()" />
             </div>
             <button class="btn" onclick="filterMovies()">Ir</button>
         </div>
     </header>
 
-    <!-- TABS -->
     <div class="flex flex-wrap items-center gap-3 mb-6 border-b border-[#00E5FF]/5 pb-3 max-w-7xl mx-auto px-4 md:px-6">
         <span class="tab active" data-filter="all" onclick="setFilter('all')">Tudo</span>
         <span class="tab" data-filter="movie" onclick="setFilter('movie')">Filmes</span>
@@ -243,13 +241,11 @@
         <span class="ml-auto text-[10px] text-[#445566]">Dublado PT-BR</span>
     </div>
 
-    <!-- GRADE -->
     <section class="mb-6 max-w-7xl mx-auto px-4 md:px-6">
         <div id="movieGrid" class="scroll"></div>
         <p id="noResults" class="text-center text-[#445566] py-6 hidden">Nenhum título encontrado.</p>
     </section>
 
-    <!-- PLAYER -->
     <section id="player-section" class="mt-6 max-w-7xl mx-auto px-4 md:px-6">
         <div id="player-container">
             <div id="fallbackMessage" class="placeholder">
@@ -281,7 +277,7 @@
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         // ================================================================
-        //  CATÁLOGO COMPLETO (COM COYOTE VS ACME)
+        //  CATÁLOGO COMPLETO
         // ================================================================
         const MOVIES = [{
             id: 'sonic3',
@@ -289,7 +285,7 @@
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
             type: 'movie',
-            video: 'https://vik1ngfile.site/f/HDMOo7lm4r#Sonic%203%20Filme%20Dublado.mp4'
+            video: 'https://drive.google.com/uc?export=download&id=1f8yow5AfwGM-72FItHGwtuGy_bgXwiNm'
         }, {
             id: 'deadpool3',
             title: 'Deadpool 3',
