@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ricoflix — Dublado PT-BR</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
         * {
             margin: 0;
@@ -143,17 +144,23 @@
             overflow: hidden;
             border: 1px solid rgba(0, 229, 255, 0.06);
             min-height: 420px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        #player-container video {
-            width: 100%;
-            height: 420px;
+        #player-container .plyr {
+            border-radius: 24px;
             background: #000;
-            display: block;
-            border: none;
-            outline: none;
+            width: 100%;
+        }
+        #player-container .plyr__controls {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(0, 229, 255, 0.05);
+        }
+        .plyr__control--overlaid {
+            background: rgba(0, 229, 255, 0.15) !important;
+            border: 2px solid rgba(0, 229, 255, 0.3) !important;
+        }
+        .plyr__control--overlaid svg {
+            fill: #00E5FF !important;
         }
 
         .placeholder {
@@ -174,28 +181,6 @@
             color: #eef4ff;
             font-size: 1.2rem;
             font-weight: 600;
-        }
-        .placeholder .sub {
-            color: #445566;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            max-width: 400px;
-        }
-        .placeholder .btn-hospedar {
-            margin-top: 1.5rem;
-            background: rgba(0, 229, 255, 0.1);
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            color: #00E5FF;
-            padding: 0.6rem 1.8rem;
-            border-radius: 40px;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-        .placeholder .btn-hospedar:hover {
-            background: rgba(0, 229, 255, 0.2);
-            border-color: #00E5FF;
         }
 
         .player-title {
@@ -267,9 +252,8 @@
                         <line x1="2" y1="16" x2="22" y2="16" />
                     </svg>
                 </div>
-                <div class="title">🎬 Selecione um filme</div>
-                <div class="sub">Clique em um card para assistir sem anúncios</div>
-                <div class="sub" style="font-size:0.7rem;margin-top:0.3rem;color:#334455;">Os filmes com "Em breve" ainda não foram hospedados</div>
+                <div class="title">Selecione um filme</div>
+                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir sem anúncios</div>
             </div>
             <video id="player" playsinline controls style="display:none;"></video>
         </div>
@@ -283,9 +267,10 @@
         </div>
     </section>
 
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         // ================================================================
-        //  CATÁLOGO - TODOS OS FILMES AGUARDANDO HOSPEDAGEM
+        //  CATÁLOGO - SUBSTITUA O LINK DO SONIC 3 PELO SEU
         // ================================================================
         const MOVIES = [{
             id: 'sonic3',
@@ -293,7 +278,7 @@
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
             type: 'movie',
-            video: null
+            video: 'https://drive.google.com/uc?export=download&id=1f8yow5AfwGM-72FItHGwtuGy_bgXwiNm'
         }, {
             id: 'deadpool3',
             title: 'Deadpool 3',
@@ -339,6 +324,25 @@
         }];
 
         let currentFilter = 'all';
+        let playerInstance = null;
+
+        // ================================================================
+        //  INICIALIZAR PLYR
+        // ================================================================
+        function initPlayer() {
+            const videoElement = document.getElementById('player');
+            if (videoElement) {
+                playerInstance = new Plyr(videoElement, {
+                    controls: [
+                        'play-large', 'play', 'progress', 'current-time', 'duration',
+                        'mute', 'volume', 'captions', 'settings', 'pip', 'fullscreen'
+                    ],
+                    settings: ['quality', 'speed'],
+                    quality: { default: 720, options: [1080, 720, 480, 360] },
+                    i18n: { quality: 'Qualidade', speed: 'Velocidade' }
+                });
+            }
+        }
 
         // ================================================================
         //  RENDER CARDS
@@ -410,15 +414,8 @@
                             <line x1="12" y1="16" x2="12.01" y2="16" />
                         </svg>
                     </div>
-                    <div class="title">📥 Em breve</div>
-                    <div class="sub">Este título ainda não foi hospedado em um servidor</div>
-                    <div class="sub" style="font-size:0.7rem;margin-top:0.3rem;color:#334455;">
-                        <i class="fas fa-cloud-upload-alt" style="color:#00E5FF;"></i>
-                        Hospede o vídeo no Vercel Blob, Cloudflare R2 ou outro serviço e atualize o link.
-                    </div>
-                    <a href="https://vercel.com/docs/storage/blob" target="_blank" class="btn-hospedar">
-                        <i class="fas fa-external-link-alt"></i> Como hospedar no Vercel Blob
-                    </a>
+                    <div class="title">Em breve</div>
+                    <div class="sub" style="color:#445566;margin-top:0.5rem;">Este título ainda não foi hospedado</div>
                 `;
                 titleDisplay.textContent = movie.title + ' (Em breve)';
                 return;
@@ -432,6 +429,10 @@
             videoElement.load();
 
             titleDisplay.textContent = movie.title;
+
+            if (playerInstance) {
+                setTimeout(() => playerInstance.play(), 500);
+            }
 
             document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -458,6 +459,7 @@
         //  INIT
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
+            initPlayer();
             renderMovies();
         });
     </script>
