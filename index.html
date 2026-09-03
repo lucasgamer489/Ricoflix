@@ -424,20 +424,20 @@
             id: 'gumball',
             title: 'O Incrível Mundo de Gumball',
             year: '2011',
-            poster: 'https://image.tmdb.org/t/p/w342/d1x7X52X1d4m1z7Z5e8l9W2vN5a.jpg',
+            poster: 'https://image.tmdb.org/t/p/w342/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg',
             type: 'tv',
             seasons: {
                 1: [
                     { num: 1, title: '1. O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável", enquanto inundam a casa.', thumb: 'https://image.tmdb.org/t/p/w300/t6HIqr3GNoqNWgL0sT054cEZZ.jpg' },
-                    { num: 2, title: '2. Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e danificou.', thumb: 'https://image.tmdb.org/t/p/w300/u1x1U2x3U4x5U6x7U8x9U0x1U2x.jpg' },
-                    { num: 3, title: '3. O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo melhor amigo.', thumb: 'https://image.tmdb.org/t/p/w300/v1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
-                    { num: 4, title: '4. A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da Terceira Idade.', thumb: 'https://image.tmdb.org/t/p/w300/w1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
-                    { num: 5, title: '5. O Fim', desc: 'Eles acreditam que o mundo vai acabar e resolvem fazer uma lista de despedida.', thumb: 'https://image.tmdb.org/t/p/w300/x1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
-                    { num: 6, title: '6. O Vestido', desc: 'Richard acaba rasgando o vestido de casamento da noiva de Larry por acidente.', thumb: 'https://image.tmdb.org/t/p/w300/y1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' }
+                    { num: 2, title: '2. Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e danificou.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
+                    { num: 3, title: '3. O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo melhor amigo.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
+                    { num: 4, title: '4. A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da Terceira Idade.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
+                    { num: 5, title: '5. O Fim', desc: 'Eles acreditam que o mundo vai acabar e resolvem fazer uma lista de despedida.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
+                    { num: 6, title: '6. O Vestido', desc: 'Richard acaba rasgando o vestido de casamento da noiva de Larry por acidente.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' }
                 ],
                 2: [
-                    { num: 1, title: '1. A Remote', desc: 'Uma guerra épica pelo controle remoto da televisão da sala de estar.', thumb: 'https://image.tmdb.org/t/p/w300/z1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
-                    { num: 2, title: '2. O Colosso', desc: 'Bananinha acaba sofrendo um acidente hilário na escola.', thumb: 'https://image.tmdb.org/t/p/w300/a1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' }
+                    { num: 1, title: '1. A Remote', desc: 'Uma guerra épica pelo controle remoto da televisão da sala de estar.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
+                    { num: 2, title: '2. O Colosso', desc: 'Bananinha acaba sofrendo um acidente hilário na escola.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' }
                 ]
             }
         }, {
@@ -546,11 +546,10 @@
             if (movie.type === 'tv') {
                 selectedSeries = movie;
                 currentSeason = 1;
-                document.getElementById('seasonSelect.value') = '1';
+                document.getElementById('seasonSelect').value = '1';
                 renderEpisodes();
                 seriesSection.classList.remove('hidden');
                 
-                // Reseta player de filme se estiver aberto
                 document.getElementById('placeholderMessage').style.display = 'flex';
                 document.getElementById('player').style.display = 'none';
                 document.getElementById('iframeWrapper').style.display = 'none';
@@ -613,7 +612,6 @@
             statusDisplay.style.display = 'inline';
             titleDisplay.innerHTML = `Assistindo a: <strong class="text-cyan-400 font-semibold">${selectedSeries.title} — T${currentSeason} : ${ep.title}</strong>`;
             
-            // Simulação de carregamento do player do episódio
             setTimeout(() => {
                 placeholder.style.display = 'none';
                 iframeWrapper.style.display = 'block';
@@ -681,4 +679,4 @@
         });
     </script>
 </body>
-</html>s
+</html>
