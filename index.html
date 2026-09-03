@@ -14,31 +14,40 @@
             scroll-behavior: smooth;
         }
         body {
-            background: #0a0a0a;
+            background: #08080a;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             color: #e0e0e0;
             min-height: 100vh;
         }
 
+        /* Container Principal centralizado */
+        .wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Estilo dos Cards */
         .card {
-            width: 200px;
-            background: #111;
+            width: 210px;
+            background: #121216;
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.3s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             flex-shrink: 0;
         }
         .card:hover {
-            transform: translateY(-4px) scale(1.01);
-            border-color: #00E5FF;
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(0, 229, 255, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(0, 229, 255, 0.1);
         }
         .card .poster-wrapper {
             position: relative;
             width: 100%;
-            height: 280px;
-            background: #0a0a0a;
+            height: 300px;
+            background: #111;
             overflow: hidden;
         }
         .card .poster-wrapper img {
@@ -46,9 +55,13 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            transition: transform 0.3s;
+        }
+        .card:hover .poster-wrapper img {
+            transform: scale(1.05);
         }
         .card .info {
-            padding: 0.9rem;
+            padding: 1rem;
         }
         .card .info h3 {
             font-size: 0.95rem;
@@ -56,285 +69,293 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: #eef4ff;
+            color: #f1f5f9;
+        }
+        .card .info .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.5rem;
         }
         .card .info .year {
             font-size: 0.75rem;
-            color: #6688aa;
+            color: #64748b;
         }
-        .card .badge-type {
-            font-size: 0.6rem;
-            background: rgba(0, 229, 255, 0.06);
-            border: 1px solid rgba(0, 229, 255, 0.08);
-            padding: 0.15rem 0.7rem;
-            border-radius: 40px;
-            color: #88ccff;
+        .badge-type {
+            font-size: 0.65rem;
+            background: rgba(0, 229, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            padding: 0.1rem 0.6rem;
+            border-radius: 20px;
+            color: #38bdf8;
+            font-weight: 500;
         }
 
-        .scroll {
+        /* Carrossel Horizontal Fluido */
+        .scroll-container {
             display: flex;
-            flex-wrap: nowrap;
+            gap: 1.25rem;
             overflow-x: auto;
-            gap: 1.2rem;
-            padding: 0.8rem 0.2rem 2rem 0.2rem;
+            padding: 1rem 0.2rem 1.5rem 0.2rem;
             scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 229, 255, 0.2) transparent;
         }
-        .scroll>* {
-            flex: 0 0 auto;
+        .scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 229, 255, 0.2);
+            border-radius: 4px;
+        }
+        .scroll-container > * {
             scroll-snap-align: start;
         }
 
         .logo {
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: #00E5FF;
             letter-spacing: -0.5px;
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
         }
 
-        .btn {
-            background: rgba(0, 229, 255, 0.04);
-            border: 1px solid rgba(0, 229, 255, 0.12);
-            color: #00E5FF;
-            padding: 0.5rem 1.4rem;
-            border-radius: 60px;
-            font-weight: 500;
+        /* Barra de Pesquisa */
+        .search-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 0.6rem 1rem 0.6rem 2.8rem;
+            color: #fff;
+            width: 280px;
             transition: all 0.3s;
         }
-        .btn:hover {
-            background: rgba(0, 229, 255, 0.08);
-            border-color: #00E5FF;
-        }
-
-        .search {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(0, 229, 255, 0.12);
-            border-radius: 60px;
-            padding: 0.5rem 1.2rem 0.5rem 2.8rem;
-            color: #f0f0f0;
-            width: 260px;
-            transition: all 0.3s;
-        }
-        .search:focus {
+        .search-box:focus {
             outline: none;
             border-color: #00E5FF;
-        }
-        .search::placeholder {
-            color: #556677;
+            background: rgba(0, 229, 255, 0.02);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
         }
 
+        /* Abas de Filtro */
         .tab {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 40px;
-            padding: 0.5rem 1.2rem;
-            color: #8899aa;
+            border-radius: 30px;
+            padding: 0.5rem 1.25rem;
+            color: #94a3b8;
+            font-size: 0.9rem;
             transition: all 0.25s;
             cursor: pointer;
         }
+        .tab:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
         .tab.active {
-            background: rgba(0, 229, 255, 0.06);
+            background: rgba(0, 229, 255, 0.1);
             border-color: #00E5FF;
             color: #00E5FF;
+            font-weight: 600;
         }
 
-        #player-container {
-            background: #0a0a0a;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 229, 255, 0.06);
-            min-height: 420px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* Player Container Perfeito (16:9 responsivo e centralizado) */
+        #player-section {
+            margin-top: 2rem;
+            margin-bottom: 3rem;
         }
-        #player-container .plyr {
-            border-radius: 24px;
+        
+        .player-wrapper-box {
             background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 229, 255, 0.15);
             width: 100%;
-        }
-        #player-container iframe {
-            width: 100%;
-            height: 480px;
-            border: none;
-            border-radius: 24px;
-        }
-        #player-container .plyr__controls {
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(0, 229, 255, 0.05);
-        }
-        .plyr__control--overlaid {
-            background: rgba(0, 229, 255, 0.15) !important;
-            border: 2px solid rgba(0, 229, 255, 0.3) !important;
-        }
-        .plyr__control--overlaid svg {
-            fill: #00E5FF !important;
+            aspect-ratio: 16 / 9;
+            position: relative;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.05);
         }
 
-        .placeholder {
+        .player-wrapper-box iframe,
+        .player-wrapper-box video {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Placeholder Inicial Bonito */
+        .placeholder-content {
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            padding: 3rem;
-            text-align: center;
-            color: #445566;
             width: 100%;
             height: 100%;
+            background: radial-gradient(circle at center, #121218 0%, #08080a 100%);
+            color: #64748b;
+            text-align: center;
+            padding: 2rem;
         }
-        .placeholder .icon {
-            font-size: 3rem;
+        .placeholder-content .icon-box {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid rgba(0, 229, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: #00E5FF;
             margin-bottom: 1rem;
-        }
-        .placeholder .title {
-            color: #eef4ff;
-            font-size: 1.2rem;
-            font-weight: 600;
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
         }
 
-        .player-title {
-            color: #aabbdd;
-            font-weight: 400;
-            letter-spacing: 0.3px;
-        }
-        .player-title strong {
-            color: #00E5FF;
-            font-weight: 600;
-        }
-
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+            .wrapper {
+                padding: 0 1rem;
+            }
             .card {
                 width: 160px;
             }
             .card .poster-wrapper {
-                height: 220px;
+                height: 230px;
             }
-            .search {
-                width: 180px;
-            }
-            #player-container iframe, #player-container video {
-                height: 280px;
+            .search-box {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
 
-    <header class="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 md:p-6 max-w-7xl mx-auto">
-        <div class="flex items-center gap-3">
-            <span class="logo">Ricoflix</span>
-            <span class="hidden sm:inline text-[10px] text-[#445566] bg-black/60 px-3 py-1 rounded-full border border-[#00E5FF]/10">Dublado</span>
-        </div>
-        <div class="flex items-center gap-3 flex-wrap">
-            <div class="relative">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#445566;">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                <input type="text" id="searchInput" placeholder="Buscar filmes..." class="search pl-10 pr-4 py-2" onkeyup="filterMovies()" />
+    <!-- Header -->
+    <header class="py-5 border-b border-white/5 mb-6">
+        <div class="wrapper flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <span class="logo">Ricoflix</span>
+                <span class="hidden sm:inline text-xs text-sky-400/80 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20 font-medium">Dublado PT-BR</span>
             </div>
-            <button class="btn" onclick="filterMovies()">Ir</button>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <div class="relative w-full sm:w-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#64748b;">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Pesquisar filmes ou séries..." class="search-box" onkeyup="filterMovies()" />
+                </div>
+            </div>
         </div>
     </header>
 
-    <div class="flex flex-wrap items-center gap-3 mb-6 border-b border-[#00E5FF]/5 pb-3 max-w-7xl mx-auto px-4 md:px-6">
-        <span class="tab active" data-filter="all" onclick="setFilter('all')">Tudo</span>
-        <span class="tab" data-filter="movie" onclick="setFilter('movie')">Filmes</span>
-        <span class="tab" data-filter="tv" onclick="setFilter('tv')">Séries</span>
-        <span class="ml-auto text-[10px] text-[#445566]">Dublado PT-BR</span>
+    <!-- Filtros -->
+    <div class="wrapper mb-6">
+        <div class="flex items-center gap-2 overflow-x-auto pb-2">
+            <button class="tab active" data-filter="all" onclick="setFilter('all')">Todos</button>
+            <button class="tab" data-filter="movie" onclick="setFilter('movie')">Filmes</button>
+            <button class="tab" data-filter="tv" onclick="setFilter('tv')">Séries</button>
+        </div>
     </div>
 
-    <section class="mb-6 max-w-7xl mx-auto px-4 md:px-6">
-        <div id="movieGrid" class="scroll"></div>
-        <p id="noResults" class="text-center text-[#445566] py-6 hidden">Nenhum título encontrado.</p>
-    </section>
+    <!-- Grade / Carrossel de Filmes -->
+    <main class="wrapper">
+        <section>
+            <div id="movieGrid" class="scroll-container"></div>
+            <p id="noResults" class="text-center text-slate-500 py-12 hidden text-sm">Nenhum título encontrado com esse termo.</p>
+        </section>
 
-    <section id="player-section" class="mt-6 max-w-7xl mx-auto px-4 md:px-6">
-        <div id="player-container">
-            <div id="fallbackMessage" class="placeholder">
-                <div class="icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
-                        <rect x="2" y="2" width="20" height="20" rx="2.18" />
-                        <line x1="8" y1="2" x2="8" y2="22" />
-                        <line x1="16" y1="2" x2="16" y2="22" />
-                        <line x1="2" y1="8" x2="22" y2="8" />
-                        <line x1="2" y1="16" x2="22" y2="16" />
-                    </svg>
+        <!-- Seção do Player Profissional -->
+        <section id="player-section">
+            <div class="flex items-center justify-between mb-3 px-1">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                    <span id="movieTitleDisplay" class="text-sm font-semibold text-slate-200 tracking-wide">Selecione um título para assistir</span>
                 </div>
-                <div class="title">Selecione um filme</div>
-                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir</div>
+                <span id="playerStatus" class="text-xs text-slate-500 hidden font-medium">Servidor Dedicado · HD</span>
             </div>
-            <!-- O player ou iframe será injetado aqui dinamicamente -->
-            <video id="player" playsinline controls style="display:none;"></video>
-            <div id="iframeWrapper" style="display:none; width:100%;"></div>
+
+            <div class="player-wrapper-box" id="playerContainer">
+                <!-- Estado Inicial / Vazio -->
+                <div id="placeholderMessage" class="placeholder-content">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </div>
+                    <h4 class="text-white font-semibold text-base mb-1">Nenhum player ativo</h4>
+                    <p class="text-xs text-slate-400 max-w-xs">Escolha qualquer capa no catálogo acima para carregar o player integrado instantaneamente.</p>
+                </div>
+                <!-- Players dinâmicos inseridos via Script -->
+                <video id="player" playsinline controls style="display:none;"></video>
+                <div id="iframeWrapper" style="display:none; width:100%; height:100%;"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="mt-20 py-6 border-t border-white/5 text-center text-xs text-slate-600">
+        <div class="wrapper flex flex-col sm:flex-row items-center justify-between gap-3">
+            <span>© 2026 Ricoflix — Todos os direitos reservados.</span>
+            <span class="text-slate-500">Desenvolvido com alta performance e zero anúncios intrusivos.</span>
         </div>
-        <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
-            <span class="player-title" id="movieTitlePlayer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:0.5rem;color:#00E5FF;">
-                    <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-                <strong id="movieTitleDisplay">Selecione um filme</strong>
-                <span class="text-[#445566] text-xs ml-2" id="playerStatus" style="display:none;">Player Embed · Dublado</span>
-            </span>
-        </div>
-    </section>
+    </footer>
 
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         const MOVIES = [{
             id: 'sonic3',
-            title: 'Sonic 3',
+            title: 'Sonic 3: O Filme',
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
             type: 'movie',
-            // DICA: Se o link for um embed/iframe, defina isEmbed como true. Se for link direto .mp4, deixe false ou remova.
-            video: 'https://file.kiwi/9416860e#9hsIvO3LRXup2Mr1oxmcPw',
-            isEmbed: true 
+            video: 'https://www.hypeflixon.org/filmes/assistir-sonic-3-o-filme-online/',
+            isEmbed: true
         }, {
             id: 'deadpool3',
-            title: 'Deadpool 3',
+            title: 'Deadpool & Wolverine',
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg',
             type: 'movie',
-            video: null
+            video: null,
+            isEmbed: true
         }, {
             id: 'divertidamente2',
             title: 'Divertida Mente 2',
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg',
             type: 'movie',
-            video: null
+            video: null,
+            isEmbed: true
         }, {
             id: 'oppenheimer',
             title: 'Oppenheimer',
             year: '2023',
             poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
             type: 'movie',
-            video: null
+            video: null,
+            isEmbed: true
         }, {
             id: 'duna2',
             title: 'Duna: Parte 2',
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
             type: 'movie',
-            video: null
+            video: null,
+            isEmbed: true
         }, {
             id: 'johnwick4',
-            title: 'John Wick 4',
+            title: 'John Wick 4: Baba Yaga',
             year: '2023',
             poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg',
             type: 'movie',
-            video: null
-        }, {
-            id: 'coyotevscacme',
-            title: 'Coyote vs. Acme',
-            year: '2024',
-            poster: 'https://via.placeholder.com/342x513/0a0a0a/00E5FF?text=Coyote+vs+Acme',
-            type: 'movie',
-            video: null
+            video: null,
+            isEmbed: true
         }];
 
         let currentFilter = 'all';
@@ -344,10 +365,7 @@
             const videoElement = document.getElementById('player');
             if (videoElement) {
                 playerInstance = new Plyr(videoElement, {
-                    controls: [
-                        'play-large', 'play', 'progress', 'current-time', 'duration',
-                        'mute', 'volume', 'captions', 'settings', 'pip', 'fullscreen'
-                    ]
+                    controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'fullscreen']
                 });
             }
         }
@@ -379,23 +397,19 @@
                 card.innerHTML = `
                     <div class="poster-wrapper">
                         <img src="${movie.poster}" alt="${movie.title}" loading="lazy" />
-                        <div style="position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.8);padding:0.2rem 0.6rem;border-radius:40px;border:1px solid rgba(0,229,255,0.2);">
-                            <span style="font-size:0.5rem;color:#00E5FF;">DUB</span>
+                        <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);padding:0.2rem 0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.1);">
+                            <span style="font-size:0.6rem;color:#00E5FF;font-weight:700;">DUBLADO</span>
                         </div>
                     </div>
                     <div class="info">
-                        <div class="flex justify-between items-start">
-                            <h3>${movie.title}</h3>
-                        </div>
-                        <div class="flex justify-between items-center mt-1">
+                        <h3>${movie.title}</h3>
+                        <div class="meta">
                             <span class="year">${movie.year}</span>
                             <span class="badge-type">${movie.type === 'tv' ? 'Série' : 'Filme'}</span>
                         </div>
                     </div>
                 `;
-                card.addEventListener('click', function() {
-                    loadMovie(movie);
-                });
+                card.addEventListener('click', () => loadMovie(movie));
                 grid.appendChild(card);
             });
         }
@@ -403,7 +417,7 @@
         function loadMovie(movie) {
             const videoElement = document.getElementById('player');
             const iframeWrapper = document.getElementById('iframeWrapper');
-            const placeholder = document.getElementById('fallbackMessage');
+            const placeholder = document.getElementById('placeholderMessage');
             const titleDisplay = document.getElementById('movieTitleDisplay');
             const statusDisplay = document.getElementById('playerStatus');
 
@@ -412,43 +426,30 @@
                 videoElement.style.display = 'none';
                 iframeWrapper.style.display = 'none';
                 statusDisplay.style.display = 'none';
-                placeholder.innerHTML = `
-                    <div class="icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
-                            <circle cx="12" cy="12" r="10" />
-                            <line x1="12" y1="8" x2="12" y2="12" />
-                            <line x1="12" y1="16" x2="12.01" y2="16" />
-                        </svg>
-                    </div>
-                    <div class="title">Em breve</div>
-                    <div class="sub" style="color:#445566;margin-top:0.5rem;">Este título ainda não foi hospedado</div>
-                `;
-                titleDisplay.textContent = movie.title + ' (Em breve)';
+                titleDisplay.textContent = `${movie.title} — Indisponível no momento`;
                 return;
             }
 
             placeholder.style.display = 'none';
-            titleDisplay.textContent = movie.title;
+            titleDisplay.innerHTML = `Assistindo a: <strong class="text-cyan-400 font-semibold">${movie.title}</strong>`;
             statusDisplay.style.display = 'inline';
 
-            // Se for um link de incorporação/iframe (como sites externos)
             if (movie.isEmbed) {
                 videoElement.style.display = 'none';
                 iframeWrapper.style.display = 'block';
                 iframeWrapper.innerHTML = `<iframe src="${movie.video}" allowfullscreen></iframe>`;
             } else {
-                // Se for um arquivo de vídeo direto (.mp4)
                 iframeWrapper.style.display = 'none';
                 videoElement.style.display = 'block';
                 videoElement.src = movie.video;
-                videoElement.poster = movie.poster || '';
                 videoElement.load();
                 if (playerInstance) {
-                    setTimeout(() => playerInstance.play(), 500);
+                    setTimeout(() => playerInstance.play(), 300);
                 }
             }
 
-            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Suaviza a rolagem certinho até o player com respiro na tela
+            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function setFilter(filter) {
@@ -466,16 +467,10 @@
             renderMovies();
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             initPlayer();
             renderMovies();
         });
     </script>
-
-    <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
-        <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span>Player Otimizado · Sem Anúncios</span>
-    </footer>
-
 </body>
 </html>
