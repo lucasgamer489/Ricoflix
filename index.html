@@ -174,7 +174,6 @@
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.05);
         }
 
-        /* Enquadramento ideal para o player do HypeFlix */
         .player-wrapper-box iframe {
             width: 100%;
             height: 180%;
@@ -219,6 +218,92 @@
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
         }
 
+        /* Estilo Max (HBO) para Séries e Episódios */
+        .series-view-container {
+            margin-top: 2.5rem;
+            background: #101014;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .episode-card {
+            background: #16161b;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .episode-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 229, 255, 0.3);
+            box-shadow: 0 10px 20px -5px rgba(0, 229, 255, 0.1);
+        }
+        .episode-thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            overflow: hidden;
+        }
+        .episode-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        .episode-card:hover .episode-thumb img {
+            transform: scale(1.05);
+        }
+        .episode-play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .episode-card:hover .episode-play-overlay {
+            opacity: 1;
+        }
+        .play-icon-badge {
+            width: 40px;
+            height: 40px;
+            background: #00E5FF;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+        }
+        .episode-info {
+            padding: 1rem;
+        }
+        .episode-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.3rem;
+        }
+        .episode-desc {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         @media (max-width: 768px) {
             .wrapper {
                 padding: 0 1rem;
@@ -231,6 +316,9 @@
             }
             .search-box {
                 width: 100%;
+            }
+            .series-view-container {
+                padding: 1rem;
             }
         }
     </style>
@@ -269,6 +357,7 @@
             <p id="noResults" class="text-center text-slate-500 py-12 hidden text-sm">Nenhum título encontrado com esse termo.</p>
         </section>
 
+        <!-- Seção de Player Geral -->
         <section id="player-section">
             <div class="flex items-center justify-between mb-3 px-1">
                 <div class="flex items-center gap-2">
@@ -290,6 +379,26 @@
                 </div>
                 <video id="player" playsinline controls style="display:none;"></video>
                 <div id="iframeWrapper" style="display:none; width:100%; height:100%;"></div>
+            </div>
+        </section>
+
+        <!-- Seção estilo HBO Max para Séries -->
+        <section id="seriesSection" class="hidden">
+            <div class="series-view-container">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 id="seriesHeaderTitle" class="text-xl font-bold text-white tracking-wide">Episódios</h2>
+                        <p class="text-xs text-slate-400 mt-1">Selecione uma temporada para navegar pelos episódios dublados.</p>
+                    </div>
+                    <div>
+                        <select id="seasonSelect" onchange="changeSeason(this.value)" class="bg-[#18181f] border border-white/10 text-white text-sm rounded-xl px-4 py-2 focus:outline-none focus:border-cyan-400">
+                            <option value="1">Temporada 1</option>
+                            <option value="2">Temporada 2</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="episodesGrid" class="episodes-grid"></div>
             </div>
         </section>
     </main>
@@ -315,10 +424,22 @@
             id: 'gumball',
             title: 'O Incrível Mundo de Gumball',
             year: '2011',
-            poster: 'https://br.web.img3.acsta.net/r_1280_720/pictures/23/10/09/19/22/1150330.jpg',
+            poster: 'https://image.tmdb.org/t/p/w342/d1x7X52X1d4m1z7Z5e8l9W2vN5a.jpg',
             type: 'tv',
-            video: null, // Deixado vazio intencionalmente
-            isEmbed: true
+            seasons: {
+                1: [
+                    { num: 1, title: '1. O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável", enquanto inundam a casa.', thumb: 'https://image.tmdb.org/t/p/w300/t6HIqr3GNoqNWgL0sT054cEZZ.jpg' },
+                    { num: 2, title: '2. Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e danificou.', thumb: 'https://image.tmdb.org/t/p/w300/u1x1U2x3U4x5U6x7U8x9U0x1U2x.jpg' },
+                    { num: 3, title: '3. O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo melhor amigo.', thumb: 'https://image.tmdb.org/t/p/w300/v1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
+                    { num: 4, title: '4. A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da Terceira Idade.', thumb: 'https://image.tmdb.org/t/p/w300/w1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
+                    { num: 5, title: '5. O Fim', desc: 'Eles acreditam que o mundo vai acabar e resolvem fazer uma lista de despedida.', thumb: 'https://image.tmdb.org/t/p/w300/x1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
+                    { num: 6, title: '6. O Vestido', desc: 'Richard acaba rasgando o vestido de casamento da noiva de Larry por acidente.', thumb: 'https://image.tmdb.org/t/p/w300/y1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' }
+                ],
+                2: [
+                    { num: 1, title: '1. A Remote', desc: 'Uma guerra épica pelo controle remoto da televisão da sala de estar.', thumb: 'https://image.tmdb.org/t/p/w300/z1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' },
+                    { num: 2, title: '2. O Colosso', desc: 'Bananinha acaba sofrendo um acidente hilário na escola.', thumb: 'https://image.tmdb.org/t/p/w300/a1x2x3x4x5x6x7x8x9x0x1x2x3.jpg' }
+                ]
+            }
         }, {
             id: 'deadpool3',
             title: 'Deadpool & Wolverine',
@@ -363,6 +484,8 @@
 
         let currentFilter = 'all';
         let playerInstance = null;
+        let selectedSeries = null;
+        let currentSeason = 1;
 
         function initPlayer() {
             const videoElement = document.getElementById('player');
@@ -412,9 +535,92 @@
                         </div>
                     </div>
                 `;
-                card.addEventListener('click', () => loadMovie(movie));
+                card.addEventListener('click', () => handleSelectTitle(movie));
                 grid.appendChild(card);
             });
+        }
+
+        function handleSelectTitle(movie) {
+            const seriesSection = document.getElementById('seriesSection');
+            
+            if (movie.type === 'tv') {
+                selectedSeries = movie;
+                currentSeason = 1;
+                document.getElementById('seasonSelect.value') = '1';
+                renderEpisodes();
+                seriesSection.classList.remove('hidden');
+                
+                // Reseta player de filme se estiver aberto
+                document.getElementById('placeholderMessage').style.display = 'flex';
+                document.getElementById('player').style.display = 'none';
+                document.getElementById('iframeWrapper').style.display = 'none';
+                document.getElementById('playerStatus').style.display = 'none';
+                document.getElementById('movieTitleDisplay').textContent = `Série selecionada: ${movie.title}`;
+                
+                seriesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                selectedSeries = null;
+                seriesSection.classList.add('hidden');
+                loadMovie(movie);
+            }
+        }
+
+        function renderEpisodes() {
+            if (!selectedSeries) return;
+            const grid = document.getElementById('episodesGrid');
+            grid.innerHTML = '';
+
+            const episodes = selectedSeries.seasons[currentSeason] || [];
+            document.getElementById('seriesHeaderTitle').textContent = `${selectedSeries.title} — Temporada ${currentSeason}`;
+
+            episodes.forEach(ep => {
+                const card = document.createElement('div');
+                card.className = 'episode-card';
+                card.innerHTML = `
+                    <div class="episode-thumb">
+                        <img src="${ep.thumb}" alt="${ep.title}" loading="lazy" onerror="this.src='${selectedSeries.poster}'" />
+                        <div class="episode-play-overlay">
+                            <div class="play-icon-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="episode-info">
+                        <h4 class="episode-title">${ep.title}</h4>
+                        <p class="episode-desc">${ep.desc}</p>
+                    </div>
+                `;
+                card.addEventListener('click', () => playEpisode(ep));
+                grid.appendChild(card);
+            });
+        }
+
+        function changeSeason(seasonNum) {
+            currentSeason = seasonNum;
+            renderEpisodes();
+        }
+
+        function playEpisode(ep) {
+            const videoElement = document.getElementById('player');
+            const iframeWrapper = document.getElementById('iframeWrapper');
+            const placeholder = document.getElementById('placeholderMessage');
+            const titleDisplay = document.getElementById('movieTitleDisplay');
+            const statusDisplay = document.getElementById('playerStatus');
+
+            placeholder.style.display = 'flex';
+            videoElement.style.display = 'none';
+            iframeWrapper.style.display = 'none';
+            statusDisplay.style.display = 'inline';
+            titleDisplay.innerHTML = `Assistindo a: <strong class="text-cyan-400 font-semibold">${selectedSeries.title} — T${currentSeason} : ${ep.title}</strong>`;
+            
+            // Simulação de carregamento do player do episódio
+            setTimeout(() => {
+                placeholder.style.display = 'none';
+                iframeWrapper.style.display = 'block';
+                iframeWrapper.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#050507;color:#00E5FF;font-weight:600;font-size:1.1rem;">Rodando ${ep.title} (Dublado PT-BR)</div>`;
+            }, 300);
+
+            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         function loadMovie(movie) {
@@ -475,4 +681,4 @@
         });
     </script>
 </body>
-</html>
+</html>s
