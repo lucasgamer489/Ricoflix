@@ -144,11 +144,21 @@
             overflow: hidden;
             border: 1px solid rgba(0, 229, 255, 0.06);
             min-height: 420px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #player-container .plyr {
             border-radius: 24px;
             background: #000;
             width: 100%;
+        }
+        #player-container iframe {
+            width: 100%;
+            height: 480px;
+            border: none;
+            border-radius: 24px;
         }
         #player-container .plyr__controls {
             background: rgba(0, 0, 0, 0.85);
@@ -171,6 +181,8 @@
             padding: 3rem;
             text-align: center;
             color: #445566;
+            width: 100%;
+            height: 100%;
         }
         .placeholder .icon {
             font-size: 3rem;
@@ -203,7 +215,7 @@
             .search {
                 width: 180px;
             }
-            #player-container video {
+            #player-container iframe, #player-container video {
                 height: 280px;
             }
         }
@@ -253,9 +265,11 @@
                     </svg>
                 </div>
                 <div class="title">Selecione um filme</div>
-                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir sem anúncios</div>
+                <div class="sub" style="color:#445566;margin-top:0.5rem;">Clique em um card para assistir</div>
             </div>
+            <!-- O player ou iframe será injetado aqui dinamicamente -->
             <video id="player" playsinline controls style="display:none;"></video>
+            <div id="iframeWrapper" style="display:none; width:100%;"></div>
         </div>
         <div class="flex flex-wrap justify-between items-center mt-3 text-sm text-[#556677] px-1 gap-2">
             <span class="player-title" id="movieTitlePlayer">
@@ -263,23 +277,22 @@
                     <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
                 <strong id="movieTitleDisplay">Selecione um filme</strong>
-                <span class="text-[#445566] text-xs ml-2" id="playerStatus" style="display:none;">Player Nativo · Dublado</span>
+                <span class="text-[#445566] text-xs ml-2" id="playerStatus" style="display:none;">Player Embed · Dublado</span>
             </span>
         </div>
     </section>
 
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
-        // ================================================================
-        //  CATÁLOGO - COM LINK DO VIKINGFILE
-        // ================================================================
         const MOVIES = [{
             id: 'sonic3',
             title: 'Sonic 3',
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
             type: 'movie',
-            video: 'https://www.hypeflixon.org/filmes/assistir-sonic-3-o-filme-online/'
+            // DICA: Se o link for um embed/iframe, defina isEmbed como true. Se for link direto .mp4, deixe false ou remova.
+            video: 'https://www.hypeflixon.org/filmes/assistir-sonic-3-o-filme-online/',
+            isEmbed: true 
         }, {
             id: 'deadpool3',
             title: 'Deadpool 3',
@@ -327,9 +340,6 @@
         let currentFilter = 'all';
         let playerInstance = null;
 
-        // ================================================================
-        //  INICIALIZAR PLYR
-        // ================================================================
         function initPlayer() {
             const videoElement = document.getElementById('player');
             if (videoElement) {
@@ -337,17 +347,11 @@
                     controls: [
                         'play-large', 'play', 'progress', 'current-time', 'duration',
                         'mute', 'volume', 'captions', 'settings', 'pip', 'fullscreen'
-                    ],
-                    settings: ['quality', 'speed'],
-                    quality: { default: 720, options: [1080, 720, 480, 360] },
-                    i18n: { quality: 'Qualidade', speed: 'Velocidade' }
+                    ]
                 });
             }
         }
 
-        // ================================================================
-        //  RENDER CARDS
-        // ================================================================
         function renderMovies() {
             const grid = document.getElementById('movieGrid');
             grid.innerHTML = '';
@@ -396,11 +400,9 @@
             });
         }
 
-        // ================================================================
-        //  CARREGAR FILME
-        // ================================================================
         function loadMovie(movie) {
             const videoElement = document.getElementById('player');
+            const iframeWrapper = document.getElementById('iframeWrapper');
             const placeholder = document.getElementById('fallbackMessage');
             const titleDisplay = document.getElementById('movieTitleDisplay');
             const statusDisplay = document.getElementById('playerStatus');
@@ -408,6 +410,7 @@
             if (!movie.video) {
                 placeholder.style.display = 'flex';
                 videoElement.style.display = 'none';
+                iframeWrapper.style.display = 'none';
                 statusDisplay.style.display = 'none';
                 placeholder.innerHTML = `
                     <div class="icon">
@@ -425,25 +428,29 @@
             }
 
             placeholder.style.display = 'none';
-            videoElement.style.display = 'block';
+            titleDisplay.textContent = movie.title;
             statusDisplay.style.display = 'inline';
 
-            videoElement.src = movie.video;
-            videoElement.poster = movie.poster || '';
-            videoElement.load();
-
-            titleDisplay.textContent = movie.title;
-
-            if (playerInstance) {
-                setTimeout(() => playerInstance.play(), 500);
+            // Se for um link de incorporação/iframe (como sites externos)
+            if (movie.isEmbed) {
+                videoElement.style.display = 'none';
+                iframeWrapper.style.display = 'block';
+                iframeWrapper.innerHTML = `<iframe src="${movie.video}" allowfullscreen></iframe>`;
+            } else {
+                // Se for um arquivo de vídeo direto (.mp4)
+                iframeWrapper.style.display = 'none';
+                videoElement.style.display = 'block';
+                videoElement.src = movie.video;
+                videoElement.poster = movie.poster || '';
+                videoElement.load();
+                if (playerInstance) {
+                    setTimeout(() => playerInstance.play(), 500);
+                }
             }
 
             document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // ================================================================
-        //  FILTROS
-        // ================================================================
         function setFilter(filter) {
             currentFilter = filter;
             document.querySelectorAll('.tab').forEach(tab => {
@@ -459,9 +466,6 @@
             renderMovies();
         }
 
-        // ================================================================
-        //  INIT
-        // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             initPlayer();
             renderMovies();
@@ -470,7 +474,7 @@
 
     <footer class="mt-12 pt-6 border-t border-[#00E5FF]/5 text-[10px] text-[#334455] max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center">
         <span>© 2026 Ricoflix · Dublado PT-BR</span>
-        <span>Player Nativo · Sem Anúncios</span>
+        <span>Player Otimizado · Sem Anúncios</span>
     </footer>
 
 </body>
