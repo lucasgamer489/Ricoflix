@@ -263,6 +263,7 @@
                     <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
                 <strong id="movieTitleDisplay">Selecione um filme</strong>
+                <span class="text-[#445566] text-xs ml-2" id="playerStatus" style="display:none;">Player Nativo · Dublado</span>
             </span>
         </div>
     </section>
@@ -270,7 +271,7 @@
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         // ================================================================
-        //  CATÁLOGO - SUBSTITUA O LINK DO SONIC 3 PELO SEU
+        //  CATÁLOGO - COM LINK DO VIKINGFILE
         // ================================================================
         const MOVIES = [{
             id: 'sonic3',
@@ -278,7 +279,7 @@
             year: '2024',
             poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
             type: 'movie',
-            video: 'https://file.kiwi/9416860e#9hsIvO3LRXup2Mr1oxmcPw'
+            video: 'https://vikingfile.com/d/HDMOo7lm4r/Sonic+3+Filme+Dublado.mp4'
         }, {
             id: 'deadpool3',
             title: 'Deadpool 3',
@@ -402,10 +403,12 @@
             const videoElement = document.getElementById('player');
             const placeholder = document.getElementById('fallbackMessage');
             const titleDisplay = document.getElementById('movieTitleDisplay');
+            const statusDisplay = document.getElementById('playerStatus');
 
             if (!movie.video) {
                 placeholder.style.display = 'flex';
                 videoElement.style.display = 'none';
+                statusDisplay.style.display = 'none';
                 placeholder.innerHTML = `
                     <div class="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
@@ -423,6 +426,7 @@
 
             placeholder.style.display = 'none';
             videoElement.style.display = 'block';
+            statusDisplay.style.display = 'inline';
 
             videoElement.src = movie.video;
             videoElement.poster = movie.poster || '';
