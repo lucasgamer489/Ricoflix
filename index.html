@@ -20,14 +20,12 @@
             min-height: 100vh;
         }
 
-        /* Container Principal centralizado */
         .wrapper {
             max-width: 1400px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
-        /* Estilo dos Cards */
         .card {
             width: 210px;
             background: #121216;
@@ -91,7 +89,6 @@
             font-weight: 500;
         }
 
-        /* Carrossel Horizontal Fluido */
         .scroll-container {
             display: flex;
             gap: 1.25rem;
@@ -124,7 +121,6 @@
             text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
         }
 
-        /* Barra de Pesquisa */
         .search-box {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -141,7 +137,6 @@
             box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
         }
 
-        /* Abas de Filtro */
         .tab {
             background: transparent;
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -163,7 +158,6 @@
             font-weight: 600;
         }
 
-        /* Player Container Perfeito (16:9 responsivo e centralizado) */
         #player-section {
             margin-top: 2rem;
             margin-bottom: 3rem;
@@ -180,7 +174,16 @@
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.05);
         }
 
-        .player-wrapper-box iframe,
+        /* Zoom aplicado no iframe para esconder a barra superior do player externo */
+        .player-wrapper-box iframe {
+            width: 100%;
+            height: 125%;
+            border: none;
+            position: absolute;
+            top: -15%;
+            left: 0;
+        }
+
         .player-wrapper-box video {
             width: 100%;
             height: 100%;
@@ -190,7 +193,6 @@
             left: 0;
         }
 
-        /* Placeholder Inicial Bonito */
         .placeholder-content {
             display: flex;
             align-items: center;
@@ -235,7 +237,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header class="py-5 border-b border-white/5 mb-6">
         <div class="wrapper flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-4">
@@ -254,7 +255,6 @@
         </div>
     </header>
 
-    <!-- Filtros -->
     <div class="wrapper mb-6">
         <div class="flex items-center gap-2 overflow-x-auto pb-2">
             <button class="tab active" data-filter="all" onclick="setFilter('all')">Todos</button>
@@ -263,14 +263,12 @@
         </div>
     </div>
 
-    <!-- Grade / Carrossel de Filmes -->
     <main class="wrapper">
         <section>
             <div id="movieGrid" class="scroll-container"></div>
             <p id="noResults" class="text-center text-slate-500 py-12 hidden text-sm">Nenhum título encontrado com esse termo.</p>
         </section>
 
-        <!-- Seção do Player Profissional -->
         <section id="player-section">
             <div class="flex items-center justify-between mb-3 px-1">
                 <div class="flex items-center gap-2">
@@ -281,7 +279,6 @@
             </div>
 
             <div class="player-wrapper-box" id="playerContainer">
-                <!-- Estado Inicial / Vazio -->
                 <div id="placeholderMessage" class="placeholder-content">
                     <div class="icon-box">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -291,14 +288,12 @@
                     <h4 class="text-white font-semibold text-base mb-1">Nenhum player ativo</h4>
                     <p class="text-xs text-slate-400 max-w-xs">Escolha qualquer capa no catálogo acima para carregar o player integrado instantaneamente.</p>
                 </div>
-                <!-- Players dinâmicos inseridos via Script -->
                 <video id="player" playsinline controls style="display:none;"></video>
                 <div id="iframeWrapper" style="display:none; width:100%; height:100%;"></div>
             </div>
         </section>
     </main>
 
-    <!-- Rodapé -->
     <footer class="mt-20 py-6 border-t border-white/5 text-center text-xs text-slate-600">
         <div class="wrapper flex flex-col sm:flex-row items-center justify-between gap-3">
             <span>© 2026 Ricoflix — Todos os direitos reservados.</span>
@@ -315,6 +310,14 @@
             poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
             type: 'movie',
             video: 'https://www.hypeflixon.org/filmes/assistir-sonic-3-o-filme-online/',
+            isEmbed: true
+        }, {
+            id: 'gumball',
+            title: 'O Incrível Mundo de Gumball',
+            year: '2011',
+            poster: 'https://image.tmdb.org/t/p/w342/d1x7X52X1d4m1z7Z5e8l9W2vN5a.jpg', // Capa de exemplo/substituível
+            type: 'tv',
+            video: 'https://www.hypeflixon.org/filmes/assistir-sonic-3-o-filme-online/', // Link de exemplo pro player abrir
             isEmbed: true
         }, {
             id: 'deadpool3',
@@ -448,7 +451,6 @@
                 }
             }
 
-            // Suaviza a rolagem certinho até o player com respiro na tela
             document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
