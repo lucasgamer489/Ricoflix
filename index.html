@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ricoflix — Dublado PT-BR</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
         * {
             margin: 0;
@@ -144,29 +143,21 @@
             overflow: hidden;
             border: 1px solid rgba(0, 229, 255, 0.06);
             min-height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         #player-container video {
             width: 100%;
             height: 420px;
             background: #000;
             display: block;
+            border: none;
+            outline: none;
         }
-        #player-container .plyr {
-            border-radius: 24px;
-            background: #000;
-            width: 100%;
-        }
-        #player-container .plyr__controls {
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(0, 229, 255, 0.05);
-        }
-        .plyr__control--overlaid {
-            background: rgba(0, 229, 255, 0.15) !important;
-            border: 2px solid rgba(0, 229, 255, 0.3) !important;
-        }
-        .plyr__control--overlaid svg {
-            fill: #00E5FF !important;
+        #player-container video::-webkit-media-controls {
+            background: rgba(0, 0, 0, 0.7);
+            color: #00E5FF;
         }
 
         .placeholder {
@@ -269,15 +260,13 @@
                     <polygon points="5 3 19 12 5 21 5 3" />
                 </svg>
                 <strong id="movieTitleDisplay">Selecione um filme</strong>
-                <span class="text-[#445566] text-xs ml-2" id="playerStatus" style="display:none;">Player Nativo · Dublado</span>
             </span>
         </div>
     </section>
 
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
         // ================================================================
-        //  CATÁLOGO COMPLETO
+        //  CATÁLOGO - SONIC 3 COM GOOGLE DRIVE
         // ================================================================
         const MOVIES = [{
             id: 'sonic3',
@@ -331,25 +320,6 @@
         }];
 
         let currentFilter = 'all';
-        let playerInstance = null;
-
-        // ================================================================
-        //  INICIALIZAR PLYR
-        // ================================================================
-        function initPlayer() {
-            const videoElement = document.getElementById('player');
-            if (videoElement) {
-                playerInstance = new Plyr(videoElement, {
-                    controls: [
-                        'play-large', 'play', 'progress', 'current-time', 'duration',
-                        'mute', 'volume', 'captions', 'settings', 'pip', 'fullscreen'
-                    ],
-                    settings: ['quality', 'speed'],
-                    quality: { default: 720, options: [1080, 720, 480, 360] },
-                    i18n: { quality: 'Qualidade', speed: 'Velocidade' }
-                });
-            }
-        }
 
         // ================================================================
         //  RENDER CARDS
@@ -409,12 +379,10 @@
             const videoElement = document.getElementById('player');
             const placeholder = document.getElementById('fallbackMessage');
             const titleDisplay = document.getElementById('movieTitleDisplay');
-            const statusDisplay = document.getElementById('playerStatus');
 
             if (!movie.video) {
                 placeholder.style.display = 'flex';
                 videoElement.style.display = 'none';
-                statusDisplay.style.display = 'none';
                 placeholder.innerHTML = `
                     <div class="icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#00E5FF;">
@@ -432,17 +400,12 @@
 
             placeholder.style.display = 'none';
             videoElement.style.display = 'block';
-            statusDisplay.style.display = 'inline';
 
             videoElement.src = movie.video;
             videoElement.poster = movie.poster || '';
             videoElement.load();
 
             titleDisplay.textContent = movie.title;
-
-            if (playerInstance) {
-                setTimeout(() => playerInstance.play(), 500);
-            }
 
             document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
@@ -469,7 +432,6 @@
         //  INIT
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            initPlayer();
             renderMovies();
         });
     </script>
