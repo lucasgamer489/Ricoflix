@@ -13,11 +13,11 @@
     <!-- Header / Barra Superior -->
     <header class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-6">
-            <h1 onclick="voltarHome()" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer">Ricoflix</h1>
+            <h1 onclick="carregarPopulares()" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer">Ricoflix</h1>
             <span class="text-xs bg-zinc-800 text-cyan-300 px-3 py-1 rounded-full border border-cyan-900">Dublado PT-BR</span>
         </div>
         <div class="relative w-72">
-            <input type="text" id="input-busca" oninput="pesquisarFilmes()" placeholder="Pesquisar filmes..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
+            <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar filme (aperte Enter)..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
         </div>
     </header>
 
@@ -26,12 +26,11 @@
         
         <!-- Filtros -->
         <div id="secao-filtros" class="flex items-center gap-3">
-            <button onclick="filtrar('todos', this)" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all">Todos</button>
-            <button onclick="filtrar('filme', this)" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Filmes</button>
-            <button onclick="filtrar('serie', this)" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Séries</button>
+            <button onclick="carregarPopulares()" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all">Populares</button>
+            <span class="text-xs text-zinc-500 self-center">Dica: Digite o nome do filme no campo acima e aperte Enter para buscar qualquer título!</span>
         </div>
 
-        <!-- Grade de Catálogo (Preenchida via API do TMDB) -->
+        <!-- Grade de Catálogo -->
         <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <!-- Carregando via JavaScript -->
         </div>
@@ -65,82 +64,79 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script com API do TMDB -->
+    <!-- Script com TMDB API e Busca Direta -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
 
-        async function carregarCatalogo() {
+        async function carregarPopulares() {
+            voltarHome();
             try {
                 const resposta = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`);
                 const dados = await resposta.json();
-                
-                const catalogo = document.getElementById('catalogo');
-                catalogo.innerHTML = '';
-
-                dados.results.forEach(filme => {
-                    const ano = filme.release_date ? filme.release_date.split('-')[0] : '2026';
-                    const poster = filme.poster_path ? IMG_BASE_URL + filme.poster_path : 'https://via.placeholder.com/300x450?text=Sem+Capa';
-
-                    catalogo.innerHTML += `
-                        <div onclick="abrirFilme('${filme.title}', 'https://embed.rgshows.me/movie/${filme.id}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme" data-titulo="${filme.title.toLowerCase()}">
-                            <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                                <img src="${poster}" alt="${filme.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
-                            </div>
-                            <div class="p-3 flex flex-col justify-between flex-1">
-                                <h3 class="text-sm font-bold text-zinc-200 truncate">${filme.title}</h3>
-                                <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                                    <span>${ano}</span>
-                                    <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
+                exibirFilmes(dados.results);
             } catch (erro) {
-                console.error("Erro ao carregar TMDB:", erro);
+                console.error("Erro ao carregar populares:", erro);
             }
         }
 
-        function filtrar(tipo, elemento) {
-            document.querySelectorAll('.filtro-btn').forEach(btn => {
-                btn.className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
-            });
-            elemento.className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all";
+        async function buscarNoTmdb(event) {
+            if (event.key === 'Enter') {
+                const termo = document.getElementById('input-busca').value.trim();
+                if (!termo) return;
 
-            document.querySelectorAll('.card-item').forEach(card => {
-                if (tipo === 'todos' || card.getAttribute('data-tipo') === tipo) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
+                try {
+                    const resposta = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
+                    const dados = await resposta.json();
+                    
+                    if (dados.results && dados.results.length > 0) {
+                        exibirFilmes(dados.results);
+                    } else {
+                        alert("Nenhum filme encontrado com esse nome!");
+                    }
+                } catch (erro) {
+                    console.error("Erro na busca:", erro);
                 }
-            });
+            }
         }
 
-        function pesquisarFilmes() {
-            const termo = document.getElementById('input-busca').value.toLowerCase();
-            document.querySelectorAll('.card-item').forEach(card => {
-                const titulo = card.getAttribute('data-titulo');
-                if (titulo.includes(termo)) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
+        function exibirFilmes(filmes) {
+            const catalogo = document.getElementById('catalogo');
+            catalogo.innerHTML = '';
+
+            filmes.forEach(filme => {
+                if (!filme.poster_path) return; // Pula se não tiver capa
+                const ano = filme.release_date ? filme.release_date.split('-')[0] : '2026';
+                const poster = IMG_BASE_URL + filme.poster_path;
+                const titulo = filme.title || filme.name;
+
+                catalogo.innerHTML += `
+                    <div onclick="abrirFilme('${titulo.replace(/'/g, "\\'")}', 'https://embed.rgshows.me/movie/${filme.id}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
+                        <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
+                            <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
+                        </div>
+                        <div class="p-3 flex flex-col justify-between flex-1">
+                            <h3 class="text-sm font-bold text-zinc-200 truncate">${titulo}</h3>
+                            <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
+                               <span>${ano}</span>
+                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
         }
 
         function voltarHome() {
             document.getElementById('painel-player').classList.add('hidden');
             document.getElementById('catalogo').classList.remove('hidden');
-            document.getElementById('secao-filtros').classList.remove('hidden');
             document.getElementById('meu-player').src = '';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function abrirFilme(nome, url) {
             document.getElementById('catalogo').classList.add('hidden');
-            document.getElementById('secao-filtros').classList.add('hidden');
             document.getElementById('painel-player').classList.remove('hidden');
             
             document.getElementById('titulo-player').innerText = 'Assistindo a: ' + nome;
@@ -148,8 +144,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Inicializa o catálogo puxando do TMDB ao carregar a página
-        carregarCatalogo();
+        // Carrega os populares ao iniciar
+        carregarPopulares();
     </script>
 </body>
 </html>
