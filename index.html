@@ -13,21 +13,24 @@
     <!-- Header / Barra Superior -->
     <header class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-6">
-            <h1 onclick="carregarPopulares()" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer">Ricoflix</h1>
+            <h1 onclick="carregarConteudo('movie')" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer">Ricoflix</h1>
             <span class="text-xs bg-zinc-800 text-cyan-300 px-3 py-1 rounded-full border border-cyan-900">Dublado PT-BR</span>
         </div>
         <div class="relative w-72">
-            <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar filme (aperte Enter)..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
+            <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar (aperte Enter)..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 flex flex-col gap-6">
         
-        <!-- Filtros -->
-        <div id="secao-filtros" class="flex items-center gap-3">
-            <button onclick="carregarPopulares()" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all">Populares</button>
-            <span class="text-xs text-zinc-500 self-center">Dica: Digite o nome do filme no campo acima e aperte Enter para buscar qualquer título!</span>
+        <!-- Filtros Profissionais -->
+        <div id="secao-filtros" class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-3">
+                <button id="btn-filmes" onclick="carregarConteudo('movie')" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all">Filmes</button>
+                <button id="btn-series" onclick="carregarConteudo('tv')" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Séries</button>
+            </div>
+            <span class="text-xs text-zinc-500">Dica: Digite na busca e aperte Enter para achar qualquer título.</span>
         </div>
 
         <!-- Grade de Catálogo -->
@@ -45,7 +48,7 @@
                 <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">1080p HD Nativo</span>
             </div>
 
-            <!-- Container do Iframe com VidSrc -->
+            <!-- Container do Iframe -->
             <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
                 <iframe id="meu-player" src="" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
@@ -64,19 +67,31 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script com TMDB e VidSrc Player -->
+    <!-- Script Profissional -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
+        let tipoAtual = 'movie'; // 'movie' ou 'tv'
 
-        async function carregarPopulares() {
+        async function carregarConteudo(tipo) {
+            tipoAtual = tipo;
             voltarHome();
+
+            // Atualiza visual dos botões
+            if (tipo === 'movie') {
+                document.getElementById('btn-filmes').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all";
+                document.getElementById('btn-series').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
+            } else {
+                document.getElementById('btn-series').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all";
+                document.getElementById('btn-filmes').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
+            }
+
             try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`);
+                const resposta = await fetch(`https://api.themoviedb.org/3/${tipo}/popular?api_key=${API_KEY}&language=pt-BR`);
                 const dados = await resposta.json();
-                exibirFilmes(dados.results);
+                exibirCards(dados.results, tipo);
             } catch (erro) {
-                console.error("Erro ao carregar populares:", erro);
+                console.error("Erro ao carregar catálogo:", erro);
             }
         }
 
@@ -86,13 +101,16 @@
                 if (!termo) return;
 
                 try {
-                    const resposta = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
+                    const resposta = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
                     const dados = await resposta.json();
                     
-                    if (dados.results && dados.results.length > 0) {
-                        exibirFilmes(dados.results);
+                    // Filtra apenas filmes e séries válidos que tenham poster
+                    const resultadosValidos = dados.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
+                    
+                    if (resultadosValidos.length > 0) {
+                        exibirCards(resultadosValidos, 'multi');
                     } else {
-                        alert("Nenhum filme encontrado com esse nome!");
+                        alert("Nenhum resultado encontrado!");
                     }
                 } catch (erro) {
                     console.error("Erro na busca:", erro);
@@ -100,21 +118,28 @@
             }
         }
 
-        function exibirFilmes(filmes) {
+        function exibirCards(itens, modo) {
             const catalogo = document.getElementById('catalogo');
             catalogo.innerHTML = '';
 
-            filmes.forEach(filme => {
-                if (!filme.poster_path) return;
-                const ano = filme.release_date ? filme.release_date.split('-')[0] : '2026';
-                const poster = IMG_BASE_URL + filme.poster_path;
-                const titulo = filme.title || filme.name;
+            itens.forEach(item => {
+                if (!item.poster_path) return;
                 
-                // Usando o player da vidsrc.xyz baseado no ID do TMDB
-                const urlEmbed = `https://vidsrc.xyz/embed/movie?tmdb=${filme.id}`;
+                const tipoItem = modo === 'multi' ? item.media_type : modo;
+                const titulo = item.title || item.name;
+                const data = item.release_date || item.first_air_date || '2026';
+                const ano = data.split('-')[0];
+                const poster = IMG_BASE_URL + item.poster_path;
+                
+                // Monta a URL correta do player dependendo se é filme ou série
+                const urlEmbed = tipoItem === 'tv' 
+                    ? `https://vidsrc.xyz/embed/tv?tmdb=${item.id}` 
+                    : `https://vidsrc.xyz/embed/movie?tmdb=${item.id}`;
+
+                const labelTipo = tipoItem === 'tv' ? 'Série' : 'Filme';
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirFilme('${titulo.replace(/'/g, "\\'")}', '${urlEmbed}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
+                    <div onclick="abrirPlayer('${titulo.replace(/'/g, "\\'")}', '${urlEmbed}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
@@ -123,7 +148,7 @@
                             <h3 class="text-sm font-bold text-zinc-200 truncate">${titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${ano}</span>
-                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
+                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${labelTipo}</span>
                             </div>
                         </div>
                     </div>
@@ -138,7 +163,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function abrirFilme(nome, url) {
+        function abrirPlayer(nome, url) {
             document.getElementById('catalogo').classList.add('hidden');
             document.getElementById('painel-player').classList.remove('hidden');
             
@@ -147,7 +172,8 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        carregarPopulares();
+        // Inicializa abrindo os filmes populares
+        carregarConteudo('movie');
     </script>
 </body>
 </html>
