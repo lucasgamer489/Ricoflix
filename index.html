@@ -124,20 +124,20 @@
 
         </div>
 
-        <!-- Seção do Player (Ajustada com aspect-ratio para não cortar a barra inferior) -->
+        <!-- Seção do Player em HD Perfeito -->
         <div class="mt-8 flex flex-col gap-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
                     <h2 id="movie-title" class="text-sm font-semibold text-zinc-300">Assistindo a: Sonic 3: O Filme</h2>
                 </div>
-                <span class="text-xs bg-zinc-900 border border-zinc-800 text-zinc-400 px-3 py-1 rounded-full">Servidor Dedicado - HD</span>
+                <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">Servidor Dedicado - 1080p HD</span>
             </div>
 
-            <!-- Container do Player com Proporção Perfeita -->
+            <!-- Container do Player com Proporção 16:9 e Filtro de Nitidez/Claridade HD -->
             <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
                 <iframe src="https://v1.watchplay.shop/movie/tt18259086" 
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; filter: brightness(1.08) contrast(1.06) saturate(1.03);" 
                         allowfullscreen="true" 
                         webkitallowfullscreen="true" 
                         mozallowfullscreen="true" 
