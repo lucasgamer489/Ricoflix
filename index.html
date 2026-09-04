@@ -1,682 +1,75 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ricoflix — Dublado PT-BR</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricoflix</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            scroll-behavior: smooth;
-        }
-        body {
-            background: #08080a;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: #e0e0e0;
-            min-height: 100vh;
-        }
-
-        .wrapper {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .card {
-            width: 210px;
-            background: #121216;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .card:hover {
-            transform: translateY(-6px) scale(1.02);
-            border-color: rgba(0, 229, 255, 0.4);
-            box-shadow: 0 10px 25px -5px rgba(0, 229, 255, 0.1);
-        }
-        .card .poster-wrapper {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background: #111;
-            overflow: hidden;
-        }
-        .card .poster-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 0.3s;
-        }
-        .card:hover .poster-wrapper img {
-            transform: scale(1.05);
-        }
-        .card .info {
-            padding: 1rem;
-        }
-        .card .info h3 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: #f1f5f9;
-        }
-        .card .info .meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 0.5rem;
-        }
-        .card .info .year {
-            font-size: 0.75rem;
-            color: #64748b;
-        }
-        .badge-type {
-            font-size: 0.65rem;
-            background: rgba(0, 229, 255, 0.08);
-            border: 1px solid rgba(0, 229, 255, 0.15);
-            padding: 0.1rem 0.6rem;
-            border-radius: 20px;
-            color: #38bdf8;
-            font-weight: 500;
-        }
-
-        .scroll-container {
-            display: flex;
-            gap: 1.25rem;
-            overflow-x: auto;
-            padding: 1rem 0.2rem 1.5rem 0.2rem;
-            scroll-snap-type: x mandatory;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(0, 229, 255, 0.2) transparent;
-        }
-        .scroll-container::-webkit-scrollbar {
-            height: 6px;
-        }
-        .scroll-container::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 4px;
-        }
-        .scroll-container::-webkit-scrollbar-thumb {
-            background: rgba(0, 229, 255, 0.2);
-            border-radius: 4px;
-        }
-        .scroll-container > * {
-            scroll-snap-align: start;
-        }
-
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: #00E5FF;
-            letter-spacing: -0.5px;
-            text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-        }
-
-        .search-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 30px;
-            padding: 0.6rem 1rem 0.6rem 2.8rem;
-            color: #fff;
-            width: 280px;
-            transition: all 0.3s;
-        }
-        .search-box:focus {
-            outline: none;
-            border-color: #00E5FF;
-            background: rgba(0, 229, 255, 0.02);
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
-        }
-
-        .tab {
-            background: transparent;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 30px;
-            padding: 0.5rem 1.25rem;
-            color: #94a3b8;
-            font-size: 0.9rem;
-            transition: all 0.25s;
-            cursor: pointer;
-        }
-        .tab:hover {
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-        .tab.active {
-            background: rgba(0, 229, 255, 0.1);
-            border-color: #00E5FF;
-            color: #00E5FF;
-            font-weight: 600;
-        }
-
-        #player-section {
-            margin-top: 2rem;
-            margin-bottom: 3rem;
-        }
-        
-        .player-wrapper-box {
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(0, 229, 255, 0.15);
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            position: relative;
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.05);
-        }
-
-        .player-wrapper-box iframe {
-            width: 100%;
-            height: 180%;
-            border: none;
-            position: absolute;
-            top: -55%;
-            left: 0;
-        }
-
-        .player-wrapper-box video {
-            width: 100%;
-            height: 100%;
-            border: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .placeholder-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, #121218 0%, #08080a 100%);
-            color: #64748b;
-            text-align: center;
-            padding: 2rem;
-        }
-        .placeholder-content .icon-box {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: rgba(0, 229, 255, 0.05);
-            border: 1px solid rgba(0, 229, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #00E5FF;
-            margin-bottom: 1rem;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
-        }
-
-        /* Estilo Max (HBO) para Séries e Episódios */
-        .series-view-container {
-            margin-top: 2.5rem;
-            background: #101014;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            padding: 2rem;
-        }
-        .episodes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-        .episode-card {
-            background: #16161b;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        .episode-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(0, 229, 255, 0.3);
-            box-shadow: 0 10px 20px -5px rgba(0, 229, 255, 0.1);
-        }
-        .episode-thumb {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            overflow: hidden;
-        }
-        .episode-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
-        }
-        .episode-card:hover .episode-thumb img {
-            transform: scale(1.05);
-        }
-        .episode-play-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.25s;
-        }
-        .episode-card:hover .episode-play-overlay {
-            opacity: 1;
-        }
-        .play-icon-badge {
-            width: 40px;
-            height: 40px;
-            background: #00E5FF;
-            color: #000;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
-        }
-        .episode-info {
-            padding: 1rem;
-        }
-        .episode-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #f1f5f9;
-            margin-bottom: 0.3rem;
-        }
-        .episode-desc {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        @media (max-width: 768px) {
-            .wrapper {
-                padding: 0 1rem;
-            }
-            .card {
-                width: 160px;
-            }
-            .card .poster-wrapper {
-                height: 230px;
-            }
-            .search-box {
-                width: 100%;
-            }
-            .series-view-container {
-                padding: 1rem;
-            }
-        }
-    </style>
 </head>
-<body>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans">
 
-    <header class="py-5 border-b border-white/5 mb-6">
-        <div class="wrapper flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <span class="logo">Ricoflix</span>
-                <span class="hidden sm:inline text-xs text-sky-400/80 bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20 font-medium">Dublado PT-BR</span>
-            </div>
-            <div class="flex items-center gap-3 w-full sm:w-auto">
-                <div class="relative w-full sm:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:#64748b;">
-                        <circle cx="11" cy="11" r="8" />
-                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <input type="text" id="searchInput" placeholder="Pesquisar filmes ou séries..." class="search-box" onkeyup="filterMovies()" />
-                </div>
-            </div>
-        </div>
+    <!-- Header -->
+    <header class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <h1 class="text-2xl font-black text-red-600 tracking-wider">RICOFLIX</h1>
     </header>
 
-    <div class="wrapper mb-6">
-        <div class="flex items-center gap-2 overflow-x-auto pb-2">
-            <button class="tab active" data-filter="all" onclick="setFilter('all')">Todos</button>
-            <button class="tab" data-filter="movie" onclick="setFilter('movie')">Filmes</button>
-            <button class="tab" data-filter="tv" onclick="setFilter('tv')">Séries</button>
+    <!-- Main Content -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8 flex flex-col gap-6">
+        
+        <!-- Info do Filme Atual -->
+        <div class="flex items-center justify-between">
+            <h2 id="movie-title" class="text-xl font-bold">Assistindo a: Sonic 3: O Filme</h2>
+            <span class="text-xs bg-zinc-800 text-zinc-400 px-3 py-1 rounded-full">Servidor Dedicado</span>
         </div>
-    </div>
 
-    <main class="wrapper">
-        <section>
-            <div id="movieGrid" class="scroll-container"></div>
-            <p id="noResults" class="text-center text-slate-500 py-12 hidden text-sm">Nenhum título encontrado com esse termo.</p>
-        </section>
-
-        <!-- Seção de Player Geral -->
-        <section id="player-section">
-            <div class="flex items-center justify-between mb-3 px-1">
-                <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
-                    <span id="movieTitleDisplay" class="text-sm font-semibold text-slate-200 tracking-wide">Selecione um título para assistir</span>
-                </div>
-                <span id="playerStatus" class="text-xs text-slate-500 hidden font-medium">Servidor Dedicado · HD</span>
+        <!-- Player Container Responsivo (16:9) -->
+        <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
+            <div style="position: relative; width: 100%; height: 0; padding-bottom: 56.25%;">
+                <iframe id="main-player" 
+                        src="https://v1.watchplay.shop/movie/tt18259086" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+                        allowfullscreen="true" 
+                        webkitallowfullscreen="true" 
+                        mozallowfullscreen="true" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
             </div>
+        </div>
 
-            <div class="player-wrapper-box" id="playerContainer">
-                <div id="placeholderMessage" class="placeholder-content">
-                    <div class="icon-box">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                        </svg>
-                    </div>
-                    <h4 class="text-white font-semibold text-base mb-1">Nenhum player ativo</h4>
-                    <p class="text-xs text-slate-400 max-w-xs">Escolha qualquer capa no catálogo acima para carregar o player integrado instantaneamente.</p>
-                </div>
-                <video id="player" playsinline controls style="display:none;"></video>
-                <div id="iframeWrapper" style="display:none; width:100%; height:100%;"></div>
-            </div>
-        </section>
-
-        <!-- Seção estilo HBO Max para Séries -->
-        <section id="seriesSection" class="hidden">
-            <div class="series-view-container">
-                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                    <div>
-                        <h2 id="seriesHeaderTitle" class="text-xl font-bold text-white tracking-wide">Episódios</h2>
-                        <p class="text-xs text-slate-400 mt-1">Selecione uma temporada para navegar pelos episódios dublados.</p>
-                    </div>
-                    <div>
-                        <select id="seasonSelect" onchange="changeSeason(this.value)" class="bg-[#18181f] border border-white/10 text-white text-sm rounded-xl px-4 py-2 focus:outline-none focus:border-cyan-400">
-                            <option value="1">Temporada 1</option>
-                            <option value="2">Temporada 2</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="episodesGrid" class="episodes-grid"></div>
-            </div>
-        </section>
     </main>
 
-    <footer class="mt-20 py-6 border-t border-white/5 text-center text-xs text-slate-600">
-        <div class="wrapper flex flex-col sm:flex-row items-center justify-between gap-3">
-            <span>© 2026 Ricoflix — Todos os direitos reservados.</span>
-            <span class="text-slate-500">Desenvolvido com alta performance e zero anúncios intrusivos.</span>
-        </div>
+    <!-- Footer -->
+    <footer class="bg-zinc-900 border-t border-zinc-800 text-center py-4 text-xs text-zinc-500">
+        Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script>
-        const MOVIES = [{
-            id: 'sonic3',
-            title: 'Sonic 3: O Filme',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYAuycVKDp5HpdWPKgV.jpg',
-            type: 'movie',
-            video: 'https://v1.watchplay.shop/movie/tt18259086',
-            isEmbed: true
-        }, {
-            id: 'gumball',
-            title: 'O Incrível Mundo de Gumball',
-            year: '2011',
-            poster: 'https://image.tmdb.org/t/p/w342/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg',
-            type: 'tv',
-            seasons: {
-                1: [
-                    { num: 1, title: '1. O Responsável', desc: 'Gumball e Darwin cuidam de Anais de maneira "responsável", enquanto inundam a casa.', thumb: 'https://beam-images.warnermediacdn.com/BEAM_LWM_DELIVERABLES/d8a97b35-2578-44e9-835e-296095eb76cc/53d62f56599a91c276fcd83a6822ec175591683c.jpg?host=wbd-images.prod-vod.h264.io&partner=beamcom&w=2000' },
-                    { num: 2, title: '2. Laser Vídeo', desc: 'Gumball está desesperado, porque não quer pagar a multa de um DVD que alugou e danificou.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
-                    { num: 3, title: '3. O Terceiro', desc: 'Gumball e Darwin deixam sua amizade mais divertida quando encontram um novo melhor amigo.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
-                    { num: 4, title: '4. A Dívida', desc: 'Gumball decide salvar a vida de Mr. Robinson durante o Show de Talentos da Terceira Idade.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
-                    { num: 5, title: '5. O Fim', desc: 'Eles acreditam que o mundo vai acabar e resolvem fazer uma lista de despedida.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
-                    { num: 6, title: '6. O Vestido', desc: 'Richard acaba rasgando o vestido de casamento da noiva de Larry por acidente.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' }
-                ],
-                2: [
-                    { num: 1, title: '1. A Remote', desc: 'Uma guerra épica pelo controle remoto da televisão da sala de estar.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' },
-                    { num: 2, title: '2. O Colosso', desc: 'Bananinha acaba sofrendo um acidente hilário na escola.', thumb: 'https://image.tmdb.org/t/p/w300/t9086TYIcYwDB9zXqU4n8T7rQ06.jpg' }
-                ]
-            }
-        }, {
-            id: 'deadpool3',
-            title: 'Deadpool & Wolverine',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/8cdWjvZQUDoUYc5uQQj9DmxyiXJ.jpg',
-            type: 'movie',
-            video: null,
-            isEmbed: true
-        }, {
-            id: 'divertidamente2',
-            title: 'Divertida Mente 2',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/p6H8b1cGfEo9fKbCw8jG0s3nGxM.jpg',
-            type: 'movie',
-            video: null,
-            isEmbed: true
-        }, {
-            id: 'oppenheimer',
-            title: 'Oppenheimer',
-            year: '2023',
-            poster: 'https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg',
-            type: 'movie',
-            video: null,
-            isEmbed: true
-        }, {
-            id: 'duna2',
-            title: 'Duna: Parte 2',
-            year: '2024',
-            poster: 'https://image.tmdb.org/t/p/w342/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg',
-            type: 'movie',
-            video: null,
-            isEmbed: true
-        }, {
-            id: 'johnwick4',
-            title: 'John Wick 4: Baba Yaga',
-            year: '2023',
-            poster: 'https://image.tmdb.org/t/p/w342/vZloFAK7NmvMGKE7VkF5UHaz0I.jpg',
-            type: 'movie',
-            video: null,
-            isEmbed: true
-        }];
-
-        let currentFilter = 'all';
-        let playerInstance = null;
-        let selectedSeries = null;
-        let currentSeason = 1;
-
-        function initPlayer() {
-            const videoElement = document.getElementById('player');
-            if (videoElement) {
-                playerInstance = new Plyr(videoElement, {
-                    controls: ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'fullscreen']
-                });
-            }
-        }
-
-        function renderMovies() {
-            const grid = document.getElementById('movieGrid');
-            grid.innerHTML = '';
-
-            let filtered = MOVIES.filter(movie => {
-                if (currentFilter === 'movie') return movie.type === 'movie';
-                if (currentFilter === 'tv') return movie.type === 'tv';
-                return true;
-            });
-
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            if (search) {
-                filtered = filtered.filter(m => m.title.toLowerCase().includes(search));
-            }
-
-            if (filtered.length === 0) {
-                document.getElementById('noResults').classList.remove('hidden');
-                return;
-            }
-            document.getElementById('noResults').classList.add('hidden');
-
-            filtered.forEach(movie => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="poster-wrapper">
-                        <img src="${movie.poster}" alt="${movie.title}" loading="lazy" />
-                        <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);padding:0.2rem 0.5rem;border-radius:6px;border:1px solid rgba(255,255,255,0.1);">
-                            <span style="font-size:0.6rem;color:#00E5FF;font-weight:700;">DUBLADO</span>
-                        </div>
-                    </div>
-                    <div class="info">
-                        <h3>${movie.title}</h3>
-                        <div class="meta">
-                            <span class="year">${movie.year}</span>
-                            <span class="badge-type">${movie.type === 'tv' ? 'Série' : 'Filme'}</span>
-                        </div>
-                    </div>
-                `;
-                card.addEventListener('click', () => handleSelectTitle(movie));
-                grid.appendChild(card);
-            });
-        }
-
-        function handleSelectTitle(movie) {
-            const seriesSection = document.getElementById('seriesSection');
-            
-            if (movie.type === 'tv') {
-                selectedSeries = movie;
-                currentSeason = 1;
-                document.getElementById('seasonSelect').value = '1';
-                renderEpisodes();
-                seriesSection.classList.remove('hidden');
-                
-                document.getElementById('placeholderMessage').style.display = 'flex';
-                document.getElementById('player').style.display = 'none';
-                document.getElementById('iframeWrapper').style.display = 'none';
-                document.getElementById('playerStatus').style.display = 'none';
-                document.getElementById('movieTitleDisplay').textContent = `Série selecionada: ${movie.title}`;
-                
-                seriesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                selectedSeries = null;
-                seriesSection.classList.add('hidden');
-                loadMovie(movie);
-            }
-        }
-
-        function renderEpisodes() {
-            if (!selectedSeries) return;
-            const grid = document.getElementById('episodesGrid');
-            grid.innerHTML = '';
-
-            const episodes = selectedSeries.seasons[currentSeason] || [];
-            document.getElementById('seriesHeaderTitle').textContent = `${selectedSeries.title} — Temporada ${currentSeason}`;
-
-            episodes.forEach(ep => {
-                const card = document.createElement('div');
-                card.className = 'episode-card';
-                card.innerHTML = `
-                    <div class="episode-thumb">
-                        <img src="${ep.thumb}" alt="${ep.title}" loading="lazy" onerror="this.src='${selectedSeries.poster}'" />
-                        <div class="episode-play-overlay">
-                            <div class="play-icon-badge">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="episode-info">
-                        <h4 class="episode-title">${ep.title}</h4>
-                        <p class="episode-desc">${ep.desc}</p>
-                    </div>
-                `;
-                card.addEventListener('click', () => playEpisode(ep));
-                grid.appendChild(card);
-            });
-        }
-
-        function changeSeason(seasonNum) {
-            currentSeason = seasonNum;
-            renderEpisodes();
-        }
-
-        function playEpisode(ep) {
-            const videoElement = document.getElementById('player');
-            const iframeWrapper = document.getElementById('iframeWrapper');
-            const placeholder = document.getElementById('placeholderMessage');
-            const titleDisplay = document.getElementById('movieTitleDisplay');
-            const statusDisplay = document.getElementById('playerStatus');
-
-            placeholder.style.display = 'flex';
-            videoElement.style.display = 'none';
-            iframeWrapper.style.display = 'none';
-            statusDisplay.style.display = 'inline';
-            titleDisplay.innerHTML = `Assistindo a: <strong class="text-cyan-400 font-semibold">${selectedSeries.title} — T${currentSeason} : ${ep.title}</strong>`;
-            
-            setTimeout(() => {
-                placeholder.style.display = 'none';
-                iframeWrapper.style.display = 'block';
-                iframeWrapper.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:#050507;color:#00E5FF;font-weight:600;font-size:1.1rem;">Rodando ${ep.title} (Dublado PT-BR)</div>`;
-            }, 300);
-
-            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function loadMovie(movie) {
-            const videoElement = document.getElementById('player');
-            const iframeWrapper = document.getElementById('iframeWrapper');
-            const placeholder = document.getElementById('placeholderMessage');
-            const titleDisplay = document.getElementById('movieTitleDisplay');
-            const statusDisplay = document.getElementById('playerStatus');
-
-            if (!movie.video) {
-                placeholder.style.display = 'flex';
-                videoElement.style.display = 'none';
-                iframeWrapper.style.display = 'none';
-                statusDisplay.style.display = 'none';
-                titleDisplay.textContent = `${movie.title} — Indisponível no momento`;
-                return;
-            }
-
-            placeholder.style.display = 'none';
-            titleDisplay.innerHTML = `Assistindo a: <strong class="text-cyan-400 font-semibold">${movie.title}</strong>`;
-            statusDisplay.style.display = 'inline';
-
-            if (movie.isEmbed) {
-                videoElement.style.display = 'none';
-                iframeWrapper.style.display = 'block';
-                iframeWrapper.innerHTML = `<iframe src="${movie.video}" allowfullscreen></iframe>`;
-            } else {
-                iframeWrapper.style.display = 'none';
-                videoElement.style.display = 'block';
-                videoElement.src = movie.video;
-                videoElement.load();
-                if (playerInstance) {
-                    setTimeout(() => playerInstance.play(), 300);
+        const MOVIES = [
+            {
+                id: 'sonic3',
+                title: 'Sonic 3: O Filme',
+                year: '2024',
+                poster: 'https://image.tmdb.org/t/p/w342/d8Ryb8AunYauycVKDp5HpdWPKGv.jpg',
+                type: 'movie',
+                video: 'https://v1.watchplay.shop/movie/tt18259086',
+                isEmbed: true
+            },
+            {
+                id: 'gumball',
+                title: 'O Incrível Mundo de Gumball',
+                year: '2011',
+                poster: 'https://image.tmdb.org/t/p/w342/t9086TYicYWDB9zXqU4n8T7rQ06.jpg',
+                type: 'tv',
+                seasons: {
+                    1: [
+                        { num: 1, title: '1. O Responsável', desc: 'Gumball e Darwin cuidam de Anais...' },
+                        { num: 2, title: '2. Laser Vídeo', desc: 'Gumball e Darwin tentam...' }
+                    ]
                 }
             }
-
-            document.getElementById('player-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-        function setFilter(filter) {
-            currentFilter = filter;
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-                if (tab.dataset.filter === filter) {
-                    tab.classList.add('active');
-                }
-            });
-            renderMovies();
-        }
-
-        function filterMovies() {
-            renderMovies();
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            initPlayer();
-            renderMovies();
-        });
+        ];
     </script>
 </body>
 </html>
