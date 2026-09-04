@@ -17,7 +17,7 @@
             <span class="text-xs bg-zinc-800 text-cyan-300 px-3 py-1 rounded-full border border-cyan-900">Dublado PT-BR</span>
         </div>
         <div class="relative w-72">
-            <input type="text" placeholder="Pesquisar filmes ou séries..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
+            <input type="text" id="input-busca" oninput="pesquisarFilmes()" placeholder="Pesquisar filmes..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
         </div>
     </header>
 
@@ -31,102 +31,12 @@
             <button onclick="filtrar('serie', this)" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Séries</button>
         </div>
 
-        <!-- Grade de Catálogo (Vitrine) -->
+        <!-- Grade de Catálogo (Preenchida via API do TMDB) -->
         <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            
-            <!-- Card 1: Sonic 3 -->
-            <div onclick="abrirFilme('Sonic 3: O Filme', 'https://v1.watchplay.shop/movie/tt18259086')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
-                <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://image.tmdb.org/t/p/w342/d8Ryb8AunYauycVKDp5HpdWPKGv.jpg" alt="Sonic 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
-                </div>
-                <div class="p-3 flex flex-col justify-between flex-1">
-                    <h3 class="text-sm font-bold text-zinc-200 truncate">Sonic 3: O Filme</h3>
-                    <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                        <span>2024</span>
-                        <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 2: Gumball (Abre a interface HBO Max) -->
-            <div onclick="abrirDetalhesSerie()" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="serie">
-                <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://image.tmdb.org/t/p/w342/t9086TYicYWDB9zXqU4n8T7rQ06.jpg" alt="Gumball" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
-                </div>
-                <div class="p-3 flex flex-col justify-between flex-1">
-                    <h3 class="text-sm font-bold text-zinc-200 truncate">O Incrível Mundo de Gumball</h3>
-                    <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                        <span>2011</span>
-                        <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Série</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 3: Deadpool & Wolverine -->
-            <div onclick="abrirFilme('Deadpool & Wolverine', 'https://v1.watchplay.shop/movie/533535')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
-                <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://image.tmdb.org/t/p/w342/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Deadpool & Wolverine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
-                </div>
-                <div class="p-3 flex flex-col justify-between flex-1">
-                    <h3 class="text-sm font-bold text-zinc-200 truncate">Deadpool & Wolverine</h3>
-                    <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                        <span>2024</span>
-                        <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 4: Divertida Mente 2 -->
-            <div onclick="abrirFilme('Divertida Mente 2', 'https://v1.watchplay.shop/movie/1022789')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
-                <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://image.tmdb.org/t/p/w342/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg" alt="Divertida Mente 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
-                </div>
-                <div class="p-3 flex flex-col justify-between flex-1">
-                    <h3 class="text-sm font-bold text-zinc-200 truncate">Divertida Mente 2</h3>
-                    <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                        <span>2024</span>
-                        <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 5: Oppenheimer -->
-            <div onclick="abrirFilme('Oppenheimer', 'https://v1.watchplay.shop/movie/872585')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
-                <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="Oppenheimer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
-                </div>
-                <div class="p-3 flex flex-col justify-between flex-1">
-                    <h3 class="text-sm font-bold text-zinc-200 truncate">Oppenheimer</h3>
-                    <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                        <span>2023</span>
-                        <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Card 6: Duna: Parte 2 -->
-            <div onclick="abrirFilme('Duna: Parte 2', 'https://v1.watchplay.shop/movie/693134')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
-                <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://image.tmdb.org/t/p/w342/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" alt="Duna 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
-                </div>
-                <div class="p-3 flex flex-col justify-between flex-1">
-                    <h3 class="text-sm font-bold text-zinc-200 truncate">Duna: Parte 2</h3>
-                    <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                        <span>2024</span>
-                        <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
-                    </div>
-                </div>
-            </div>
-
+            <!-- Carregando via JavaScript -->
         </div>
 
-        <!-- Seção do Player e Episódios (Inicialmente oculto para séries até clicar) -->
+        <!-- Seção do Player -->
         <div id="painel-player" class="mt-4 flex flex-col gap-4 hidden">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -146,23 +56,6 @@
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
                 </iframe>
             </div>
-
-            <!-- Seção HBO Max Style para Episódios (Exibido apenas em Séries) -->
-            <div id="secao-episodios" class="mt-6 flex flex-col gap-4 hidden">
-                <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
-                    <h2 class="text-xl font-bold text-zinc-100">Episódios</h2>
-                    <select id="seletor-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-700 text-zinc-200 text-sm rounded-lg px-4 py-2 focus:outline-none focus:border-cyan-500 cursor-pointer">
-                        <option value="1">Temporada 1</option>
-                        <option value="2">Temporada 2</option>
-                        <option value="3">Temporada 3</option>
-                    </select>
-                </div>
-
-                <!-- Grade de Episódios -->
-                <div id="grade-episodios" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    <!-- Gerado via JavaScript -->
-                </div>
-            </div>
         </div>
 
     </main>
@@ -172,23 +65,43 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script de Navegação Pro -->
+    <!-- Script com API do TMDB -->
     <script>
-        const episodiosGumball = {
-            1: [
-                { num: 1, nome: "O Responsável", desc: "Gumball e Darwin cuidam de Anais de maneira responsável.", img: "https://image.tmdb.org/t/p/w300/t9086TYicYWDB9zXqU4n8T7rQ06.jpg", url: "https://v1.watchplay.shop/tv/32726/1/1" },
-                { num: 2, nome: "Laser Vídeo", desc: "Gumball está desesperado porque não quer pagar a multa de um DVD.", img: "https://image.tmdb.org/t/p/w300/t9086TYicYWDB9zXqU4n8T7rQ06.jpg", url: "https://v1.watchplay.shop/tv/32726/1/2" },
-                { num: 3, nome: "O Terceiro", desc: "Gumball e Darwin deixam sua amizade mais divertida.", img: "https://image.tmdb.org/t/p/w300/t9086TYicYWDB9zXqU4n8T7rQ06.jpg", url: "https://v1.watchplay.shop/tv/32726/1/3" },
-                { num: 4, nome: "A Dívida", desc: "Gumball decide salvar a vida de Mr. Robinson.", img: "https://image.tmdb.org/t/p/w300/t9086TYicYWDB9zXqU4n8T7rQ06.jpg", url: "https://v1.watchplay.shop/tv/32726/1/4" }
-            ],
-            2: [
-                { num: 1, nome: "O Controle remoto", desc: "Uma disputa épica pelo controle remoto da TV da família.", img: "https://image.tmdb.org/t/p/w300/t9086TYicYWDB9zXqU4n8T7rQ06.jpg", url: "https://v1.watchplay.shop/tv/32726/2/1" },
-                { num: 2, nome: "O Apocalipse", desc: "Gumball e Darwin acham que o mundo vai acabar em 24 horas.", img: "https://image.tmdb.org/t/p/w300/t9086TYicYWDB9zXqU4n8T7rQ06.jpg", url: "https://v1.watchplay.shop/tv/32726/2/2" }
-            ],
-            3: [
-                { num: 1, nome: "As Férias", desc: "A família Watterson viaja para curtir as férias escolares.", img: "https://image.tmdb.org/t/p/w300/t9086TYicYWDB9zXqU4n8T7rQ06.jpg", url: "https://v1.watchplay.shop/tv/32726/3/1" }
-            ]
-        };
+        const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
+        const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
+
+        async function carregarCatalogo() {
+            try {
+                const resposta = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`);
+                const dados = await resposta.json();
+                
+                const catalogo = document.getElementById('catalogo');
+                catalogo.innerHTML = '';
+
+                dados.results.forEach(filme => {
+                    const ano = filme.release_date ? filme.release_date.split('-')[0] : '2026';
+                    const poster = filme.poster_path ? IMG_BASE_URL + filme.poster_path : 'https://via.placeholder.com/300x450?text=Sem+Capa';
+
+                    catalogo.innerHTML += `
+                        <div onclick="abrirFilme('${filme.title}', 'https://embed.rgshows.me/movie/${filme.id}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme" data-titulo="${filme.title.toLowerCase()}">
+                            <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
+                                <img src="${poster}" alt="${filme.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
+                            </div>
+                            <div class="p-3 flex flex-col justify-between flex-1">
+                                <h3 class="text-sm font-bold text-zinc-200 truncate">${filme.title}</h3>
+                                <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
+                                    <span>${ano}</span>
+                                    <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (erro) {
+                console.error("Erro ao carregar TMDB:", erro);
+            }
+        }
 
         function filtrar(tipo, elemento) {
             document.querySelectorAll('.filtro-btn').forEach(btn => {
@@ -205,11 +118,23 @@
             });
         }
 
+        function pesquisarFilmes() {
+            const termo = document.getElementById('input-busca').value.toLowerCase();
+            document.querySelectorAll('.card-item').forEach(card => {
+                const titulo = card.getAttribute('data-titulo');
+                if (titulo.includes(termo)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
         function voltarHome() {
             document.getElementById('painel-player').classList.add('hidden');
-            document.getElementById('secao-episodios').classList.add('hidden');
             document.getElementById('catalogo').classList.remove('hidden');
             document.getElementById('secao-filtros').classList.remove('hidden');
+            document.getElementById('meu-player').src = '';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -217,58 +142,14 @@
             document.getElementById('catalogo').classList.add('hidden');
             document.getElementById('secao-filtros').classList.add('hidden');
             document.getElementById('painel-player').classList.remove('hidden');
-            document.getElementById('secao-episodios').classList.add('hidden');
             
             document.getElementById('titulo-player').innerText = 'Assistindo a: ' + nome;
             document.getElementById('meu-player').src = url;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function abrirDetalhesSerie() {
-            document.getElementById('catalogo').classList.add('hidden');
-            document.getElementById('secao-filtros').classList.add('hidden');
-            document.getElementById('painel-player').classList.remove('hidden');
-            document.getElementById('secao-episodios').classList.remove('hidden');
-
-            // Carrega a temporada 1 por padrão no player e na grade
-            mudarTemporada();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function mudarTemporada() {
-            const tempNum = document.getElementById('seletor-temporada').value;
-            const lista = episodiosGumball[tempNum] || [];
-            const grade = document.getElementById('grade-episodios');
-            grade.innerHTML = '';
-
-            if (lista.length > 0) {
-                // Inicia o player no primeiro episódio da temporada selecionada
-                tocarEpisodio(lista[0].url, `O Incrível Mundo de Gumball - T${tempNum}:E1 ${lista[0].nome}`);
-
-                lista.forEach(ep => {
-                    grade.innerHTML += `
-                        <div onclick="tocarEpisodio('${ep.url}', 'O Incrível Mundo de Gumball - T${tempNum}:E${ep.num} ${ep.nome}')" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
-                            <div class="aspect-video bg-zinc-800 relative overflow-hidden">
-                                <img src="${ep.img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <span class="bg-cyan-500 text-zinc-950 font-bold px-3 py-1 rounded-full text-xs shadow-lg">Assistir</span>
-                                </div>
-                            </div>
-                            <div class="p-3 flex flex-col gap-1">
-                                <h4 class="text-sm font-bold text-zinc-200 truncate">${ep.num}. ${ep.nome}</h4>
-                                <p class="text-xs text-zinc-400 line-clamp-2">${ep.desc}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        function tocarEpisodio(url, titulo) {
-            document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
-            document.getElementById('meu-player').src = url;
-            document.getElementById('painel-player').scrollIntoView({ behavior: 'smooth' });
-        }
+        // Inicializa o catálogo puxando do TMDB ao carregar a página
+        carregarCatalogo();
     </script>
 </body>
 </html>
