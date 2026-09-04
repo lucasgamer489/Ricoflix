@@ -24,20 +24,20 @@
     <!-- Main Content -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 flex flex-col gap-6">
         
-        <!-- Filtros -->
+        <!-- Filtros Funcionais -->
         <div class="flex items-center gap-3">
-            <button class="bg-cyan-500 text-zinc-950 font-semibold px-4 py-1.5 rounded-full text-sm">Todos</button>
-            <button class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800">Filmes</button>
-            <button class="bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800">Séries</button>
+            <button onclick="filtrar('todos', this)" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all">Todos</button>
+            <button onclick="filtrar('filme', this)" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Filmes</button>
+            <button onclick="filtrar('serie', this)" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Séries</button>
         </div>
 
         <!-- Grade de Catálogo (Vitrine) -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             
             <!-- Card 1: Sonic 3 -->
-            <a href="#" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all block">
+            <div onclick="trocarMidia('Sonic 3: O Filme', 'https://v1.watchplay.shop/movie/tt18259086')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
                 <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://m.media-amazon.com/images/M/MV5BNzlkMjdhN2YtYTc2Yi00OWY2LThhMjAtOGM2MDM3ZTMwNmY3XkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_FMjpg_UX1000_.jpg" alt="Sonic 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="https://image.tmdb.org/t/p/w342/d8Ryb8AunYauycVKDp5HpdWPKGv.jpg" alt="Sonic 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-1">
@@ -47,12 +47,12 @@
                         <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <!-- Card 2: Gumball -->
-            <a href="#" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all block">
+            <div onclick="trocarMidia('O Incrível Mundo de Gumball', 'https://v1.watchplay.shop/tv/32726')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="serie">
                 <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://m.media-amazon.com/images/M/MV5BZTU2ODdjOGItNmYzZi00OGVjLThmMDgtOWMxNDYzNWMyNTM0XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_FMjpg_UX1000_.jpg" alt="Gumball" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="https://image.tmdb.org/t/p/w342/t9086TYicYWDB9zXqU4n8T7rQ06.jpg" alt="Gumball" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-1">
@@ -62,12 +62,12 @@
                         <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Série</span>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <!-- Card 3: Deadpool & Wolverine -->
-            <a href="#" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all block">
+            <div onclick="trocarMidia('Deadpool & Wolverine', 'https://v1.watchplay.shop/movie/533535')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
                 <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://m.media-amazon.com/images/M/MV5BNWE5ODAyZmEtY2Y2Yi00MmI1LTlhMmMtYmZlZmM0ZDU2ODU2XkEyXkFqcGdeQXVyMTUzMTg2ODkz._V1_FMjpg_UX1000_.jpg" alt="Deadpool & Wolverine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="https://image.tmdb.org/t/p/w342/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg" alt="Deadpool & Wolverine" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-1">
@@ -77,12 +77,12 @@
                         <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <!-- Card 4: Divertida Mente 2 -->
-            <a href="#" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all block">
+            <div onclick="trocarMidia('Divertida Mente 2', 'https://v1.watchplay.shop/movie/1022789')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
                 <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://m.media-amazon.com/images/M/MV5BYmMyYzk3OWItM2Y2MS00NWE1LWEzMjItMjZiMDU3N2JjYmFkXkEyXkFqcGdeQXVyMTM1MjAxMDc3._V1_FMjpg_UX1000_.jpg" alt="Divertida Mente 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="https://image.tmdb.org/t/p/w342/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg" alt="Divertida Mente 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-1">
@@ -92,12 +92,12 @@
                         <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <!-- Card 5: Oppenheimer -->
-            <a href="#" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all block">
+            <div onclick="trocarMidia('Oppenheimer', 'https://v1.watchplay.shop/movie/872585')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
                 <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://m.media-amazon.com/images/M/MV5BMDBmYTZjNjUtN2M1MS00MTQ2LTk2ODgtNzc2M2QyZGE5NTVjXkEyXkFqcGdeQXVyNzAwMjU2MTY@._V1_FMjpg_UX1000_.jpg" alt="Oppenheimer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="https://image.tmdb.org/t/p/w342/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg" alt="Oppenheimer" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-1">
@@ -107,12 +107,12 @@
                         <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <!-- Card 6: Duna: Parte 2 -->
-            <a href="#" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all block">
+            <div onclick="trocarMidia('Duna: Parte 2', 'https://v1.watchplay.shop/movie/693134')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all" data-tipo="filme">
                 <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                    <img src="https://m.media-amazon.com/images/M/MV5BN2QyOGFiYWUtMGYwNy00NTBlLWEzNTktYTQ4OWExNTQ4ZDhkXkEyXkFqcGdeQXVyMDM2NDM2MQ@@._V1_FMjpg_UX1000_.jpg" alt="Duna 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <img src="https://image.tmdb.org/t/p/w342/1pdfLvkbY9ohJlCjQH2CZjjYVvJ.jpg" alt="Duna 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                     <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
                 </div>
                 <div class="p-3 flex flex-col justify-between flex-1">
@@ -122,7 +122,7 @@
                         <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
                     </div>
                 </div>
-            </a>
+            </div>
 
         </div>
 
@@ -131,14 +131,14 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <h2 class="text-sm font-semibold text-zinc-300">Assistindo a: Sonic 3: O Filme</h2>
+                    <h2 id="titulo-player" class="text-sm font-semibold text-zinc-300">Assistindo a: Sonic 3: O Filme</h2>
                 </div>
                 <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">1080p HD Nativo</span>
             </div>
 
-            <!-- Container do Player com Nitidez Otimizada de Hardware -->
-            <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative; -webkit-font-smoothing: antialiased;">
-                <iframe src="https://v1.watchplay.shop/movie/tt18259086" 
+            <!-- Container do Player -->
+            <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
+                <iframe id="meu-player" src="https://v1.watchplay.shop/movie/tt18259086" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
                         allowfullscreen="true" 
                         webkitallowfullscreen="true" 
@@ -155,5 +155,30 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
+    <!-- Script de Filtro e Troca de Vídeo -->
+    <script>
+        function filtrar(tipo, elemento) {
+            // Estilo dos botões
+            document.querySelectorAll('.filtro-btn').forEach(btn => {
+                btn.className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-4 py-1.5 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
+            });
+            elemento.className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-4 py-1.5 rounded-full text-sm cursor-pointer transition-all";
+
+            // Filtrar cards
+            document.querySelectorAll('.card-item').forEach(card => {
+                if (tipo === 'todos' || card.getAttribute('data-tipo') === tipo) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function trocarMidia(nome, url) {
+            document.getElementById('titulo-player').innerText = 'Assistindo a: ' + nome;
+            document.getElementById('meu-player').src = url;
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
