@@ -124,20 +124,27 @@
 
         </div>
 
-        <!-- Seção do Player em HD Perfeito -->
+        <!-- Seção do Player com Ajustes de Brilho -->
         <div class="mt-8 flex flex-col gap-3">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <h2 id="movie-title" class="text-sm font-semibold text-zinc-300">Assistindo a: Sonic 3: O Filme</h2>
+                    <h2 class="text-sm font-semibold text-zinc-300">Assistindo a: Sonic 3: O Filme</h2>
                 </div>
-                <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">Servidor Dedicado - 1080p HD</span>
+                
+                <!-- Botões de Controle de Brilho Dinâmicos -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-zinc-400">Brilho HD:</span>
+                    <button onclick="mudarBrilho('brightness(1)' , 'contrast(1)')" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs px-2.5 py-1 rounded">Normal</button>
+                    <button onclick="mudarBrilho('brightness(1.15)', 'contrast(1.08)')" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 text-xs px-2.5 py-1 rounded font-bold">Claro+</button>
+                    <button onclick="mudarBrilho('brightness(1.35)', 'contrast(1.15)')" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-amber-400 text-xs px-2.5 py-1 rounded font-bold">Ultra HD</button>
+                </div>
             </div>
 
-            <!-- Container do Player com Proporção 16:9 e Filtro de Nitidez/Claridade HD -->
+            <!-- Container do Player com Proporção Perfeita e ID para o script -->
             <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
-                <iframe src="https://v1.watchplay.shop/movie/tt18259086" 
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; filter: brightness(1.08) contrast(1.06) saturate(1.03);" 
+                <iframe id="player-iframe" src="https://v1.watchplay.shop/movie/tt18259086" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; filter: brightness(1.15) contrast(1.08); transition: filter 0.3s ease;" 
                         allowfullscreen="true" 
                         webkitallowfullscreen="true" 
                         mozallowfullscreen="true" 
@@ -153,5 +160,12 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
+    <!-- Script para alternar o brilho em tempo real -->
+    <script>
+        function mudarBrilho(brilho, contraste) {
+            const iframe = document.getElementById('player-iframe');
+            iframe.style.filter = `${brilho} ${contraste}`;
+        }
+    </script>
 </body>
 </html>
