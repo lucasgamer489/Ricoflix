@@ -45,7 +45,7 @@
                 <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">1080p HD Nativo</span>
             </div>
 
-            <!-- Container do Iframe -->
+            <!-- Container do Iframe Corrigido -->
             <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
                 <iframe id="meu-player" src="" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
@@ -64,7 +64,7 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script com TMDB API e Busca Direta -->
+    <!-- Script com TMDB API e Player Universal -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
@@ -105,13 +105,15 @@
             catalogo.innerHTML = '';
 
             filmes.forEach(filme => {
-                if (!filme.poster_path) return; // Pula se não tiver capa
+                if (!filme.poster_path) return;
                 const ano = filme.release_date ? filme.release_date.split('-')[0] : '2026';
                 const poster = IMG_BASE_URL + filme.poster_path;
                 const titulo = filme.title || filme.name;
+                // Usando o player embed universal por ID do TMDB
+                const urlEmbed = `https://embed.rgshows.me/movie/${filme.id}`;
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirFilme('${titulo.replace(/'/g, "\\'")}', 'https://embed.rgshows.me/movie/${filme.id}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
+                    <div onclick="abrirFilme('${titulo.replace(/'/g, "\\'")}', '${urlEmbed}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
@@ -144,7 +146,6 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Carrega os populares ao iniciar
         carregarPopulares();
     </script>
 </body>
