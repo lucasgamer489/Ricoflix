@@ -124,25 +124,18 @@
 
         </div>
 
-        <!-- Seção do Player com Ajustes de Brilho Funcionais -->
+        <!-- Seção do Player Perfeita em HD -->
         <div class="mt-8 flex flex-col gap-3">
-            <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
                     <h2 class="text-sm font-semibold text-zinc-300">Assistindo a: Sonic 3: O Filme</h2>
                 </div>
-                
-                <!-- Botões de Controle de Brilho -->
-                <div class="flex items-center gap-2">
-                    <span class="text-xs text-zinc-400">Modo de Luz:</span>
-                    <button onclick="mudarBrilho('normal')" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 text-xs px-2.5 py-1 rounded">Normal</button>
-                    <button onclick="mudarBrilho('claro')" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 text-xs px-2.5 py-1 rounded font-bold">Claro+</button>
-                    <button onclick="mudarBrilho('ultra')" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-amber-400 text-xs px-2.5 py-1 rounded font-bold">Ultra HD</button>
-                </div>
+                <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">1080p HD Nativo</span>
             </div>
 
-            <!-- Container do Player com Camada de Brilho Garantida -->
-            <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
+            <!-- Container do Player com Nitidez Otimizada de Hardware -->
+            <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative; -webkit-font-smoothing: antialiased;">
                 <iframe src="https://v1.watchplay.shop/movie/tt18259086" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
                         allowfullscreen="true" 
@@ -150,8 +143,6 @@
                         mozallowfullscreen="true" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
                 </iframe>
-                <!-- Camada interativa de filtro de luz por cima do player -->
-                <div id="overlay-brilho" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; background: rgba(255, 255, 255, 0.08); mix-blend-mode: screen; transition: background 0.3s ease;"></div>
             </div>
         </div>
 
@@ -162,18 +153,5 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script atualizado para controlar a camada de luz -->
-    <script>
-        function mudarBrilho(modo) {
-            const overlay = document.getElementById('overlay-brilho');
-            if (modo === 'normal') {
-                overlay.style.background = 'rgba(255, 255, 255, 0)';
-            } else if (modo === 'claro') {
-                overlay.style.background = 'rgba(255, 255, 255, 0.12)';
-            } else if (modo === 'ultra') {
-                overlay.style.background = 'rgba(255, 255, 255, 0.22)';
-            }
-        }
-    </script>
 </body>
 </html>
