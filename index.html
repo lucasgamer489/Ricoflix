@@ -10,66 +10,79 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #090b10; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        .scrollbar-none::-webkit-scrollbar { display: none; }
+        .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-[#0b0e14] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white custom-scrollbar">
+<body class="bg-[#141414] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-red-600 selection:text-white custom-scrollbar">
 
-    <!-- Header / Barra Superior -->
-    <header id="header-principal" class="bg-[#0b0e14]/95 backdrop-blur-md border-b border-zinc-900/80 px-8 py-4 flex items-center justify-between sticky top-0 z-50 transition-all">
+    <!-- Header / Barra Superior Estilo Netflix -->
+    <header id="header-principal" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-6 md:px-12 py-4 flex items-center justify-between">
         <div class="flex items-center gap-8">
-            <h1 onclick="mudarAba('filmes')" class="text-2xl font-black text-blue-500 tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
+            <h1 onclick="voltarHome()" class="text-2xl md:text-3xl font-black text-red-600 tracking-wider cursor-pointer hover:scale-105 transition-transform">RICOFLIX</h1>
             <nav class="hidden md:flex items-center gap-6 text-xs font-medium tracking-wide text-zinc-300">
-                <button onclick="mudarAba('filmes')" class="hover:text-white transition-colors cursor-pointer">FILMES</button>
-                <button onclick="mudarAba('series')" class="hover:text-white transition-colors cursor-pointer">SÉRIES DE TV</button>
-                <button onclick="mudarAba('minhalista')" class="hover:text-white transition-colors cursor-pointer">MINHA LISTA</button>
+                <button onclick="mudarAba('home')" id="nav-home" class="hover:text-white transition-colors cursor-pointer text-white font-bold">Início</button>
+                <button onclick="mudarAba('filmes')" id="nav-filmes" class="hover:text-white transition-colors cursor-pointer">Filmes</button>
+                <button onclick="mudarAba('series')" id="nav-series" class="hover:text-white transition-colors cursor-pointer">Séries</button>
+                <button onclick="mudarAba('minhalista')" id="nav-lista" class="hover:text-white transition-colors cursor-pointer">Minha Lista</button>
             </nav>
         </div>
         <div class="flex items-center gap-4">
-            <div class="relative w-64 hidden lg:block">
-                <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar..." class="w-full bg-zinc-900/70 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-blue-500 transition-colors">
+            <div class="relative w-48 md:w-64">
+                <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Títulos, gente e gêneros..." class="w-full bg-black/60 border border-zinc-700/60 rounded-full px-4 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-white transition-all backdrop-blur-sm">
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 flex flex-col gap-6">
+    <main class="flex-1 w-full flex flex-col pb-16">
         
-        <!-- Filtros e Navegação -->
-        <div id="secao-filtros" class="flex flex-col gap-4 transition-all">
-            <div class="flex items-center justify-between flex-wrap gap-4">
-                <div class="flex items-center gap-3">
-                    <button onclick="mudarAba('filmes')" id="btn-tab-filmes" class="filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30 cursor-pointer transition-all">FILMES</button>
-                    <button onclick="mudarAba('series')" id="btn-tab-series" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all">SÉRIES</button>
-                    <button onclick="mudarAba('minhalista')" id="btn-tab-minhalista" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all">MINHA LISTA</button>
-                </div>
-                
-                <!-- Barra de busca mobile -->
-                <div class="relative w-full md:hidden">
-                    <input type="text" id="input-busca-mobile" onkeypress="buscarNoTmdb(event, true)" placeholder="Pesquisar..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-xs text-zinc-200 focus:outline-none focus:border-blue-500">
+        <!-- Banner Netflix (Hero Section) -->
+        <section id="secao-hero" class="relative w-full h-[75vh] md:h-[85vh] flex items-center">
+            <div id="hero-bg" class="absolute inset-0 bg-cover bg-center">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent w-full md:w-2/3"></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/60"></div>
+            </div>
+            
+            <div class="relative max-w-7xl w-full mx-auto px-6 md:px-12 flex flex-col gap-4 z-10 pt-20">
+                <span id="hero-tag" class="text-xs uppercase tracking-widest text-red-500 font-bold">Destaque do Ricoflix</span>
+                <h2 id="hero-titulo" class="text-3xl md:text-6xl font-black text-white max-w-2xl tracking-tight leading-none">Carregando...</h2>
+                <p id="hero-sinopse" class="text-xs md:text-sm text-zinc-300 max-w-xl line-clamp-3 leading-relaxed">...</p>
+                <div class="flex items-center gap-3 mt-2">
+                    <button id="hero-btn-assistir" class="bg-white hover:bg-zinc-200 text-black font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 text-xs md:text-sm transition-all cursor-pointer shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Assistir
+                    </button>
+                    <button id="hero-btn-detalhes" class="bg-zinc-500/40 hover:bg-zinc-500/60 text-white font-semibold px-6 py-2.5 rounded-lg flex items-center gap-2 text-xs md:text-sm transition-all cursor-pointer backdrop-blur-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg> Mais Informações
+                    </button>
                 </div>
             </div>
+        </section>
 
-            <!-- Botões de Gêneros -->
-            <div id="secao-generos" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
+        <!-- Container de Carrosséis / Catálogo -->
+        <div id="container-carrosseis" class="flex flex-col gap-8 -mt-24 md:-mt-32 relative z-20 px-6 md:px-12">
+            <!-- Os carrosséis serão injetados dinamicamente aqui -->
         </div>
 
-        <!-- Grade de Catálogo -->
-        <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+        <!-- Grade de Busca / Minha Lista -->
+        <div id="secao-grade" class="hidden flex flex-col gap-6 max-w-7xl w-full mx-auto px-6 md:px-12 pt-24">
+            <h2 id="titulo-grade" class="text-xl md:text-2xl font-bold text-white">Resultados</h2>
+            <div id="catalogo-grade" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
+        </div>
 
         <!-- Painel de Detalhes da Série / Episódios -->
-        <div id="painel-serie-detalhes" class="hidden flex flex-col gap-6 animate-fadeIn w-full">
-            <div class="flex items-center justify-between flex-wrap gap-4 border-b border-zinc-900 pb-4">
+        <div id="painel-serie-detalhes" class="hidden flex flex-col gap-6 max-w-7xl w-full mx-auto px-6 md:px-12 pt-24 animate-fadeIn w-full">
+            <div class="flex items-center justify-between flex-wrap gap-4 border-b border-zinc-800 pb-4">
                 <div class="flex items-center gap-4">
-                    <button onclick="voltarHome()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-blue-400 px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
+                    <button onclick="voltarHome()" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
                     <h2 class="text-2xl font-bold tracking-tight text-white" id="titulo-serie-header">Episódios</h2>
                 </div>
                 
-                <!-- Seletor de Temporadas -->
                 <div class="relative">
-                    <select id="select-temporada" onchange="mudarTemporadaMax()" class="bg-[#181b22] border border-zinc-800 text-sm text-zinc-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer appearance-none pr-10 font-medium">
+                    <select id="select-temporada" onchange="mudarTemporadaMax()" class="bg-zinc-900 border border-zinc-700 text-sm text-zinc-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-red-600 cursor-pointer appearance-none pr-10 font-medium">
                         <option value="1">Temporada 1</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-400">
@@ -78,27 +91,22 @@
                 </div>
             </div>
 
-            <!-- Grade de Episódios -->
             <div id="grade-episodios-max" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
         </div>
 
         <!-- Seção do Player (MegaEmbed) -->
-        <div id="painel-player" class="mt-2 flex flex-col gap-3 hidden animate-fadeIn w-full">
-            <div class="flex items-center justify-between flex-wrap gap-3 bg-zinc-950/60 p-3 rounded-xl border border-zinc-900">
+        <div id="painel-player" class="mt-20 flex flex-col gap-3 hidden animate-fadeIn w-full max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between flex-wrap gap-3 bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
                 <div class="flex items-center gap-3">
-                    <button onclick="fecharPlayerParaEpisodios()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-blue-400 px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
+                    <button onclick="fecharPlayerParaEpisodios()" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
                     <h2 id="titulo-player" class="text-sm font-bold text-zinc-200">Assistindo a: -</h2>
                 </div>
-                
-                <div class="flex items-center gap-3">
-                    <div class="text-xs bg-blue-500/10 border border-blue-500/30 text-blue-400 px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> MegaEmbed Player
-                    </div>
+                <div class="text-xs bg-red-600/20 border border-red-600/40 text-red-500 px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse"></span> MegaEmbed Player
                 </div>
             </div>
 
-            <!-- Container do Player -->
-            <div class="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-zinc-900 relative" style="aspect-ratio: 16/9;">
+            <div class="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-zinc-800 relative" style="aspect-ratio: 16/9;">
                 <iframe id="meu-player" src="" 
                         class="absolute inset-0 w-full h-full border-0" 
                         allowfullscreen="true" 
@@ -112,127 +120,182 @@
     </main>
 
     <!-- Footer -->
-    <footer id="footer-principal" class="bg-[#0b0e14] border-t border-zinc-900/80 text-center py-6 text-xs text-zinc-600 mt-12">
-        Ricoflix &copy; 2026 - Todos os direitos reservados
+    <footer id="footer-principal" class="bg-[#141414] border-t border-zinc-900 text-center py-6 text-xs text-zinc-500 mt-auto">
+        Ricoflix &copy; 2026 - Inspirado na Netflix
     </footer>
 
     <!-- Script Principal -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
+        const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
         const STILL_BASE_URL = 'https://image.tmdb.org/t/p/w500';
         
-        let abaAtual = 'filmes';
+        let abaAtual = 'home';
         let serieAtualCache = null;
+
+        // Efeito de escurecer header ao rolar a página
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header-principal');
+            if (window.scrollY > 50) {
+                header.classList.add('bg-[#141414]', 'shadow-xl');
+            } else {
+                header.classList.remove('bg-[#141414]', 'shadow-xl');
+            }
+        });
+
+        async function inicializarHome() {
+            abaAtual = 'home';
+            document.getElementById('secao-hero').classList.remove('hidden');
+            document.getElementById('container-carrosseis').classList.remove('hidden');
+            document.getElementById('secao-grade').classList.add('hidden');
+            document.getElementById('painel-serie-detalhes').classList.add('hidden');
+            document.getElementById('painel-player').classList.add('hidden');
+            document.getElementById('header-principal').classList.remove('hidden');
+            document.getElementById('footer-principal').classList.remove('hidden');
+
+            try {
+                // 1. Carregar Banner Hero com Filme Populares
+                const resPop = await fetch(`https://api.themoviedb.org/3/trending/all/day?api_key=${API_KEY}&language=pt-BR`);
+                const dadosPop = await resPop.json();
+                const destaque = dadosPop.results[Math.floor(Math.random() * Math.min(5, dadosPop.results.length))] || dadosPop.results[0];
+                
+                if (destaque) {
+                    const tipo = destaque.media_type || (destaque.title ? 'movie' : 'tv');
+                    const titulo = destaque.title || destaque.name;
+                    document.getElementById('hero-titulo').innerText = titulo;
+                    document.getElementById('hero-sinopse').innerText = destaque.overview || 'Sem sinopse disponível.';
+                    if (destaque.backdrop_path) {
+                        document.getElementById('hero-bg').style.backgroundImage = `url('${BACKDROP_URL + destaque.backdrop_path}')`;
+                    }
+                    document.getElementById('hero-btn-assistir').onclick = () => abrirItem(destaque.id, titulo, tipo);
+                    document.getElementById('hero-btn-detalhes').onclick = () => abrirItem(destaque.id, titulo, tipo);
+                }
+
+                // 2. Criar Carrosséis
+                const container = document.getElementById('container-carrosseis');
+                container.innerHTML = '';
+
+                await criarCarrossel('Filmes Populares', `https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`, 'movie');
+                await criarCarrossel('Séries Populares', `https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}&language=pt-BR`, 'tv');
+                await criarCarrossel('Filmes Bem Avaliados', `https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&language=pt-BR`, 'movie');
+                await criarCarrossel('Animações e Família', `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=pt-BR&with_genres=16`, 'movie');
+
+            } catch (e) {
+                console.error("Erro na home:", e);
+            }
+        }
+
+        async function criarCarrossel(tituloCarrossel, urlApi, tipoPadrao) {
+            try {
+                const res = await fetch(urlApi);
+                const dados = await res.json();
+                if (!dados.results || dados.results.length === 0) return;
+
+                const container = document.getElementById('container-carrosseis');
+                let cardsHtml = '';
+                const favoritos = obterMinhaLista();
+
+                dados.results.forEach(item => {
+                    if (!item.poster_path) return;
+                    const tipo = item.media_type || tipoPadrao;
+                    const titulo = item.title || item.name;
+                    const dataStr = item.release_date || item.first_air_date || '2026';
+                    const ano = dataStr.split('-')[0];
+                    const poster = IMG_BASE_URL + item.poster_path;
+                    const isFavorito = favoritos.some(f => f.id === item.id);
+
+                    cardsHtml += `
+                        <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="flex-none w-36 sm:w-44 md:w-52 group cursor-pointer relative transition-transform duration-300 hover:scale-105 hover:z-30">
+                            <div class="aspect-[2/3] bg-zinc-900 rounded-lg overflow-hidden shadow-md relative border border-transparent hover:border-zinc-500">
+                                <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover" loading="lazy">
+                                <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-black/70 p-1.5 rounded-full ${isFavorito ? 'text-red-600' : 'text-zinc-300'} hover:scale-110 transition-transform z-20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                </button>
+                            </div>
+                            <h4 class="text-xs font-semibold text-zinc-300 mt-2 truncate group-hover:text-white">${titulo}</h4>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="flex flex-col gap-3">
+                        <h3 class="text-sm md:text-lg font-bold text-zinc-100 tracking-wide">${tituloCarrossel}</h3>
+                        <div class="flex items-center gap-3 overflow-x-auto scrollbar-none pb-4 pt-1">
+                            ${cardsHtml}
+                        </div>
+                    </div>
+                `;
+            } catch (e) {
+                console.error("Erro ao criar carrossel:", e);
+            }
+        }
 
         function mudarAba(novaAba) {
             abaAtual = novaAba;
             document.getElementById('painel-player').classList.add('hidden');
             document.getElementById('painel-serie-detalhes').classList.add('hidden');
-            document.getElementById('catalogo').classList.remove('hidden');
-            document.getElementById('secao-filtros').classList.remove('hidden');
             document.getElementById('header-principal').classList.remove('hidden');
             document.getElementById('footer-principal').classList.remove('hidden');
 
-            document.getElementById('btn-tab-filmes').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all";
-            document.getElementById('btn-tab-series').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all";
-            document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all";
-
-            if (abaAtual === 'filmes') {
-                document.getElementById('btn-tab-filmes').className = "filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30";
-                carregarConteudoFilmes();
-            } else if (abaAtual === 'series') {
-                document.getElementById('btn-tab-series').className = "filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30";
-                carregarConteudoSeries();
-            } else if (abaAtual === 'minhalista') {
-                document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30";
-                document.getElementById('secao-generos').innerHTML = '';
-                carregarMinhaLista();
+            if (novaAba === 'home') {
+                inicializarHome();
+            } else if (novaAba === 'filmes') {
+                document.getElementById('secao-hero').classList.add('hidden');
+                document.getElementById('container-carrosseis').classList.add('hidden');
+                document.getElementById('secao-grade').classList.remove('hidden');
+                document.getElementById('titulo-grade').innerText = 'Filmes Populares';
+                carregarCatalogoGenerico(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`, 'movie');
+            } else if (novaAba === 'series') {
+                document.getElementById('secao-hero').classList.add('hidden');
+                document.getElementById('container-carrosseis').classList.add('hidden');
+                document.getElementById('secao-grade').classList.remove('hidden');
+                document.getElementById('titulo-grade').innerText = 'Séries Populares';
+                carregarCatalogoGenerico(`https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}&language=pt-BR`, 'tv');
+            } else if (novaAba === 'minhalista') {
+                document.getElementById('secao-hero').classList.add('hidden');
+                document.getElementById('container-carrosseis').classList.add('hidden');
+                document.getElementById('secao-grade').classList.remove('hidden');
+                document.getElementById('titulo-grade').innerText = 'Minha Lista';
+                carregarMinhaListaNaGrade();
             }
         }
 
-        async function carregarConteudoFilmes() {
-            carregarGeneros('movie');
+        async function carregarCatalogoGenerico(url, tipo) {
             try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`);
-                const dados = await resposta.json();
-                exibirCards(dados.results, 'movie');
-            } catch (erro) {
-                console.error("Erro filmes:", erro);
-            }
-        }
-
-        async function carregarConteudoSeries() {
-            carregarGeneros('tv');
-            try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}&language=pt-BR`);
-                const dados = await resposta.json();
-                exibirCards(dados.results, 'tv');
-            } catch (erro) {
-                console.error("Erro séries:", erro);
-            }
-        }
-
-        async function carregarGeneros(tipo) {
-            const containerGeneros = document.getElementById('secao-generos');
-            containerGeneros.innerHTML = '';
-            try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/genre/${tipo}/list?api_key=${API_KEY}&language=pt-BR`);
-                const dados = await resposta.json();
-
-                const funcTodos = tipo === 'movie' ? 'carregarConteudoFilmes()' : 'carregarConteudoSeries()';
-                containerGeneros.innerHTML = `<button onclick="${funcTodos}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-3.5 py-1.5 rounded-lg whitespace-nowrap cursor-pointer font-medium">Todos</button>`;
-                
-                dados.genres.forEach(g => {
-                    containerGeneros.innerHTML += `<button onclick="filtrarPorGenero('${tipo}', ${g.id})" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 text-xs px-3.5 py-1.5 rounded-lg whitespace-nowrap cursor-pointer transition-colors font-medium">${g.name}</button>`;
-                });
+                const res = await fetch(url);
+                const dados = await res.json();
+                exibirGradeCards(dados.results, tipo);
             } catch (e) {
-                console.error("Erro gêneros:", e);
+                console.error("Erro catálogo:", e);
             }
         }
 
-        async function filtrarPorGenero(tipo, genreId) {
-            try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/discover/${tipo}?api_key=${API_KEY}&language=pt-BR&with_genres=${genreId}`);
-                const dados = await resposta.json();
-                exibirCards(dados.results, tipo);
-            } catch (e) {
-                console.error("Erro filtrar gênero:", e);
-            }
-        }
+        function exibirGradeCards(itens, tipo) {
+            const grade = document.getElementById('catalogo-grade');
+            grade.innerHTML = '';
+            const favoritos = obterMinhaLista();
 
-        async function buscarNoTmdb(event, isMobile = false) {
-            if (event.key === 'Enter') {
-                const inputId = isMobile ? 'input-busca-mobile' : 'input-busca';
-                const termo = document.getElementById(inputId).value.trim();
-                if (!termo) return;
+            itens.forEach(item => {
+                if (!item.poster_path) return;
+                const titulo = item.title || item.name;
+                const dataStr = item.release_date || item.first_air_date || '2026';
+                const ano = dataStr.split('-')[0];
+                const poster = IMG_BASE_URL + item.poster_path;
+                const isFavorito = favoritos.some(f => f.id === item.id);
 
-                try {
-                    const resFilme = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
-                    const dadosFilme = await resFilme.json();
-                    
-                    const resTv = await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
-                    const dadosTv = await resTv.json();
-
-                    const filmes = (dadosFilme.results || []).map(item => ({ ...item, media_type: 'movie' }));
-                    const series = (dadosTv.results || []).map(item => ({ ...item, media_type: 'tv' }));
-                    
-                    const resultados = [...filmes, ...series].filter(item => item.poster_path);
-                    
-                    if (resultados.length > 0) {
-                        document.getElementById('painel-player').classList.add('hidden');
-                        document.getElementById('painel-serie-detalhes').classList.add('hidden');
-                        document.getElementById('catalogo').classList.remove('hidden');
-                        document.getElementById('secao-filtros').classList.remove('hidden');
-                        document.getElementById('header-principal').classList.remove('hidden');
-                        exibirCardsComTipoMisto(resultados);
-                    } else {
-                        alert("Nenhum resultado encontrado!");
-                    }
-                } catch (erro) {
-                    console.error("Erro na busca:", erro);
-                }
-            }
+                grade.innerHTML += `
+                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="flex flex-col group cursor-pointer relative hover:scale-105 transition-transform">
+                        <div class="aspect-[2/3] bg-zinc-900 rounded-lg overflow-hidden shadow-md relative">
+                            <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover" loading="lazy">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-black/70 p-1.5 rounded-full ${isFavorito ? 'text-red-600' : 'text-zinc-300'} hover:scale-110 transition-transform z-20">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            </button>
+                        </div>
+                        <h4 class="text-xs font-semibold text-zinc-300 mt-2 truncate group-hover:text-white">${titulo}</h4>
+                    </div>
+                `;
+            });
         }
 
         function obterMinhaLista() {
@@ -252,113 +315,77 @@
 
             localStorage.setItem('ricoflix_lista', JSON.stringify(lista));
             
-            const btn = event.currentTarget;
-            btn.classList.toggle('text-blue-500');
-            btn.classList.toggle('text-zinc-400');
+            if (abaAtual === 'minhalista') {
+                carregarMinhaListaNaGrade();
+            } else {
+                const btn = event.currentTarget;
+                btn.classList.toggle('text-red-600');
+                btn.classList.toggle('text-zinc-300');
+            }
         }
 
-        function carregarMinhaLista() {
-            document.getElementById('secao-generos').innerHTML = '';
+        function carregarMinhaListaNaGrade() {
             const lista = obterMinhaLista();
-            const catalogo = document.getElementById('catalogo');
-            catalogo.innerHTML = '';
+            const grade = document.getElementById('catalogo-grade');
+            grade.innerHTML = '';
 
             if (lista.length === 0) {
-                catalogo.innerHTML = '<div class="col-span-full text-center py-12 text-zinc-500 text-sm">Sua lista está vazia. Adicione filmes ou séries clicando no ícone de favorito!</div>';
+                grade.innerHTML = '<div class="col-span-full text-center py-16 text-zinc-500 text-sm">Sua lista está vazia. Adicione filmes ou séries clicando no ícone de coração/favorito!</div>';
                 return;
             }
 
             lista.forEach(item => {
-                catalogo.innerHTML += `
-                    <div onclick="abrirItem(${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/15 relative">
-                        <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                            <img src="${item.poster}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}', '${item.tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-blue-500 hover:scale-110 transition-transform z-10">
+                grade.innerHTML += `
+                    <div onclick="abrirItem(${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}')" class="flex flex-col group cursor-pointer relative hover:scale-105 transition-transform">
+                        <div class="aspect-[2/3] bg-zinc-900 rounded-lg overflow-hidden shadow-md relative">
+                            <img src="${item.poster}" alt="${item.titulo}" class="w-full h-full object-cover" loading="lazy">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}', '${item.tipo}')" class="absolute top-2 left-2 bg-black/70 p-1.5 rounded-full text-red-600 hover:scale-110 transition-transform z-20">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
-                        <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-blue-400 transition-colors">${item.titulo}</h3>
-                            <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                               <span>${item.ano}</span>
-                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${item.tipo === 'tv' ? 'Série' : 'Filme'}</span>
-                            </div>
-                        </div>
+                        <h4 class="text-xs font-semibold text-zinc-300 mt-2 truncate group-hover:text-white">${item.titulo}</h4>
                     </div>
                 `;
             });
         }
 
-        function exibirCards(itens, tipo) {
-            const catalogo = document.getElementById('catalogo');
-            catalogo.innerHTML = '';
-            const favoritos = obterMinhaLista();
+        async function buscarNoTmdb(event) {
+            if (event.key === 'Enter') {
+                const termo = document.getElementById('input-busca').value.trim();
+                if (!termo) return;
 
-            itens.forEach(item => {
-                if (!item.poster_path) return;
-                const titulo = item.title || item.name;
-                const dataStr = item.release_date || item.first_air_date || '2026';
-                const ano = dataStr.split('-')[0];
-                const poster = IMG_BASE_URL + item.poster_path;
-                const isFavorito = favoritos.some(f => f.id === item.id);
+                try {
+                    const resFilme = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
+                    const dadosFilme = await resFilme.json();
+                    
+                    const resTv = await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
+                    const dadosTv = await resTv.json();
 
-                catalogo.innerHTML += `
-                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/15 relative">
-                        <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                            <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-blue-500' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            </button>
-                        </div>
-                        <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-blue-400 transition-colors">${titulo}</h3>
-                            <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                               <span>${ano}</span>
-                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function exibirCardsComTipoMisto(itens) {
-            const catalogo = document.getElementById('catalogo');
-            catalogo.innerHTML = '';
-            const favoritos = obterMinhaLista();
-
-            itens.forEach(item => {
-                if (!item.poster_path) return;
-                const tipo = item.media_type || (item.name ? 'tv' : 'movie');
-                const titulo = item.title || item.name;
-                const dataStr = item.release_date || item.first_air_date || '2026';
-                const ano = dataStr.split('-')[0];
-                const poster = IMG_BASE_URL + item.poster_path;
-                const isFavorito = favoritos.some(f => f.id === item.id);
-
-                catalogo.innerHTML += `
-                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/15 relative">
-                        <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                            <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-blue-500' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                            </button>
-                        </div>
-                        <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-blue-400 transition-colors">${titulo}</h3>
-                            <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
-                               <span>${ano}</span>
-                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
+                    const filmes = (dadosFilme.results || []).map(item => ({ ...item, media_type: 'movie' }));
+                    const series = (dadosTv.results || []).map(item => ({ ...item, media_type: 'tv' }));
+                    const resultados = [...filmes, ...series].filter(item => item.poster_path);
+                    
+                    if (resultados.length > 0) {
+                        document.getElementById('secao-hero').classList.add('hidden');
+                        document.getElementById('container-carrosseis').classList.add('hidden');
+                        document.getElementById('painel-player').classList.add('hidden');
+                        document.getElementById('painel-serie-detalhes').classList.add('hidden');
+                        document.getElementById('secao-grade').classList.remove('hidden');
+                        document.getElementById('titulo-grade').innerText = `Resultados para: "${termo}"`;
+                        exibirGradeCards(resultados, 'movie');
+                    } else {
+                        alert("Nenhum resultado encontrado!");
+                    }
+                } catch (erro) {
+                    console.error("Erro na busca:", erro);
+                }
+            }
         }
 
         async function abrirItem(id, titulo, tipo) {
-            document.getElementById('catalogo').classList.add('hidden');
-            document.getElementById('secao-filtros').classList.add('hidden');
+            document.getElementById('secao-hero').classList.add('hidden');
+            document.getElementById('container-carrosseis').classList.add('hidden');
+            document.getElementById('secao-grade').classList.add('hidden');
 
             if (tipo === 'tv') {
                 document.getElementById('header-principal').classList.remove('hidden');
@@ -373,7 +400,6 @@
                 document.getElementById('painel-player').classList.remove('hidden');
                 document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
 
-                // URL do MegaEmbed para Filmes
                 const linkPlayer = `https://mgeb.top/embed/${id}`;
                 document.getElementById('meu-player').src = linkPlayer;
             }
@@ -383,14 +409,12 @@
 
         async function carregarTemporadasMax(idSerie) {
             try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}?api_key=${API_KEY}&language=pt-BR`);
-                const dados = await resposta.json();
-
+                const res = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}?api_key=${API_KEY}&language=pt-BR`);
+                const dados = await res.json();
                 const selectTemp = document.getElementById('select-temporada');
                 selectTemp.innerHTML = '';
 
                 const temporadasValidas = dados.seasons.filter(s => s.season_number > 0);
-                
                 temporadasValidas.forEach(s => {
                     selectTemp.innerHTML += `<option value="${s.season_number}">Temporada ${s.season_number}</option>`;
                 });
@@ -405,40 +429,39 @@
 
         async function carregarEpisodiosMax(idSerie, temporadaNum) {
             try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}/season/${temporadaNum}?api_key=${API_KEY}&language=pt-BR`);
-                const dados = await resposta.json();
-
+                const res = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}/season/${temporadaNum}?api_key=${API_KEY}&language=pt-BR`);
+                const dados = await res.json();
                 const gradeEpisodios = document.getElementById('grade-episodios-max');
                 gradeEpisodios.innerHTML = '';
 
                 if (!dados.episodes || dados.episodes.length === 0) {
-                    gradeEpisodios.innerHTML = '<div class="col-span-full text-center py-12 text-zinc-500 text-sm">Nenhum episódio encontrado para esta temporada.</div>';
+                    gradeEpisodios.innerHTML = '<div class="col-span-full text-center py-12 text-zinc-500 text-sm">Nenhum episódio encontrado.</div>';
                     return;
                 }
 
                 dados.episodes.forEach(ep => {
                     const thumb = ep.still_path ? (STILL_BASE_URL + ep.still_path) : 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=500&auto=format&fit=crop&q=60';
-                    const sinopse = ep.overview ? ep.overview : 'Nenhuma descrição disponível para este episódio.';
+                    const sinopse = ep.overview ? ep.overview : 'Sem descrição disponível.';
                     
                     gradeEpisodios.innerHTML += `
-                        <div onclick="reproduzirEpisodioSerie(${temporadaNum}, ${ep.episode_number}, '${ep.name.replace(/'/g, "\\'")}')" class="flex flex-col gap-2.5 group cursor-pointer bg-zinc-900/40 p-2.5 rounded-2xl border border-zinc-900 hover:border-blue-500/60 transition-all">
-                            <div class="aspect-video w-full bg-zinc-800 rounded-xl overflow-hidden relative shadow-md">
+                        <div onclick="reproduzirEpisodioSerie(${temporadaNum}, ${ep.episode_number}, '${ep.name.replace(/'/g, "\\'")}')" class="flex flex-col gap-2 group cursor-pointer bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-800 hover:border-zinc-500 transition-all">
+                            <div class="aspect-video w-full bg-zinc-800 rounded-lg overflow-hidden relative shadow-md">
                                 <img src="${thumb}" alt="${ep.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex flex-col gap-1 px-1">
-                                <h3 class="text-xs font-bold text-zinc-200 group-hover:text-blue-400 transition-colors">${ep.episode_number}. ${ep.name}</h3>
-                                <p class="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">${sinopse}</p>
+                            <div class="flex flex-col gap-1">
+                                <h3 class="text-xs font-bold text-zinc-200 group-hover:text-white">${ep.episode_number}. ${ep.name}</h3>
+                                <p class="text-[11px] text-zinc-400 line-clamp-2">${sinopse}</p>
                             </div>
                         </div>
                     `;
                 });
             } catch (e) {
-                console.error("Erro episódios max:", e);
+                console.error("Erro episódios:", e);
             }
         }
 
@@ -457,10 +480,8 @@
 
             document.getElementById('titulo-player').innerText = `Assistindo: ${serieAtualCache.titulo} - T${temporada}:E${episodio} (${nomeEpisodio})`;
 
-            // URL do MegaEmbed para Séries: https://mgeb.top/embed/{tmdb_id}/{season_number}/{episode_number}
             const url = `https://mgeb.top/embed/${serieAtualCache.id}/${temporada}/${episodio}`;
             document.getElementById('meu-player').src = url;
-
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -474,22 +495,12 @@
         }
 
         function voltarHome() {
-            document.getElementById('painel-player').classList.add('hidden');
-            document.getElementById('painel-serie-detalhes').classList.add('hidden');
-            document.getElementById('catalogo').classList.remove('hidden');
-            document.getElementById('secao-filtros').classList.remove('hidden');
-            document.getElementById('header-principal').classList.remove('hidden');
-            document.getElementById('footer-principal').classList.remove('hidden');
             document.getElementById('meu-player').src = '';
-            
-            if (abaAtual === 'filmes') carregarConteudoFilmes();
-            else if (abaAtual === 'series') carregarConteudoSeries();
-            else if (abaAtual === 'minhalista') carregarMinhaLista();
-
+            inicializarHome();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        carregarConteudoFilmes();
+        inicializarHome();
     </script>
 </body>
 </html>
