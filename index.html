@@ -183,7 +183,7 @@
             lista.forEach(item => {
                 // Checa se é o Sonic 3 pelo ID do TMDb (939243) ou pelo título para usar o link exato do pipocacine
                 let linkPlayer = (item.id == 939243 || item.titulo.toLowerCase().includes('sonic 3')) 
-                    ? `https://pipocacine.lat/assistir?id=sonic-3-o-filme-2024` 
+                    ? `https://v1.watchplay.shop/movie/tt18259086` 
                     : `https://fembed.lol/filme/${item.id}/servidor-4`;
 
                 catalogo.innerHTML += `
