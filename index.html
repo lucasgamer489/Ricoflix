@@ -3,19 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix</title>
+    <title>Ricoflix - Max Experience</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #090b10; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+    </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-zinc-950">
+<body class="bg-[#0b0e14] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-[#7d2ae8] selection:text-white custom-scrollbar">
 
-    <!-- Header / Barra Superior -->
-    <header class="bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-        <div class="flex items-center gap-6">
-            <h1 onclick="mudarAba('filmes')" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
-            <span class="text-xs bg-zinc-800 text-cyan-300 px-3 py-1 rounded-full border border-cyan-900/50">Dublado PT-BR</span>
+    <!-- Header / Barra Superior Estilo HBO Max -->
+    <header id="header-principal" class="bg-[#0b0e14]/95 backdrop-blur-md border-b border-zinc-900/80 px-8 py-4 flex items-center justify-between sticky top-0 z-50 transition-all">
+        <div class="flex items-center gap-8">
+            <h1 onclick="mudarAba('filmes')" class="text-2xl font-black text-[#8A51F7] tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
+            <nav class="hidden md:flex items-center gap-6 text-xs font-medium tracking-wide text-zinc-300">
+                <button onclick="mudarAba('filmes')" class="hover:text-white transition-colors cursor-pointer">FILMES</button>
+                <button onclick="mudarAba('series')" class="hover:text-white transition-colors cursor-pointer">SÉRIES DE TV</button>
+                <button onclick="mudarAba('minhalista')" class="hover:text-white transition-colors cursor-pointer">MINHA LISTA</button>
+            </nav>
         </div>
-        <div class="relative w-72 hidden md:block">
-            <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar (aperte Enter)..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500 transition-colors">
+        <div class="flex items-center gap-4">
+            <div class="relative w-64 hidden lg:block">
+                <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar..." class="w-full bg-zinc-900/70 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-[#7d2ae8] transition-colors">
+            </div>
+            <span class="text-[11px] bg-[#7d2ae8]/20 text-[#a875ff] px-3 py-1 rounded-full border border-[#7d2ae8]/40 font-semibold">MAX</span>
         </div>
     </header>
 
@@ -23,17 +36,17 @@
     <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 flex flex-col gap-6">
         
         <!-- Filtros e Navegação -->
-        <div id="secao-filtros" class="flex flex-col gap-4">
+        <div id="secao-filtros" class="flex flex-col gap-4 transition-all">
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <div class="flex items-center gap-3">
-                    <button onclick="mudarAba('filmes')" id="btn-tab-filmes" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20 cursor-pointer transition-all">Filmes</button>
-                    <button onclick="mudarAba('series')" id="btn-tab-series" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Séries</button>
-                    <button onclick="mudarAba('minhalista')" id="btn-tab-minhalista" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Minha Lista</button>
+                    <button onclick="mudarAba('filmes')" id="btn-tab-filmes" class="filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30 cursor-pointer transition-all">FILMES</button>
+                    <button onclick="mudarAba('series')" id="btn-tab-series" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all">SÉRIES</button>
+                    <button onclick="mudarAba('minhalista')" id="btn-tab-minhalista" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all">MINHA LISTA</button>
                 </div>
                 
                 <!-- Barra de busca mobile -->
                 <div class="relative w-full md:hidden">
-                    <input type="text" id="input-busca-mobile" onkeypress="buscarNoTmdb(event, true)" placeholder="Pesquisar..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
+                    <input type="text" id="input-busca-mobile" onkeypress="buscarNoTmdb(event, true)" placeholder="Pesquisar..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#7d2ae8]">
                 </div>
             </div>
 
@@ -44,33 +57,45 @@
         <!-- Grade de Catálogo -->
         <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
 
-        <!-- Seção do Player -->
-        <div id="painel-player" class="mt-4 flex flex-col gap-4 hidden animate-fadeIn">
-            <div class="flex items-center justify-between flex-wrap gap-3">
-                <div class="flex items-center gap-2">
-                    <button onclick="voltarHome()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-3 py-1.5 rounded-lg cursor-pointer transition-all mr-2">&larr; Voltar</button>
-                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <h2 id="titulo-player" class="text-sm font-semibold text-zinc-300">Assistindo a: -</h2>
+        <!-- Painel de Detalhes da Série / Episódios (Estilo HBO Max Exato) -->
+        <div id="painel-serie-detalhes" class="hidden flex flex-col gap-6 animate-fadeIn w-full">
+            <div class="flex items-center justify-between flex-wrap gap-4 border-b border-zinc-900 pb-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="voltarHome()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[#a875ff] px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
+                    <h2 class="text-2xl font-bold tracking-tight text-white" id="titulo-serie-header">Episódios</h2>
                 </div>
                 
-                <div class="flex items-center gap-3">
-                    <!-- Seletor de Temporadas e Episódios (Aparece apenas para Séries) -->
-                    <div id="controles-serie" class="hidden flex items-center gap-2">
-                        <select id="select-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500">
-                            <option value="1">Temporada 1</option>
-                        </select>
-                        <select id="select-episodio" onchange="mudarEpisodio()" class="bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500">
-                            <option value="1">Episódio 1</option>
-                        </select>
-                    </div>
-                    
-                    <div id="badge-qualidade" class="text-xs bg-cyan-950 border border-cyan-500/50 text-cyan-400 px-3 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-sm shadow-cyan-500/20">
-                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> HD Player Estável
+                <!-- Seletor de Temporadas Estilo Max -->
+                <div class="relative">
+                    <select id="select-temporada" onchange="mudarTemporadaMax()" class="bg-[#181b22] border border-zinc-800 text-sm text-zinc-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#7d2ae8] cursor-pointer appearance-none pr-10 font-medium">
+                        <option value="1">Temporada 1</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-400">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                     </div>
                 </div>
             </div>
 
-            <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
+            <!-- Grade de Episódios Estilo Max (Cards Horizontais com Miniatura, Título e Sinopse) -->
+            <div id="grade-episodios-max" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        </div>
+
+        <!-- Seção do Player (Imersivo) -->
+        <div id="painel-player" class="mt-2 flex flex-col gap-3 hidden animate-fadeIn w-full">
+            <div class="flex items-center justify-between flex-wrap gap-3 bg-zinc-950/60 p-3 rounded-xl border border-zinc-900">
+                <div class="flex items-center gap-3">
+                    <button onclick="fecharPlayerParaEpisodios()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[#a875ff] px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Episódios</button>
+                    <h2 id="titulo-player" class="text-sm font-bold text-zinc-200">Assistindo a: -</h2>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <div class="text-xs bg-[#7d2ae8]/10 border border-[#7d2ae8]/30 text-[#a875ff] px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#8A51F7] animate-pulse"></span> Max Player
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-zinc-900" style="aspect-ratio: 16/9; position: relative;">
                 <iframe id="meu-player" src="" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
                         allowfullscreen="true" 
@@ -84,14 +109,15 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-zinc-900 border-t border-zinc-800 text-center py-4 text-xs text-zinc-500 mt-12">
+    <footer id="footer-principal" class="bg-[#0b0e14] border-t border-zinc-900/80 text-center py-6 text-xs text-zinc-600 mt-12">
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script Atualizado -->
+    <!-- Script Principal -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
+        const STILL_BASE_URL = 'https://image.tmdb.org/t/p/w500';
         
         let abaAtual = 'filmes';
         let serieAtualCache = null;
@@ -99,21 +125,24 @@
         function mudarAba(novaAba) {
             abaAtual = novaAba;
             document.getElementById('painel-player').classList.add('hidden');
+            document.getElementById('painel-serie-detalhes').classList.add('hidden');
             document.getElementById('catalogo').classList.remove('hidden');
             document.getElementById('secao-filtros').classList.remove('hidden');
+            document.getElementById('header-principal').classList.remove('hidden');
+            document.getElementById('footer-principal').classList.remove('hidden');
 
-            document.getElementById('btn-tab-filmes').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
-            document.getElementById('btn-tab-series').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
-            document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
+            document.getElementById('btn-tab-filmes').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all";
+            document.getElementById('btn-tab-series').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all";
+            document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all";
 
             if (abaAtual === 'filmes') {
-                document.getElementById('btn-tab-filmes').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20";
+                document.getElementById('btn-tab-filmes').className = "filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30";
                 carregarConteudoFilmes();
             } else if (abaAtual === 'series') {
-                document.getElementById('btn-tab-series').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20";
+                document.getElementById('btn-tab-series').className = "filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30";
                 carregarConteudoSeries();
             } else if (abaAtual === 'minhalista') {
-                document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20";
+                document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30";
                 document.getElementById('secao-generos').innerHTML = '';
                 carregarMinhaLista();
             }
@@ -149,10 +178,10 @@
                 const dados = await resposta.json();
 
                 const funcTodos = tipo === 'movie' ? 'carregarConteudoFilmes()' : 'carregarConteudoSeries()';
-                containerGeneros.innerHTML = `<button onclick="${funcTodos}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer">Todos</button>`;
+                containerGeneros.innerHTML = `<button onclick="${funcTodos}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-3.5 py-1.5 rounded-lg whitespace-nowrap cursor-pointer font-medium">Todos</button>`;
                 
                 dados.genres.forEach(g => {
-                    containerGeneros.innerHTML += `<button onclick="filtrarPorGenero('${tipo}', ${g.id})" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer transition-colors">${g.name}</button>`;
+                    containerGeneros.innerHTML += `<button onclick="filtrarPorGenero('${tipo}', ${g.id})" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 text-xs px-3.5 py-1.5 rounded-lg whitespace-nowrap cursor-pointer transition-colors font-medium">${g.name}</button>`;
                 });
             } catch (e) {
                 console.error("Erro gêneros:", e);
@@ -189,8 +218,10 @@
                     
                     if (resultados.length > 0) {
                         document.getElementById('painel-player').classList.add('hidden');
+                        document.getElementById('painel-serie-detalhes').classList.add('hidden');
                         document.getElementById('catalogo').classList.remove('hidden');
                         document.getElementById('secao-filtros').classList.remove('hidden');
+                        document.getElementById('header-principal').classList.remove('hidden');
                         exibirCardsComTipoMisto(resultados);
                     } else {
                         alert("Nenhum resultado encontrado!");
@@ -219,7 +250,7 @@
             localStorage.setItem('ricoflix_lista', JSON.stringify(lista));
             
             const btn = event.currentTarget;
-            btn.classList.toggle('text-cyan-400');
+            btn.classList.toggle('text-[#8A51F7]');
             btn.classList.toggle('text-zinc-400');
         }
 
@@ -236,15 +267,15 @@
 
             lista.forEach(item => {
                 catalogo.innerHTML += `
-                    <div onclick="abrirPlayerItem(${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                    <div onclick="abrirItem(${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-[#7d2ae8] transition-all duration-300 hover:shadow-lg hover:shadow-[#7d2ae8]/15 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${item.poster}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}', '${item.tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-cyan-400 hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}', '${item.tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-[#8A51F7] hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-cyan-400 transition-colors">${item.titulo}</h3>
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-[#a875ff] transition-colors">${item.titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${item.ano}</span>
                                <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${item.tipo === 'tv' ? 'Série' : 'Filme'}</span>
@@ -269,15 +300,15 @@
                 const isFavorito = favoritos.some(f => f.id === item.id);
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirPlayerItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-[#7d2ae8] transition-all duration-300 hover:shadow-lg hover:shadow-[#7d2ae8]/15 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-cyan-400' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-[#8A51F7]' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-cyan-400 transition-colors">${titulo}</h3>
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-[#a875ff] transition-colors">${titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${ano}</span>
                                <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
@@ -303,15 +334,15 @@
                 const isFavorito = favoritos.some(f => f.id === item.id);
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirPlayerItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-[#7d2ae8] transition-all duration-300 hover:shadow-lg hover:shadow-[#7d2ae8]/15 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-cyan-400' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-[#8A51F7]' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-cyan-400 transition-colors">${titulo}</h3>
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-[#a875ff] transition-colors">${titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${ano}</span>
                                <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
@@ -322,20 +353,24 @@
             });
         }
 
-        async function abrirPlayerItem(id, titulo, tipo) {
+        async function abrirItem(id, titulo, tipo) {
             document.getElementById('catalogo').classList.add('hidden');
             document.getElementById('secao-filtros').classList.add('hidden');
-            document.getElementById('painel-player').classList.remove('hidden');
-            document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
-
-            const divControles = document.getElementById('controles-serie');
 
             if (tipo === 'tv') {
-                divControles.classList.remove('hidden');
+                document.getElementById('header-principal').classList.remove('hidden');
+                document.getElementById('footer-principal').classList.remove('hidden');
+                document.getElementById('painel-serie-detalhes').classList.remove('hidden');
+                document.getElementById('titulo-serie-header').innerText = titulo;
                 serieAtualCache = { id, titulo };
-                await carregarDetalhesSerie(id);
+                await carregarTemporadasMax(id);
             } else {
-                divControles.classList.add('hidden');
+                // Modo Filme: Oculta header/footer e vai direto pro player imersivo
+                document.getElementById('header-principal').classList.add('hidden');
+                document.getElementById('footer-principal').classList.add('hidden');
+                document.getElementById('painel-player').classList.remove('hidden');
+                document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
+
                 let linkPlayer = (id == 939243 || titulo.toLowerCase().includes('sonic 3')) 
                     ? `https://v1.watchplay.shop/movie/tt18259086` 
                     : `https://v1.watchplay.shop/movie/${id}`;
@@ -345,7 +380,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        async function carregarDetalhesSerie(idSerie) {
+        async function carregarTemporadasMax(idSerie) {
             try {
                 const resposta = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}?api_key=${API_KEY}&language=pt-BR`);
                 const dados = await resposta.json();
@@ -360,56 +395,95 @@
                 });
 
                 if (temporadasValidas.length > 0) {
-                    await carregarEpisodios(idSerie, temporadasValidas[0].season_number);
+                    await carregarEpisodiosMax(idSerie, temporadasValidas[0].season_number);
                 }
             } catch (e) {
-                console.error("Erro detalhes série:", e);
+                console.error("Erro temporadas:", e);
             }
         }
 
-        async function carregarEpisodios(idSerie, temporadaNum) {
+        async function carregarEpisodiosMax(idSerie, temporadaNum) {
             try {
                 const resposta = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}/season/${temporadaNum}?api_key=${API_KEY}&language=pt-BR`);
                 const dados = await resposta.json();
 
-                const selectEp = document.getElementById('select-episodio');
-                selectEp.innerHTML = '';
+                const gradeEpisodios = document.getElementById('grade-episodios-max');
+                gradeEpisodios.innerHTML = '';
+
+                if (!dados.episodes || dados.episodes.length === 0) {
+                    gradeEpisodios.innerHTML = '<div class="col-span-full text-center py-12 text-zinc-500 text-sm">Nenhum episódio encontrado para esta temporada.</div>';
+                    return;
+                }
 
                 dados.episodes.forEach(ep => {
-                    selectEp.innerHTML += `<option value="${ep.episode_number}">Ep. ${ep.episode_number} - ${ep.name}</option>`;
+                    const thumb = ep.still_path ? (STILL_BASE_URL + ep.still_path) : 'https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=500&auto=format&fit=crop&q=60';
+                    const sinopse = ep.overview ? ep.overview : 'Nenhuma descrição disponível para este episódio.';
+                    
+                    gradeEpisodios.innerHTML += `
+                        <div onclick="reproduzirEpisodioSerie(${tempOrNumberOrCache(temporadaNum)}, ${ep.episode_number}, '${ep.name.replace(/'/g, "\\'")}')" class="flex flex-col gap-2.5 group cursor-pointer bg-zinc-900/40 p-2.5 rounded-2xl border border-zinc-900 hover:border-[#7d2ae8]/60 transition-all">
+                            <div class="aspect-video w-full bg-zinc-800 rounded-xl overflow-hidden relative shadow-md">
+                                <img src="${thumb}" alt="${ep.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                    <div class="w-10 h-10 rounded-full bg-[#7d2ae8] text-white flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1 px-1">
+                                <h3 class="text-xs font-bold text-zinc-200 group-hover:text-[#a875ff] transition-colors">${ep.episode_number}. ${ep.name}</h3>
+                                <p class="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">${sinopse}</p>
+                            </div>
+                        </div>
+                    `;
                 });
-
-                atualizarIframeSerie(idSerie, temporadaNum, 1);
             } catch (e) {
-                console.error("Erro episódios:", e);
+                console.error("Erro episódios max:", e);
             }
         }
 
-        async function mudarTemporada() {
+        function tempOrNumberOrCache(val) {
+            return val;
+        }
+
+        async function mudarTemporadaMax() {
             const tempNum = document.getElementById('select-temporada').value;
             if (serieAtualCache) {
-                await carregarEpisodios(serieAtualCache.id, tempNum);
+                await carregarEpisodiosMax(serieAtualCache.id, tempNum);
             }
         }
 
-        function mudarEpisodio() {
-            const tempNum = document.getElementById('select-temporada').value;
-            const epNum = document.getElementById('select-episodio').value;
-            if (serieAtualCache) {
-                atualizarIframeSerie(serieAtualCache.id, tempNum, epNum);
-            }
-        }
+        function reproduzirEpisodioSerie(temporada, episodio, nomeEpisodio) {
+            // Oculta tudo e entra no modo imersivo estilo HBO Max
+            document.getElementById('header-principal').classList.add('hidden');
+            document.getElementById('footer-principal').classList.add('hidden');
+            document.getElementById('painel-serie-detalhes').classList.add('hidden');
+            document.getElementById('painel-player').classList.remove('hidden');
 
-        function atualizarIframeSerie(idSerie, temporada, episodio) {
-            // URL corrigida apontando para o servidor correto da rede toons com os parâmetros corretos
-            const url = `https://redetoons.win/watch/t${temporada}-ep${episodio}/o-incrivel-mundo-de-gumball?id=${idSerie}&type=tv`;
+            const nomeSlug = serieAtualCache.titulo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9 ]/g, "").trim().replace(/\s+/g, '-');
+            document.getElementById('titulo-player').innerText = `Assistindo: ${serieAtualCache.titulo} - T${temporada}:E${episodio} (${nomeEpisodio})`;
+
+            const url = `https://redetoons.win/watch/t${temporada}-ep${episodio}/${nomeSlug}?id=${serieAtualCache.id}&type=tv`;
             document.getElementById('meu-player').src = url;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function fecharPlayerParaEpisodios() {
+            document.getElementById('painel-player').classList.add('hidden');
+            document.getElementById('meu-player').src = '';
+            document.getElementById('header-principal').classList.remove('hidden');
+            document.getElementById('footer-principal').classList.remove('hidden');
+            document.getElementById('painel-serie-detalhes').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function voltarHome() {
             document.getElementById('painel-player').classList.add('hidden');
+            document.getElementById('painel-serie-detalhes').classList.add('hidden');
             document.getElementById('catalogo').classList.remove('hidden');
             document.getElementById('secao-filtros').classList.remove('hidden');
+            document.getElementById('header-principal').classList.remove('hidden');
+            document.getElementById('footer-principal').classList.remove('hidden');
             document.getElementById('meu-player').src = '';
             
             if (abaAtual === 'filmes') carregarConteudoFilmes();
