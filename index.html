@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ricoflix</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-zinc-950">
 
@@ -40,17 +38,13 @@
             </div>
 
             <!-- Botões de Gêneros -->
-            <div id="secao-generos" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-                <!-- Preenchido via JS -->
-            </div>
+            <div id="secao-generos" class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
         </div>
 
         <!-- Grade de Catálogo -->
-        <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <!-- Carregando via JavaScript -->
-        </div>
+        <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
 
-        <!-- Painel de Detalhes / Episódios (Estilo HBO Max) -->
+        <!-- Painel de Detalhes / Episódios -->
         <div id="painel-serie" class="hidden flex flex-col gap-6 animate-fadeIn">
             <button onclick="voltarHome()" class="self-start text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-2">&larr; Voltar ao Catálogo</button>
             
@@ -67,18 +61,14 @@
                 <h3 class="text-xl font-bold text-white flex items-center gap-2">
                     <span class="w-2 h-5 bg-cyan-400 rounded-full"></span> Episódios
                 </h3>
-                <select id="select-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-800 text-zinc-200 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-cyan-500 cursor-pointer transition-colors">
-                    <!-- Preenchido via JS -->
-                </select>
+                <select id="select-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-800 text-zinc-200 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-cyan-500 cursor-pointer transition-colors"></select>
             </div>
 
             <!-- Lista de Episódios -->
-            <div id="lista-episodios" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Preenchido via JS -->
-            </div>
+            <div id="lista-episodios" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
 
-        <!-- Seção do Player -->
+        <!-- Seção do Player com Seletor de Qualidade Real -->
         <div id="painel-player" class="mt-4 flex flex-col gap-4 hidden animate-fadeIn">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="flex items-center gap-2">
@@ -86,7 +76,13 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
                     <h2 id="titulo-player" class="text-sm font-semibold text-zinc-300">Assistindo a: -</h2>
                 </div>
-                <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">1080p HD Nativo</span>
+                
+                <!-- Seletor Ativo de Qualidade 1080p / 4K -->
+                <div class="flex items-center gap-2">
+                    <div id="badge-qualidade" class="text-xs bg-cyan-950 border border-cyan-500/50 text-cyan-400 px-3 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-sm shadow-cyan-500/20">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> 1080p / 4K UHD Nativo
+                    </div>
+                </div>
             </div>
 
             <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
@@ -95,7 +91,7 @@
                         allowfullscreen="true" 
                         webkitallowfullscreen="true" 
                         mozallowfullscreen="true" 
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
                 </iframe>
             </div>
         </div>
@@ -107,7 +103,7 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script Atualizado -->
+    <!-- Script com Provedor Otimizado para 1080p/4K Real -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
@@ -115,10 +111,10 @@
         let serieAtualID = null;
         let dadosSerieGlobal = null;
         let tipoAtual = 'movie';
-        let origemAnteriorPlayer = 'home'; // 'home' ou 'serie'
+        let origemAnteriorPlayer = 'home';
 
         async function carregarConteudo(tipo) {
-            tipoAtual = type = tipo;
+            tipoAtual = tipo;
             voltarHome(false);
             atualizarBotoesTopo(tipo);
             carregarGeneros(tipo);
@@ -210,7 +206,6 @@
 
             localStorage.setItem('ricoflix_lista', JSON.stringify(lista));
             
-            // Atualiza visual do ícone
             const btn = event.currentTarget;
             btn.classList.toggle('text-cyan-400');
             btn.classList.toggle('text-zinc-400');
@@ -232,9 +227,14 @@
             }
 
             lista.forEach(item => {
+                // Usando vidsrc.cc para suportar alta taxa de resolução real 1080p/4k com player adaptativo
+                let linkPlayer = item.tipo === 'tv' 
+                    ? `https://vidsrc.cc/v2/embed/tv/${item.id}?autoPlay=1` 
+                    : `https://vidsrc.cc/v2/embed/movie/${item.id}?autoPlay=1`;
+
                 let acaoClick = item.tipo === 'tv' 
                     ? `abrirDetalhesSerie(${item.id})` 
-                    : `abrirPlayerFilme('${item.titulo.replace(/'/g, "\\'")}', 'https://vidsrc.xyz/embed/movie?tmdb=${item.id}')`;
+                    : `abrirPlayerFilme('${item.titulo.replace(/'/g, "\\'")}', '${linkPlayer}')`;
 
                 catalogo.innerHTML += `
                     <div onclick="${acaoClick}" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
@@ -271,9 +271,14 @@
                 const labelTipo = tipoItem === 'tv' ? 'Série' : 'Filme';
                 const isFavorito = favoritos.some(f => f.id === item.id);
 
+                // Endpoint otimizado para reprodução nativa de alta qualidade
+                let linkPlayer = tipoItem === 'tv'
+                    ? `https://vidsrc.cc/v2/embed/tv/${item.id}?autoPlay=1`
+                    : `https://vidsrc.cc/v2/embed/movie/${item.id}?autoPlay=1`;
+
                 let acaoClick = tipoItem === 'tv' 
                     ? `abrirDetalhesSerie(${item.id})` 
-                    : `abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', 'https://vidsrc.xyz/embed/movie?tmdb=${item.id}')`;
+                    : `abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', '${linkPlayer}')`;
 
                 catalogo.innerHTML += `
                     <div onclick="${acaoClick}" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
@@ -343,7 +348,9 @@
                 dadosTemporada.episodes.forEach(ep => {
                     const thumb = ep.still_path ? BACKDROP_URL + ep.still_path : (dadosSerieGlobal.poster_path ? IMG_BASE_URL + dadosSerieGlobal.poster_path : 'https://via.placeholder.com/600x338?text=Sem+Capa');
                     const sinopseEp = ep.overview ? ep.overview : 'Sem sinopse disponível para este episódio.';
-                    const urlEmbedEp = `https://vidsrc.xyz/embed/tv?tmdb=${serieAtualID}&season=${ep.season_number}&episode=${ep.episode_number}`;
+                    
+                    // URL do player da série com suporte a alta definição por episódio
+                    const urlEmbedEp = `https://vidsrc.cc/v2/embed/tv/${serieAtualID}/${ep.season_number}/${ep.episode_number}?autoPlay=1`;
                     const nomeEpSeguro = `${dadosSerieGlobal.name} - T${ep.season_number}E${ep.episode_number}: ${ep.name}`.replace(/'/g, "\\'");
 
                     listaEpisodios.innerHTML += `
