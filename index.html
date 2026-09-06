@@ -78,7 +78,7 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script com Link Direto Configurado -->
+    <!-- Script com Link Direto Ajustado para o Iframe -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
@@ -185,12 +185,8 @@
                     ? `https://v1.watchplay.shop/movie/tt18259086` 
                     : `https://fembed.lol/filme/${item.id}/servidor-4`;
 
-                let acaoClick = (item.id == 939243 || item.titulo.toLowerCase().includes('sonic 3'))
-                    ? `abrirPlayerExterno('${linkPlayer}')`
-                    : `abrirPlayerFilme('${item.titulo.replace(/'/g, "\\'")}', '${linkPlayer}')`;
-
                 catalogo.innerHTML += `
-                    <div onclick="${acaoClick}" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                    <div onclick="abrirPlayerFilme('${item.titulo.replace(/'/g, "\\'")}', '${linkPlayer}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${item.poster}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                             <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-cyan-400 hover:scale-110 transition-transform z-10">
@@ -225,12 +221,8 @@
                     ? `https://v1.watchplay.shop/movie/tt18259086` 
                     : `https://fembed.lol/filme/${filme.id}/servidor-4`;
 
-                let acaoClick = (filme.id === 939243 || titulo.toLowerCase().includes('sonic 3'))
-                    ? `abrirPlayerExterno('${linkPlayer}')`
-                    : `abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', '${linkPlayer}')`;
-
                 catalogo.innerHTML += `
-                    <div onclick="${acaoClick}" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                    <div onclick="abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', '${linkPlayer}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                             <button onclick="alternarFavorito(event, ${filme.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-cyan-400' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
@@ -256,10 +248,6 @@
             document.getElementById('titulo-player').innerText = 'Assistindo a: ' + nome;
             document.getElementById('meu-player').src = url;
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function abrirPlayerExterno(url) {
-            window.open(url, '_blank');
         }
 
         function voltarHome(resetarFiltro = true) {
