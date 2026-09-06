@@ -296,13 +296,14 @@
             }
         }
 
-        function exibirGradeCards(itens, tipo) {
+        function exibirGradeCards(itens, tipoPadrao) {
             const grade = document.getElementById('catalogo-grade');
             grade.innerHTML = '';
             const favoritos = obterMinhaLista();
 
             itens.forEach(item => {
                 if (!item.poster_path) return;
+                const tipo = item.media_type || tipoPadrao;
                 const titulo = item.title || item.name;
                 const dataStr = item.release_date || item.first_air_date || '2026';
                 const ano = dataStr.split('-')[0];
@@ -380,15 +381,16 @@
                 if (!termo) return;
 
                 try {
-                    const resFilme = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
-                    const dadosFilme = await resFilme.json();
-                    
                     const resTv = await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
                     const dadosTv = await resTv.json();
+                    
+                    const resFilme = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
+                    const dadosFilme = await resFilme.json();
 
-                    const filmes = (dadosFilme.results || []).map(item => ({ ...item, media_type: 'movie' }));
+                    // Prioriza séries se o nome for igual ou similar a séries famosas como Gumball
                     const series = (dadosTv.results || []).map(item => ({ ...item, media_type: 'tv' }));
-                    const resultados = [...filmes, ...series].filter(item => item.poster_path);
+                    const filmes = (dadosFilme.results || []).map(item => ({ ...item, media_type: 'movie' }));
+                    const resultados = [...series, ...filmes].filter(item => item.poster_path);
                     
                     if (resultados.length > 0) {
                         document.getElementById('secao-hero').classList.add('hidden');
@@ -397,7 +399,7 @@
                         document.getElementById('painel-detalhes').classList.add('hidden');
                         document.getElementById('secao-grade').classList.remove('hidden');
                         document.getElementById('titulo-grade').innerText = `Resultados para: "${termo}"`;
-                        exibirGradeCards(resultados, 'movie');
+                        exibirGradeCards(resultados, 'tv');
                     } else {
                         alert("Nenhum resultado encontrado!");
                     }
@@ -416,8 +418,19 @@
             document.getElementById('painel-detalhes').classList.remove('hidden');
 
             try {
-                const res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}?api_key=${API_KEY}&language=pt-BR`);
-                const dados = await res.json();
+                // Tenta buscar pelo tipo fornecido. Se falhar ou vier vazio, tenta o oposto (garante que série não abra como filme)
+                let res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}?api_key=${API_KEY}&language=pt-BR`);
+                let dados = await res.json();
+
+                if (!dados.id && tipo === 'movie') {
+                    res = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}&language=pt-BR`);
+                    dados = await res.json();
+                    tipo = 'tv';
+                } else if (!dados.id && tipo === 'tv') {
+                    res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=pt-BR`);
+                    dados = await res.json();
+                    tipo = 'movie';
+                }
 
                 itemAtualCache = { id, tipo, titulo: dados.title || dados.name };
 
@@ -427,17 +440,20 @@
                 
                 const dataStr = dados.release_date || dados.first_air_date || '2026';
                 document.getElementById('detalhes-ano').innerText = dataStr.split('-')[0];
-                document.getElementById('detalhes-tipo').innerText = tipo === 'tv' ? 'Série' : 'Filme';
+                document.getElementById('detalhes-tipo').innerText = (tipo === 'tv' || dados.number_of_seasons) ? 'Série' : 'Filme';
 
-                if (tipo === 'movie') {
+                if (tipo === 'movie' && !dados.number_of_seasons) {
                     document.getElementById('detalhes-duracao').innerText = `${dados.runtime || '--'} min`;
                     document.getElementById('secao-episodios-container').classList.add('hidden');
                     
-                    // Botão de Assistir Filme direto no Player
                     document.getElementById('detalhes-btn-assistir').onclick = () => {
                         abrirPlayerFilme(id, itemAtualCache.titulo);
                     };
                 } else {
+                    // Força o tipo para tv se tiver temporadas ou se foi identificado assim
+                    tipo = 'tv';
+                    itemAtualCache.tipo = 'tv';
+                    document.getElementById('detalhes-tipo').innerText = 'Série';
                     document.getElementById('detalhes-duracao').innerText = `${dados.number_of_seasons || 1} Temporada(s)`;
                     document.getElementById('secao-episodios-container').classList.remove('hidden');
                     
@@ -481,13 +497,19 @@
             selectTemp.innerHTML = '';
 
             const temporadasValidas = (temporadas || []).filter(s => s.season_number > 0);
+            
+            if (temporadasValidas.length === 0) {
+                // Caso o TMDB venha sem o array seasons preenchido, cria ao menos a Temporada 1
+                selectTemp.innerHTML = `<option value="1">Temporada 1</option>`;
+                await carregarEpisodiosMax(idSerie, 1);
+                return;
+            }
+
             temporadasValidas.forEach(s => {
                 selectTemp.innerHTML += `<option value="${s.season_number}">Temporada ${s.season_number}</option>`;
             });
 
-            if (temporadasValidas.length > 0) {
-                await carregarEpisodiosMax(idSerie, temporadasValidas[0].season_number);
-            }
+            await carregarEpisodiosMax(idSerie, temporadasValidas[0].season_number);
         }
 
         async function carregarEpisodiosMax(idSerie, temporadaNum) {
