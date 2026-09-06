@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ricoflix - Max Experience</title>
+    <title>Ricoflix</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
@@ -12,12 +12,12 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
     </style>
 </head>
-<body class="bg-[#0b0e14] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-[#7d2ae8] selection:text-white custom-scrollbar">
+<body class="bg-[#0b0e14] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white custom-scrollbar">
 
-    <!-- Header / Barra Superior Estilo HBO Max -->
+    <!-- Header / Barra Superior -->
     <header id="header-principal" class="bg-[#0b0e14]/95 backdrop-blur-md border-b border-zinc-900/80 px-8 py-4 flex items-center justify-between sticky top-0 z-50 transition-all">
         <div class="flex items-center gap-8">
-            <h1 onclick="mudarAba('filmes')" class="text-2xl font-black text-[#8A51F7] tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
+            <h1 onclick="mudarAba('filmes')" class="text-2xl font-black text-blue-500 tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
             <nav class="hidden md:flex items-center gap-6 text-xs font-medium tracking-wide text-zinc-300">
                 <button onclick="mudarAba('filmes')" class="hover:text-white transition-colors cursor-pointer">FILMES</button>
                 <button onclick="mudarAba('series')" class="hover:text-white transition-colors cursor-pointer">SÉRIES DE TV</button>
@@ -26,9 +26,8 @@
         </div>
         <div class="flex items-center gap-4">
             <div class="relative w-64 hidden lg:block">
-                <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar..." class="w-full bg-zinc-900/70 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-[#7d2ae8] transition-colors">
+                <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar..." class="w-full bg-zinc-900/70 border border-zinc-800 rounded-full px-4 py-1.5 text-xs text-zinc-200 focus:outline-none focus:border-blue-500 transition-colors">
             </div>
-            <span class="text-[11px] bg-[#7d2ae8]/20 text-[#a875ff] px-3 py-1 rounded-full border border-[#7d2ae8]/40 font-semibold">MAX</span>
         </div>
     </header>
 
@@ -39,14 +38,14 @@
         <div id="secao-filtros" class="flex flex-col gap-4 transition-all">
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <div class="flex items-center gap-3">
-                    <button onclick="mudarAba('filmes')" id="btn-tab-filmes" class="filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30 cursor-pointer transition-all">FILMES</button>
+                    <button onclick="mudarAba('filmes')" id="btn-tab-filmes" class="filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30 cursor-pointer transition-all">FILMES</button>
                     <button onclick="mudarAba('series')" id="btn-tab-series" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all">SÉRIES</button>
                     <button onclick="mudarAba('minhalista')" id="btn-tab-minhalista" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all">MINHA LISTA</button>
                 </div>
                 
                 <!-- Barra de busca mobile -->
                 <div class="relative w-full md:hidden">
-                    <input type="text" id="input-busca-mobile" onkeypress="buscarNoTmdb(event, true)" placeholder="Pesquisar..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#7d2ae8]">
+                    <input type="text" id="input-busca-mobile" onkeypress="buscarNoTmdb(event, true)" placeholder="Pesquisar..." class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-xs text-zinc-200 focus:outline-none focus:border-blue-500">
                 </div>
             </div>
 
@@ -61,13 +60,13 @@
         <div id="painel-serie-detalhes" class="hidden flex flex-col gap-6 animate-fadeIn w-full">
             <div class="flex items-center justify-between flex-wrap gap-4 border-b border-zinc-900 pb-4">
                 <div class="flex items-center gap-4">
-                    <button onclick="voltarHome()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[#a875ff] px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
+                    <button onclick="voltarHome()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-blue-400 px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
                     <h2 class="text-2xl font-bold tracking-tight text-white" id="titulo-serie-header">Episódios</h2>
                 </div>
                 
                 <!-- Seletor de Temporadas -->
                 <div class="relative">
-                    <select id="select-temporada" onchange="mudarTemporadaMax()" class="bg-[#181b22] border border-zinc-800 text-sm text-zinc-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#7d2ae8] cursor-pointer appearance-none pr-10 font-medium">
+                    <select id="select-temporada" onchange="mudarTemporadaMax()" class="bg-[#181b22] border border-zinc-800 text-sm text-zinc-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500 cursor-pointer appearance-none pr-10 font-medium">
                         <option value="1">Temporada 1</option>
                     </select>
                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-zinc-400">
@@ -84,13 +83,13 @@
         <div id="painel-player" class="mt-2 flex flex-col gap-3 hidden animate-fadeIn w-full">
             <div class="flex items-center justify-between flex-wrap gap-3 bg-zinc-950/60 p-3 rounded-xl border border-zinc-900">
                 <div class="flex items-center gap-3">
-                    <button onclick="fecharPlayerParaEpisodios()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[#a875ff] px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
+                    <button onclick="fecharPlayerParaEpisodios()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-blue-400 px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
                     <h2 id="titulo-player" class="text-sm font-bold text-zinc-200">Assistindo a: -</h2>
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <div class="text-xs bg-[#7d2ae8]/10 border border-[#7d2ae8]/30 text-[#a875ff] px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#8A51F7] animate-pulse"></span> Redetoons Player
+                    <div class="text-xs bg-blue-500/10 border border-blue-500/30 text-blue-400 px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Redetoons Player
                     </div>
                 </div>
             </div>
@@ -139,13 +138,13 @@
             document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-xs tracking-wider border border-zinc-800 cursor-pointer transition-all";
 
             if (abaAtual === 'filmes') {
-                document.getElementById('btn-tab-filmes').className = "filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30";
+                document.getElementById('btn-tab-filmes').className = "filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30";
                 carregarConteudoFilmes();
             } else if (abaAtual === 'series') {
-                document.getElementById('btn-tab-series').className = "filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30";
+                document.getElementById('btn-tab-series').className = "filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30";
                 carregarConteudoSeries();
             } else if (abaAtual === 'minhalista') {
-                document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-[#7d2ae8] text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-[#7d2ae8]/30";
+                document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-blue-600 text-white font-semibold px-5 py-2 rounded-full text-xs tracking-wider shadow-lg shadow-blue-600/30";
                 document.getElementById('secao-generos').innerHTML = '';
                 carregarMinhaLista();
             }
@@ -253,7 +252,7 @@
             localStorage.setItem('ricoflix_lista', JSON.stringify(lista));
             
             const btn = event.currentTarget;
-            btn.classList.toggle('text-[#8A51F7]');
+            btn.classList.toggle('text-blue-500');
             btn.classList.toggle('text-zinc-400');
         }
 
@@ -270,15 +269,15 @@
 
             lista.forEach(item => {
                 catalogo.innerHTML += `
-                    <div onclick="abrirItem(${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-[#7d2ae8] transition-all duration-300 hover:shadow-lg hover:shadow-[#7d2ae8]/15 relative">
+                    <div onclick="abrirItem(${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/15 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${item.poster}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}', '${item.tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-[#8A51F7] hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}', '${item.tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-blue-500 hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-[#a875ff] transition-colors">${item.titulo}</h3>
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-blue-400 transition-colors">${item.titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${item.ano}</span>
                                <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${item.tipo === 'tv' ? 'Série' : 'Filme'}</span>
@@ -303,15 +302,15 @@
                 const isFavorito = favoritos.some(f => f.id === item.id);
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-[#7d2ae8] transition-all duration-300 hover:shadow-lg hover:shadow-[#7d2ae8]/15 relative">
+                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/15 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-[#8A51F7]' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-blue-500' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-[#a875ff] transition-colors">${titulo}</h3>
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-blue-400 transition-colors">${titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${ano}</span>
                                <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
@@ -337,15 +336,15 @@
                 const isFavorito = favoritos.some(f => f.id === item.id);
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-[#7d2ae8] transition-all duration-300 hover:shadow-lg hover:shadow-[#7d2ae8]/15 relative">
+                    <div onclick="abrirItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900/60 border border-zinc-900 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-blue-500 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/15 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-[#8A51F7]' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-blue-500' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-[#a875ff] transition-colors">${titulo}</h3>
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-blue-400 transition-colors">${titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${ano}</span>
                                <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
@@ -373,7 +372,6 @@
                 document.getElementById('painel-player').classList.remove('hidden');
                 document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
 
-                // Player do Redetoons para Filmes
                 const linkPlayer = `https://redetoons.win/watch/movie?id=${id}&type=movie`;
                 document.getElementById('meu-player').src = linkPlayer;
             }
@@ -421,17 +419,17 @@
                     const sinopse = ep.overview ? ep.overview : 'Nenhuma descrição disponível para este episódio.';
                     
                     gradeEpisodios.innerHTML += `
-                        <div onclick="reproduzirEpisodioSerie(${temporadaNum}, ${ep.episode_number}, '${ep.name.replace(/'/g, "\\'")}')" class="flex flex-col gap-2.5 group cursor-pointer bg-zinc-900/40 p-2.5 rounded-2xl border border-zinc-900 hover:border-[#7d2ae8]/60 transition-all">
+                        <div onclick="reproduzirEpisodioSerie(${temporadaNum}, ${ep.episode_number}, '${ep.name.replace(/'/g, "\\'")}')" class="flex flex-col gap-2.5 group cursor-pointer bg-zinc-900/40 p-2.5 rounded-2xl border border-zinc-900 hover:border-blue-500/60 transition-all">
                             <div class="aspect-video w-full bg-zinc-800 rounded-xl overflow-hidden relative shadow-md">
                                 <img src="${thumb}" alt="${ep.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                                 <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                    <div class="w-10 h-10 rounded-full bg-[#7d2ae8] text-white flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
+                                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                     </div>
                                 </div>
                             </div>
                             <div class="flex flex-col gap-1 px-1">
-                                <h3 class="text-xs font-bold text-zinc-200 group-hover:text-[#a875ff] transition-colors">${ep.episode_number}. ${ep.name}</h3>
+                                <h3 class="text-xs font-bold text-zinc-200 group-hover:text-blue-400 transition-colors">${ep.episode_number}. ${ep.name}</h3>
                                 <p class="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">${sinopse}</p>
                             </div>
                         </div>
@@ -457,7 +455,6 @@
 
             document.getElementById('titulo-player').innerText = `Assistindo: ${serieAtualCache.titulo} - T${temporada}:E${episodio} (${nomeEpisodio})`;
 
-            // Player do Redetoons para Séries (exatamente no formato solicitado)
             const url = `https://redetoons.win/watch/t${temporada}-ep${episodio}/${encodeURIComponent(serieAtualCache.titulo.toLowerCase().replace(/ /g, '-'))}?id=${serieAtualCache.id}&type=tv`;
             document.getElementById('meu-player').src = url;
 
