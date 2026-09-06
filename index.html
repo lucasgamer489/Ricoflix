@@ -8,16 +8,16 @@
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-cyan-500 selection:text-zinc-950">
 
     <!-- Header / Barra Superior -->
-    <header class="bg-zinc-900 border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+    <header class="bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-6">
-            <h1 onclick="carregarConteudo('movie')" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer">Ricoflix</h1>
-            <span class="text-xs bg-zinc-800 text-cyan-300 px-3 py-1 rounded-full border border-cyan-900">Dublado PT-BR</span>
+            <h1 onclick="carregarConteudo('movie')" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
+            <span class="text-xs bg-zinc-800 text-cyan-300 px-3 py-1 rounded-full border border-cyan-900/50">Dublado PT-BR</span>
         </div>
         <div class="relative w-72">
-            <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar (aperte Enter)..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500">
+            <input type="text" id="input-busca" onkeypress="buscarNoTmdb(event)" placeholder="Pesquisar (aperte Enter)..." class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-cyan-500 transition-colors">
         </div>
     </header>
 
@@ -27,7 +27,7 @@
         <!-- Filtros -->
         <div id="secao-filtros" class="flex items-center justify-between flex-wrap gap-4">
             <div class="flex items-center gap-3">
-                <button id="btn-filmes" onclick="carregarConteudo('movie')" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all">Filmes</button>
+                <button id="btn-filmes" onclick="carregarConteudo('movie')" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all shadow-lg shadow-cyan-500/20">Filmes</button>
                 <button id="btn-series" onclick="carregarConteudo('tv')" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Séries</button>
             </div>
             <span class="text-xs text-zinc-500">Dica: Digite na busca e aperte Enter para achar qualquer título.</span>
@@ -38,37 +38,39 @@
             <!-- Carregando via JavaScript -->
         </div>
 
-        <!-- Painel de Detalhes / Episódios estilo HBO Max -->
-        <div id="painel-serie" class="hidden flex flex-col gap-6">
-            <button onclick="voltarHome()" class="self-start text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-4 py-2 rounded-lg cursor-pointer transition-all">&larr; Voltar ao Catálogo</button>
+        <!-- Painel de Detalhes / Episódios (Estilo HBO Max) -->
+        <div id="painel-serie" class="hidden flex flex-col gap-6 animate-fadeIn">
+            <button onclick="voltarHome()" class="self-start text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-4 py-2 rounded-lg cursor-pointer transition-all flex items-center gap-2">&larr; Voltar ao Catálogo</button>
             
-            <div class="flex flex-col md:flex-row gap-6 items-start bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
-                <img id="serie-poster" src="" alt="" class="w-48 aspect-[2/3] object-cover rounded-xl shadow-lg border border-zinc-800">
-                <div class="flex flex-col gap-3 flex-1">
+            <div class="flex flex-col md:flex-row gap-6 items-center md:items-start bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+                <img id="serie-poster" src="" alt="" class="w-48 aspect-[2/3] object-cover rounded-xl shadow-lg border border-zinc-800 flex-shrink-0">
+                <div class="flex flex-col gap-3 flex-1 text-center md:text-left">
                     <h2 id="serie-titulo" class="text-2xl font-black text-white"></h2>
                     <p id="serie-sinopse" class="text-sm text-zinc-400 leading-relaxed"></p>
                 </div>
             </div>
 
-            <!-- Seletor de Temporadas Estilo HBO Max -->
-            <div class="flex items-center justify-between mt-4 flex-wrap gap-4">
-                <h3 class="text-xl font-bold text-white">Episódios</h3>
-                <select id="select-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-800 text-zinc-200 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-cyan-500 cursor-pointer">
+            <!-- Seletor de Temporadas -->
+            <div class="flex items-center justify-between mt-4 flex-wrap gap-4 border-b border-zinc-800/60 pb-4">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span class="w-2 h-5 bg-cyan-400 rounded-full"></span> Episódios
+                </h3>
+                <select id="select-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-800 text-zinc-200 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-cyan-500 cursor-pointer transition-colors">
                     <!-- Preenchido via JS -->
                 </select>
             </div>
 
-            <!-- Lista de Episódios Estilo HBO Max (Cards Verticais) -->
+            <!-- Lista de Episódios -->
             <div id="lista-episodios" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Preenchido via JS -->
             </div>
         </div>
 
         <!-- Seção do Player -->
-        <div id="painel-player" class="mt-4 flex flex-col gap-4 hidden">
-            <div class="flex items-center justify-between">
+        <div id="painel-player" class="mt-4 flex flex-col gap-4 hidden animate-fadeIn">
+            <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="flex items-center gap-2">
-                    <button onclick="voltarParaSerie()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-3 py-1.5 rounded-lg cursor-pointer transition-all mr-2">&larr; Voltar para Episódios</button>
+                    <button onclick="voltarParaSerie()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-3 py-1.5 rounded-lg cursor-pointer transition-all mr-2">&larr; Voltar</button>
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
                     <h2 id="titulo-player" class="text-sm font-semibold text-zinc-300">Assistindo a: -</h2>
                 </div>
@@ -93,7 +95,7 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script Principal -->
+    <!-- Script Otimizado -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
@@ -104,10 +106,10 @@
         async function carregarConteudo(tipo) {
             voltarHome();
             if (tipo === 'movie') {
-                document.getElementById('btn-filmes').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all";
+                document.getElementById('btn-filmes').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all shadow-lg shadow-cyan-500/20";
                 document.getElementById('btn-series').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
             } else {
-                document.getElementById('btn-series').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all";
+                document.getElementById('btn-series').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all shadow-lg shadow-cyan-500/20";
                 document.getElementById('btn-filmes').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
             }
 
@@ -116,7 +118,7 @@
                 const dados = await resposta.json();
                 exibirCards(dados.results, tipo);
             } catch (erro) {
-                console.error("Erro ao carregar:", erro);
+                console.error("Erro ao carregar conteúdo:", erro);
             }
         }
 
@@ -159,13 +161,13 @@
                     : `abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', 'https://vidsrc.xyz/embed/movie?tmdb=${item.id}')`;
 
                 catalogo.innerHTML += `
-                    <div onclick="${acaoClick}" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
+                    <div onclick="${acaoClick}" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
-                            <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                            <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
+                            <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                            <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded backdrop-blur-sm">DUBLADO</span>
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-1">
-                            <h3 class="text-sm font-bold text-zinc-200 truncate">${titulo}</h3>
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-cyan-400 transition-colors">${titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${ano}</span>
                                <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${labelTipo}</span>
@@ -227,12 +229,11 @@
                     const urlEmbedEp = `https://vidsrc.xyz/embed/tv?tmdb=${serieAtualID}&season=${ep.season_number}&episode=${ep.episode_number}`;
                     const nomeEpSeguro = `${dadosSerieGlobal.name} - T${ep.season_number}E${ep.episode_number}: ${ep.name}`.replace(/'/g, "\\'");
 
-                    // Layout estilo HBO Max: Imagem em cima, título e sinopse embaixo
                     listaEpisodios.innerHTML += `
-                        <div onclick="abrirPlayerEpisodio('${nomeEpSeguro}', '${urlEmbedEp}')" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
+                        <div onclick="abrirPlayerEpisodio('${nomeEpSeguro}', '${urlEmbedEp}')" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10">
                             <div class="w-full aspect-video bg-zinc-800 relative overflow-hidden">
-                                <img src="${thumb}" alt="${ep.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                                <img src="${thumb}" alt="${ep.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                                <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                             </div>
                             <div class="p-4 flex flex-col justify-between flex-1 gap-2">
                                 <h4 class="text-sm font-bold text-zinc-100 group-hover:text-cyan-400 transition-colors">${ep.episode_number}. ${ep.name}</h4>
