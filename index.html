@@ -57,7 +57,7 @@
         <!-- Grade de Catálogo -->
         <div id="catalogo" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
 
-        <!-- Painel de Detalhes da Série / Episódios (Estilo HBO Max Exato) -->
+        <!-- Painel de Detalhes da Série / Episódios -->
         <div id="painel-serie-detalhes" class="hidden flex flex-col gap-6 animate-fadeIn w-full">
             <div class="flex items-center justify-between flex-wrap gap-4 border-b border-zinc-900 pb-4">
                 <div class="flex items-center gap-4">
@@ -65,7 +65,7 @@
                     <h2 class="text-2xl font-bold tracking-tight text-white" id="titulo-serie-header">Episódios</h2>
                 </div>
                 
-                <!-- Seletor de Temporadas Estilo Max -->
+                <!-- Seletor de Temporadas -->
                 <div class="relative">
                     <select id="select-temporada" onchange="mudarTemporadaMax()" class="bg-[#181b22] border border-zinc-800 text-sm text-zinc-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-[#7d2ae8] cursor-pointer appearance-none pr-10 font-medium">
                         <option value="1">Temporada 1</option>
@@ -76,28 +76,29 @@
                 </div>
             </div>
 
-            <!-- Grade de Episódios Estilo Max (Cards Horizontais com Miniatura, Título e Sinopse) -->
+            <!-- Grade de Episódios -->
             <div id="grade-episodios-max" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
         </div>
 
-        <!-- Seção do Player (Imersivo) -->
+        <!-- Seção do Player (Blindada contra anúncios e pop-ups) -->
         <div id="painel-player" class="mt-2 flex flex-col gap-3 hidden animate-fadeIn w-full">
             <div class="flex items-center justify-between flex-wrap gap-3 bg-zinc-950/60 p-3 rounded-xl border border-zinc-900">
                 <div class="flex items-center gap-3">
-                    <button onclick="fecharPlayerParaEpisodios()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[#a875ff] px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Episódios</button>
+                    <button onclick="fecharPlayerParaEpisodios()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[#a875ff] px-4 py-2 rounded-lg cursor-pointer transition-all font-medium">&larr; Voltar</button>
                     <h2 id="titulo-player" class="text-sm font-bold text-zinc-200">Assistindo a: -</h2>
                 </div>
                 
                 <div class="flex items-center gap-3">
                     <div class="text-xs bg-[#7d2ae8]/10 border border-[#7d2ae8]/30 text-[#a875ff] px-3 py-1.5 rounded-full font-bold flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-[#8A51F7] animate-pulse"></span> Max Player
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#8A51F7] animate-pulse"></span> Max Player Seguro
                     </div>
                 </div>
             </div>
 
-            <div class="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-zinc-900" style="aspect-ratio: 16/9; position: relative;">
+            <!-- Container do Player com Camada Anti-Redirecionamento -->
+            <div class="w-full bg-black rounded-2xl overflow-hidden shadow-2xl border border-zinc-900 relative" style="aspect-ratio: 16/9;">
                 <iframe id="meu-player" src="" 
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+                        class="absolute inset-0 w-full h-full border-0" 
                         allowfullscreen="true" 
                         webkitallowfullscreen="true" 
                         mozallowfullscreen="true" 
@@ -365,15 +366,13 @@
                 serieAtualCache = { id, titulo };
                 await carregarTemporadasMax(id);
             } else {
-                // Modo Filme: Oculta header/footer e vai direto pro player imersivo
                 document.getElementById('header-principal').classList.add('hidden');
                 document.getElementById('footer-principal').classList.add('hidden');
                 document.getElementById('painel-player').classList.remove('hidden');
                 document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
 
-                let linkPlayer = (id == 939243 || titulo.toLowerCase().includes('sonic 3')) 
-                    ? `https://v1.watchplay.shop/movie/tt18259086` 
-                    : `https://v1.watchplay.shop/movie/${id}`;
+                // Player limpo direto via embed segura
+                const linkPlayer = `https://superembed.stream/movie/${id}`;
                 document.getElementById('meu-player').src = linkPlayer;
             }
 
@@ -420,7 +419,7 @@
                     const sinopse = ep.overview ? ep.overview : 'Nenhuma descrição disponível para este episódio.';
                     
                     gradeEpisodios.innerHTML += `
-                        <div onclick="reproduzirEpisodioSerie(${tempOrNumberOrCache(temporadaNum)}, ${ep.episode_number}, '${ep.name.replace(/'/g, "\\'")}')" class="flex flex-col gap-2.5 group cursor-pointer bg-zinc-900/40 p-2.5 rounded-2xl border border-zinc-900 hover:border-[#7d2ae8]/60 transition-all">
+                        <div onclick="reproduzirEpisodioSerie(${temporadaNum}, ${ep.episode_number}, '${ep.name.replace(/'/g, "\\'")}')" class="flex flex-col gap-2.5 group cursor-pointer bg-zinc-900/40 p-2.5 rounded-2xl border border-zinc-900 hover:border-[#7d2ae8]/60 transition-all">
                             <div class="aspect-video w-full bg-zinc-800 rounded-xl overflow-hidden relative shadow-md">
                                 <img src="${thumb}" alt="${ep.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                                 <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -441,10 +440,6 @@
             }
         }
 
-        function tempOrNumberOrCache(val) {
-            return val;
-        }
-
         async function mudarTemporadaMax() {
             const tempNum = document.getElementById('select-temporada').value;
             if (serieAtualCache) {
@@ -453,16 +448,15 @@
         }
 
         function reproduzirEpisodioSerie(temporada, episodio, nomeEpisodio) {
-            // Oculta tudo e entra no modo imersivo estilo HBO Max
             document.getElementById('header-principal').classList.add('hidden');
             document.getElementById('footer-principal').classList.add('hidden');
             document.getElementById('painel-serie-detalhes').classList.add('hidden');
             document.getElementById('painel-player').classList.remove('hidden');
 
-            const nomeSlug = serieAtualCache.titulo.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9 ]/g, "").trim().replace(/\s+/g, '-');
             document.getElementById('titulo-player').innerText = `Assistindo: ${serieAtualCache.titulo} - T${temporada}:E${episodio} (${nomeEpisodio})`;
 
-            const url = `https://redetoons.win/watch/t${temporada}-ep${episodio}/${nomeSlug}?id=${serieAtualCache.id}&type=tv`;
+            // Player limpo seguro para séries
+            const url = `https://superembed.stream/tv/${serieAtualCache.id}/${temporada}/${episodio}`;
             document.getElementById('meu-player').src = url;
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
