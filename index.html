@@ -387,7 +387,6 @@
                     const resFilme = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
                     const dadosFilme = await resFilme.json();
 
-                    // Prioriza séries se o nome for igual ou similar a séries famosas como Gumball
                     const series = (dadosTv.results || []).map(item => ({ ...item, media_type: 'tv' }));
                     const filmes = (dadosFilme.results || []).map(item => ({ ...item, media_type: 'movie' }));
                     const resultados = [...series, ...filmes].filter(item => item.poster_path);
@@ -409,7 +408,6 @@
             }
         }
 
-        // Função de Detalhes Rica puxada diretamente do TMDB
         async function abrirDetalhes(id, tipo) {
             document.getElementById('secao-hero').classList.add('hidden');
             document.getElementById('container-carrosseis').classList.add('hidden');
@@ -418,7 +416,6 @@
             document.getElementById('painel-detalhes').classList.remove('hidden');
 
             try {
-                // Tenta buscar pelo tipo fornecido. Se falhar ou vier vazio, tenta o oposto (garante que série não abra como filme)
                 let res = await fetch(`https://api.themoviedb.org/3/${tipo}/${id}?api_key=${API_KEY}&language=pt-BR`);
                 let dados = await res.json();
 
@@ -450,7 +447,6 @@
                         abrirPlayerFilme(id, itemAtualCache.titulo);
                     };
                 } else {
-                    // Força o tipo para tv se tiver temporadas ou se foi identificado assim
                     tipo = 'tv';
                     itemAtualCache.tipo = 'tv';
                     document.getElementById('detalhes-tipo').innerText = 'Série';
@@ -481,6 +477,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        // URL do MegaEmbed atualizada para Filmes
         function abrirPlayerFilme(id, titulo) {
             document.getElementById('header-principal').classList.add('hidden');
             document.getElementById('footer-principal').classList.add('hidden');
@@ -488,7 +485,7 @@
             document.getElementById('painel-player').classList.remove('hidden');
 
             document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
-            document.getElementById('meu-player').src = `https://mgeb.top/embed/${id}`;
+            document.getElementById('meu-player').src = `https://redeflixapi.store/filme/${id}`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -499,7 +496,6 @@
             const temporadasValidas = (temporadas || []).filter(s => s.season_number > 0);
             
             if (temporadasValidas.length === 0) {
-                // Caso o TMDB venha sem o array seasons preenchido, cria ao menos a Temporada 1
                 selectTemp.innerHTML = `<option value="1">Temporada 1</option>`;
                 await carregarEpisodiosMax(idSerie, 1);
                 return;
@@ -564,7 +560,8 @@
             document.getElementById('painel-player').classList.remove('hidden');
 
             document.getElementById('titulo-player').innerText = `Assistindo: ${itemAtualCache.titulo} - T${temporada}:E${episodio} (${nomeEpisodio})`;
-            document.getElementById('meu-player').src = `https://mgeb.top/embed/${itemAtualCache.id}/${temporada}/${episodio}`;
+            // Mantém a rota correta da série caso já estivesse configurada, ou use o padrão da sua documentação
+            document.getElementById('meu-player').src = `https://redeflixapi.store/serie/${itemAtualCache.id}/${temporada}/${episodio}`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
