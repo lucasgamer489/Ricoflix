@@ -564,7 +564,7 @@
             document.getElementById('painel-player').classList.remove('hidden');
 
             document.getElementById('titulo-player').innerText = `Assistindo: ${itemAtualCache.titulo} - T${temporada}:E${episodio} (${nomeEpisodio})`;
-            document.getElementById('meu-player').src = `https://mgeb.top/embed/${itemAtualCache.id}/${temporada}/${episodio}`;
+            document.getElementById('meu-player').src = `https://redeflixapi.store/serie/${itemAtualCache.id}/${temporada}/${episodio}`;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
