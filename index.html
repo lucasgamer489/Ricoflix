@@ -11,7 +11,7 @@
     <!-- Header / Barra Superior -->
     <header class="bg-zinc-900/90 backdrop-blur-md border-b border-zinc-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-6">
-            <h1 onclick="voltarHome()" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
+            <h1 onclick="mudarAba('filmes')" class="text-2xl font-black text-cyan-400 tracking-wider cursor-pointer hover:opacity-80 transition-opacity">Ricoflix</h1>
             <span class="text-xs bg-zinc-800 text-cyan-300 px-3 py-1 rounded-full border border-cyan-900/50">Dublado PT-BR</span>
         </div>
         <div class="relative w-72 hidden md:block">
@@ -26,8 +26,9 @@
         <div id="secao-filtros" class="flex flex-col gap-4">
             <div class="flex items-center justify-between flex-wrap gap-4">
                 <div class="flex items-center gap-3">
-                    <button class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20">Filmes</button>
-                    <button onclick="carregarMinhaLista()" id="btn-minhalista" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Minha Lista</button>
+                    <button onclick="mudarAba('filmes')" id="btn-tab-filmes" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20 cursor-pointer transition-all">Filmes</button>
+                    <button onclick="mudarAba('series')" id="btn-tab-series" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Séries</button>
+                    <button onclick="mudarAba('minhalista')" id="btn-tab-minhalista" class="filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all">Minha Lista</button>
                 </div>
                 
                 <!-- Barra de busca mobile -->
@@ -52,8 +53,17 @@
                     <h2 id="titulo-player" class="text-sm font-semibold text-zinc-300">Assistindo a: -</h2>
                 </div>
                 
-                <!-- Selo de Qualidade Ativo -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
+                    <!-- Seletor de Temporadas e Episódios (Aparece apenas para Séries) -->
+                    <div id="controles-serie" class="hidden flex items-center gap-2">
+                        <select id="select-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500">
+                            <option value="1">Temporada 1</option>
+                        </select>
+                        <select id="select-episodio" onchange="mudarEpisodio()" class="bg-zinc-900 border border-zinc-800 text-xs text-zinc-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-cyan-500">
+                            <option value="1">Episódio 1</option>
+                        </select>
+                    </div>
+                    
                     <div id="badge-qualidade" class="text-xs bg-cyan-950 border border-cyan-500/50 text-cyan-400 px-3 py-1 rounded-full font-bold flex items-center gap-1.5 shadow-sm shadow-cyan-500/20">
                         <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> HD Player Estável
                     </div>
@@ -78,48 +88,85 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script Atualizado sem o selo falso de 4K -->
+    <!-- Script Atualizado com Aba de Séries e Gumball -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
+        
+        let abaAtual = 'filmes'; // 'filmes', 'series', 'minhalista'
+        let serieAtualCache = null;
 
-        async function carregarConteudo() {
-            voltarHome(false);
-            carregarGeneros();
+        function mudarAba(novaAba) {
+            abaAtual = novaAba;
+            document.getElementById('painel-player').classList.add('hidden');
+            document.getElementById('catalogo').classList.remove('hidden');
+            document.getElementById('secao-filtros').classList.remove('hidden');
 
-            try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`);
-                const dados = await resposta.json();
-                exibirCards(dados.results);
-            } catch (erro) {
-                console.error("Erro ao carregar filmes:", erro);
+            // Resetar estilos dos botões de abas
+            document.getElementById('btn-tab-filmes').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
+            document.getElementById('btn-tab-series').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
+            document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
+
+            if (abaAtual === 'filmes') {
+                document.getElementById('btn-tab-filmes').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20";
+                carregarConteudoFilmes();
+            } else if (abaAtual === 'series') {
+                document.getElementById('btn-tab-series').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20";
+                carregarConteudoSeries();
+            } else if (abaAtual === 'minhalista') {
+                document.getElementById('btn-tab-minhalista').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20";
+                document.getElementById('secao-generos').innerHTML = '';
+                carregarMinhaLista();
             }
         }
 
-        async function carregarGeneros() {
+        async function carregarConteudoFilmes() {
+            carregarGeneros('movie');
+            try {
+                const resposta = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=pt-BR`);
+                const dados = await resposta.json();
+                exibirCards(dados.results, 'movie');
+            } catch (erro) {
+                console.error("Erro filmes:", erro);
+            }
+        }
+
+        async function carregarConteudoSeries() {
+            carregarGeneros('tv');
+            try {
+                const resposta = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${API_KEY}&language=pt-BR`);
+                const dados = await resposta.json();
+                exibirCards(dados.results, 'tv');
+            } catch (erro) {
+                console.error("Erro séries:", erro);
+            }
+        }
+
+        async function carregarGeneros(tipo) {
             const containerGeneros = document.getElementById('secao-generos');
             containerGeneros.innerHTML = '';
             try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=pt-BR`);
+                const resposta = await fetch(`https://api.themoviedb.org/3/genre/${tipo}/list?api_key=${API_KEY}&language=pt-BR`);
                 const dados = await resposta.json();
 
-                containerGeneros.innerHTML = `<button onclick="carregarConteudo()" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer">Todos</button>`;
+                const funcTodos = tipo === 'movie' ? 'carregarConteudoFilmes()' : 'carregarConteudoSeries()';
+                containerGeneros.innerHTML = `<button onclick="${funcTodos}" class="bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer">Todos</button>`;
                 
                 dados.genres.forEach(g => {
-                    containerGeneros.innerHTML += `<button onclick="filtrarPorGenero(${g.id})" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer transition-colors">${g.name}</button>`;
+                    containerGeneros.innerHTML += `<button onclick="filtrarPorGenero('${tipo}', ${g.id})" class="bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 text-xs px-3 py-1.5 rounded-lg whitespace-nowrap cursor-pointer transition-colors">${g.name}</button>`;
                 });
             } catch (e) {
                 console.error("Erro gêneros:", e);
             }
         }
 
-        async function filtrarPorGenero(genreId) {
+        async function filtrarPorGenero(tipo, genreId) {
             try {
-                const resposta = await fetch(`https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=pt-BR&with_genres=${genreId}`);
+                const resposta = await fetch(`https://api.themoviedb.org/3/discover/${tipo}?api_key=${API_KEY}&language=pt-BR&with_genres=${genreId}`);
                 const dados = await resposta.json();
-                exibirCards(dados.results);
+                exibirCards(dados.results, tipo);
             } catch (e) {
-                console.error("Erro ao filtrar gênero:", e);
+                console.error("Erro filtrar gênero:", e);
             }
         }
 
@@ -130,14 +177,26 @@
                 if (!termo) return;
 
                 try {
-                    const resposta = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
-                    const dados = await resposta.json();
-                    const resultadosValidos = dados.results.filter(item => item.poster_path);
+                    // Busca tanto em filmes quanto em séries
+                    const resFilme = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
+                    const dadosFilme = await resFilme.json();
                     
-                    if (resultadosValidos.length > 0) {
-                        exibirCards(resultadosValidos);
+                    const resTv = await fetch(`https://api.themoviedb.org/3/search/tv?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
+                    const dadosTv = await resTv.json();
+
+                    // Marcar o tipo explicitamente em cada resultado
+                    const filmes = (dadosFilme.results || []).map(item => ({ ...item, media_type: 'movie' }));
+                    const series = (dadosTv.results || []).map(item => ({ ...item, media_type: 'tv' }));
+                    
+                    const resultados = [...filmes, ...series].filter(item => item.poster_path);
+                    
+                    if (resultados.length > 0) {
+                        document.getElementById('painel-player').classList.add('hidden');
+                        document.getElementById('catalogo').classList.remove('hidden');
+                        document.getElementById('secao-filtros').classList.remove('hidden');
+                        exibirCardsComTipoMisto(resultados);
                     } else {
-                        alert("Nenhum filme encontrado!");
+                        alert("Nenhum resultado encontrado!");
                     }
                 } catch (erro) {
                     console.error("Erro na busca:", erro);
@@ -149,7 +208,7 @@
             return JSON.parse(localStorage.getItem('ricoflix_lista') || '[]');
         }
 
-        function alternarFavorito(event, id, titulo, poster, ano) {
+        function alternarFavorito(event, id, titulo, poster, ano, tipo) {
             event.stopPropagation();
             let lista = obterMinhaLista();
             const index = lista.findIndex(item => item.id === id);
@@ -157,7 +216,7 @@
             if (index > -1) {
                 lista.splice(index, 1);
             } else {
-                lista.push({ id, titulo, poster, tipo: 'movie', ano });
+                lista.push({ id, titulo, poster, tipo, ano });
             }
 
             localStorage.setItem('ricoflix_lista', JSON.stringify(lista));
@@ -168,28 +227,31 @@
         }
 
         function carregarMinhaLista() {
-            document.getElementById('btn-minhalista').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm shadow-lg shadow-cyan-500/20";
             document.getElementById('secao-generos').innerHTML = '';
-
             const lista = obterMinhaLista();
             const catalogo = document.getElementById('catalogo');
             catalogo.innerHTML = '';
 
             if (lista.length === 0) {
-                catalogo.innerHTML = '<div class="col-span-full text-center py-12 text-zinc-500 text-sm">Sua lista está vazia. Adicione filmes clicando no ícone de favorito!</div>';
+                catalogo.innerHTML = '<div class="col-span-full text-center py-12 text-zinc-500 text-sm">Sua lista está vazia. Adicione filmes ou séries clicando no ícone de favorito!</div>';
                 return;
             }
 
             lista.forEach(item => {
-                let linkPlayer = (item.id == 939243 || item.titulo.toLowerCase().includes('sonic 3')) 
-                    ? `https://v1.watchplay.shop/movie/tt18259086` 
-                    : `https://fembed.lol/filme/${item.id}/servidor-4`;
+                let linkPlayer = '';
+                if(item.tipo === 'tv') {
+                    linkPlayer = `https://v1.watchplay.shop/tv/${item.id}/1/1`;
+                } else {
+                    linkPlayer = (item.id == 939243 || item.titulo.toLowerCase().includes('sonic 3')) 
+                        ? `https://v1.watchplay.shop/movie/tt18259086` 
+                        : `https://v1.watchplay.shop/movie/${item.id}`;
+                }
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirPlayerFilme('${item.titulo.replace(/'/g, "\\'")}', '${linkPlayer}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                    <div onclick="abrirPlayerItem(${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.tipo}', ${JSON.stringify(item).replace(/"/g, '&quot;')})" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${item.poster}" alt="${item.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-cyan-400 hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${item.titulo.replace(/'/g, "\\'")}', '${item.poster}', '${item.ano}', '${item.tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full text-cyan-400 hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
@@ -197,7 +259,7 @@
                             <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-cyan-400 transition-colors">${item.titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${item.ano}</span>
-                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
+                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${item.tipo === 'tv' ? 'Série' : 'Filme'}</span>
                             </div>
                         </div>
                     </div>
@@ -205,27 +267,24 @@
             });
         }
 
-        function exibirCards(filmes) {
+        function exibirCards(itens, tipo) {
             const catalogo = document.getElementById('catalogo');
             catalogo.innerHTML = '';
             const favoritos = obterMinhaLista();
 
-            filmes.forEach(filme => {
-                if (!filme.poster_path) return;
-                const titulo = filme.title;
-                const ano = (filme.release_date || '2026').split('-')[0];
-                const poster = IMG_BASE_URL + filme.poster_path;
-                const isFavorito = favoritos.some(f => f.id === filme.id);
-
-                let linkPlayer = (filme.id === 939243 || titulo.toLowerCase().includes('sonic 3')) 
-                    ? `https://v1.watchplay.shop/movie/tt18259086` 
-                    : `https://fembed.lol/filme/${filme.id}/servidor-4`;
+            itens.forEach(item => {
+                if (!item.poster_path) return;
+                const titulo = item.title || item.name;
+                const dataStr = item.release_date || item.first_air_date || '2026';
+                const ano = dataStr.split('-')[0];
+                const poster = IMG_BASE_URL + item.poster_path;
+                const isFavorito = favoritos.some(f => f.id === item.id);
 
                 catalogo.innerHTML += `
-                    <div onclick="abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', '${linkPlayer}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                    <div onclick="abrirPlayerItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
-                            <button onclick="alternarFavorito(event, ${filme.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-cyan-400' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-cyan-400' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                             </button>
                         </div>
@@ -233,7 +292,7 @@
                             <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-cyan-400 transition-colors">${titulo}</h3>
                             <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
                                <span>${ano}</span>
-                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">Filme</span>
+                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
                             </div>
                         </div>
                     </div>
@@ -241,26 +300,139 @@
             });
         }
 
-        function abrirPlayerFilme(nome, url) {
+        function exibirCardsComTipoMisto(itens) {
+            const catalogo = document.getElementById('catalogo');
+            catalogo.innerHTML = '';
+            const favoritos = obterMinhaLista();
+
+            itens.forEach(item => {
+                if (!item.poster_path) return;
+                const tipo = item.media_type || (item.name ? 'tv' : 'movie');
+                const titulo = item.title || item.name;
+                const dataStr = item.release_date || item.first_air_date || '2026';
+                const ano = dataStr.split('-')[0];
+                const poster = IMG_BASE_URL + item.poster_path;
+                const isFavorito = favoritos.some(f => f.id === item.id);
+
+                catalogo.innerHTML += `
+                    <div onclick="abrirPlayerItem(${item.id}, '${titulo.replace(/'/g, "\\'")}', '${tipo}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 relative">
+                        <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
+                            <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                            <button onclick="alternarFavorito(event, ${item.id}, '${titulo.replace(/'/g, "\\'")}', '${poster}', '${ano}', '${tipo}')" class="absolute top-2 left-2 bg-zinc-950/80 p-1.5 rounded-full ${isFavorito ? 'text-cyan-400' : 'text-zinc-400'} hover:scale-110 transition-transform z-10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            </button>
+                        </div>
+                        <div class="p-3 flex flex-col justify-between flex-1">
+                            <h3 class="text-sm font-bold text-zinc-200 truncate group-hover:text-cyan-400 transition-colors">${titulo}</h3>
+                            <div class="flex items-center justify-between text-xs text-zinc-400 mt-2">
+                               <span>${ano}</span>
+                               <span class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded text-zinc-300">${tipo === 'tv' ? 'Série' : 'Filme'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function abrirPlayerItem(id, titulo, tipo) {
             document.getElementById('catalogo').classList.add('hidden');
             document.getElementById('secao-filtros').classList.add('hidden');
             document.getElementById('painel-player').classList.remove('hidden');
-            document.getElementById('titulo-player').innerText = 'Assistindo a: ' + nome;
-            document.getElementById('meu-player').src = url;
+            document.getElementById('titulo-player').innerText = 'Assistindo a: ' + titulo;
+
+            const divControles = document.getElementById('controles-serie');
+
+            if (tipo === 'tv') {
+                divControles.classList.remove('hidden');
+                serieAtualCache = { id, titulo };
+                await carregarDetalhesSerie(id);
+            } else {
+                divControles.classList.add('hidden');
+                let linkPlayer = (id == 939243 || titulo.toLowerCase().includes('sonic 3')) 
+                    ? `https://v1.watchplay.shop/movie/tt18259086` 
+                    : `https://v1.watchplay.shop/movie/${id}`;
+                document.getElementById('meu-player').src = linkPlayer;
+            }
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function voltarHome(resetarFiltro = true) {
+        async function carregarDetalhesSerie(idSerie) {
+            try {
+                const resposta = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}?api_key=${API_KEY}&language=pt-BR`);
+                const dados = await resposta.json();
+
+                const selectTemp = document.getElementById('select-temporada');
+                selectTemp.innerHTML = '';
+
+                // Filtrar apenas temporadas válidas (geralmente season_number > 0)
+                const temporadasValidas = dados.seasons.filter(s => s.season_number > 0);
+                
+                temporadasValidas.forEach(s => {
+                    selectTemp.innerHTML += `<option value="${s.season_number}">Temporada ${s.season_number}</option>`;
+                });
+
+                if (temporadasValidas.length > 0) {
+                    await carregarEpisodios(idSerie, temporadasValidas[0].season_number);
+                }
+            } catch (e) {
+                console.error("Erro detalhes série:", e);
+            }
+        }
+
+        async function carregarEpisodios(idSerie, temporadaNum) {
+            try {
+                const resposta = await fetch(`https://api.themoviedb.org/3/tv/${idSerie}/season/${temporadaNum}?api_key=${API_KEY}&language=pt-BR`);
+                const dados = await resposta.json();
+
+                const selectEp = document.getElementById('select-episodio');
+                selectEp.innerHTML = '';
+
+                dados.episodes.forEach(ep => {
+                    selectEp.innerHTML += `<option value="${ep.episode_number}">Ep. ${ep.episode_number} - ${ep.name}</option>`;
+                });
+
+                atualizarIframeSerie(idSerie, temporadaNum, 1);
+            } catch (e) {
+                console.error("Erro episódios:", e);
+            }
+        }
+
+        async function mudarTemporada() {
+            const tempNum = document.getElementById('select-temporada').value;
+            if (serieAtualCache) {
+                await carregarEpisodios(serieAtualCache.id, tempNum);
+            }
+        }
+
+        function mudarEpisodio() {
+            const tempNum = document.getElementById('select-temporada').value;
+            const epNum = document.getElementById('select-episodio').value;
+            if (serieAtualCache) {
+                atualizarIframeSerie(serieAtualCache.id, tempNum, epNum);
+            }
+        }
+
+        function atualizarIframeSerie(idSerie, temporada, episodio) {
+            const url = `https://v1.watchplay.shop/tv/${idSerie}/${temporada}/${episodio}`;
+            document.getElementById('meu-player').src = url;
+        }
+
+        function voltarHome() {
             document.getElementById('painel-player').classList.add('hidden');
             document.getElementById('catalogo').classList.remove('hidden');
             document.getElementById('secao-filtros').classList.remove('hidden');
-            document.getElementById('btn-minhalista').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
             document.getElementById('meu-player').src = '';
-            if(resetarFiltro) carregarConteudo();
+            
+            if (abaAtual === 'filmes') carregarConteudoFilmes();
+            else if (abaAtual === 'series') carregarConteudoSeries();
+            else if (abaAtual === 'minhalista') carregarMinhaLista();
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        carregarConteudo();
+        // Inicializar na aba de Filmes
+        carregarConteudoFilmes();
     </script>
 </body>
 </html>
