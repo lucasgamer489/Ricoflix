@@ -95,15 +95,17 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script Otimizado -->
+    <!-- Script Corrigido -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
         const BACKDROP_URL = 'https://image.tmdb.org/t/p/w780';
         let serieAtualID = null;
         let dadosSerieGlobal = null;
+        let tipoAtual = 'movie';
 
         async function carregarConteudo(tipo) {
+            tipoAtual = tipo;
             voltarHome();
             if (tipo === 'movie') {
                 document.getElementById('btn-filmes').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all shadow-lg shadow-cyan-500/20";
@@ -156,6 +158,7 @@
                 const poster = IMG_BASE_URL + item.poster_path;
                 const labelTipo = tipoItem === 'tv' ? 'Série' : 'Filme';
 
+                // CORREÇÃO: Força checagem correta se é série (tv) ou filme (movie), evitando abrir player quebrado
                 let acaoClick = tipoItem === 'tv' 
                     ? `abrirDetalhesSerie(${item.id})` 
                     : `abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', 'https://vidsrc.xyz/embed/movie?tmdb=${item.id}')`;
