@@ -24,7 +24,7 @@
     <!-- Main Content -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-6 py-6 flex flex-col gap-6">
         
-        <!-- Filtros Profissionais -->
+        <!-- Filtros -->
         <div id="secao-filtros" class="flex items-center justify-between flex-wrap gap-4">
             <div class="flex items-center gap-3">
                 <button id="btn-filmes" onclick="carregarConteudo('movie')" class="filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all">Filmes</button>
@@ -38,17 +38,43 @@
             <!-- Carregando via JavaScript -->
         </div>
 
+        <!-- Painel de Detalhes / Episódios estilo HBO Max -->
+        <div id="painel-serie" class="hidden flex flex-col gap-6">
+            <button onclick="voltarHome()" class="self-start text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-4 py-2 rounded-lg cursor-pointer transition-all">&larr; Voltar ao Catálogo</button>
+            
+            <div class="flex flex-col md:flex-row gap-6 items-start bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800">
+                <img id="serie-poster" src="" alt="" class="w-48 aspect-[2/3] object-cover rounded-xl shadow-lg border border-zinc-800">
+                <div class="flex flex-col gap-3 flex-1">
+                    <h2 id="serie-titulo" class="text-2xl font-black text-white"></h2>
+                    <p id="serie-sinopse" class="text-sm text-zinc-400 leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- Seletor de Temporadas Estilo HBO Max -->
+            <div class="flex items-center justify-between mt-4 flex-wrap gap-4">
+                <h3 class="text-xl font-bold text-white">Episódios</h3>
+                <select id="select-temporada" onchange="mudarTemporada()" class="bg-zinc-900 border border-zinc-800 text-zinc-200 font-semibold px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-cyan-500 cursor-pointer">
+                    <!-- Preenchido via JS -->
+                </select>
+            </div>
+
+            <!-- Lista de Episódios Estilo HBO Max (Cards Verticais) -->
+            <div id="lista-episodios" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+
         <!-- Seção do Player -->
         <div id="painel-player" class="mt-4 flex flex-col gap-4 hidden">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
+                    <button onclick="voltarParaSerie()" class="text-xs bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-cyan-400 px-3 py-1.5 rounded-lg cursor-pointer transition-all mr-2">&larr; Voltar para Episódios</button>
                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
                     <h2 id="titulo-player" class="text-sm font-semibold text-zinc-300">Assistindo a: -</h2>
                 </div>
                 <span class="text-xs bg-zinc-900 border border-zinc-800 text-cyan-400 px-3 py-1 rounded-full font-bold">1080p HD Nativo</span>
             </div>
 
-            <!-- Container do Iframe -->
             <div class="w-full bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800" style="aspect-ratio: 16/9; position: relative;">
                 <iframe id="meu-player" src="" 
                         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
@@ -67,17 +93,16 @@
         Ricoflix &copy; 2026 - Todos os direitos reservados
     </footer>
 
-    <!-- Script Profissional -->
+    <!-- Script Principal -->
     <script>
         const API_KEY = '3cbe2c38513cc9d3266f2dc134ce9b29';
         const IMG_BASE_URL = 'https://image.tmdb.org/t/p/w342';
-        let tipoAtual = 'movie'; // 'movie' ou 'tv'
+        const BACKDROP_URL = 'https://image.tmdb.org/t/p/w780';
+        let serieAtualID = null;
+        let dadosSerieGlobal = null;
 
         async function carregarConteudo(tipo) {
-            tipoAtual = tipo;
             voltarHome();
-
-            // Atualiza visual dos botões
             if (tipo === 'movie') {
                 document.getElementById('btn-filmes').className = "filtro-btn bg-cyan-500 text-zinc-950 font-semibold px-5 py-2 rounded-full text-sm cursor-pointer transition-all";
                 document.getElementById('btn-series').className = "filtro-btn bg-zinc-900 hover:bg-zinc-800 text-zinc-300 px-5 py-2 rounded-full text-sm border border-zinc-800 cursor-pointer transition-all";
@@ -91,7 +116,7 @@
                 const dados = await resposta.json();
                 exibirCards(dados.results, tipo);
             } catch (erro) {
-                console.error("Erro ao carregar catálogo:", erro);
+                console.error("Erro ao carregar:", erro);
             }
         }
 
@@ -103,8 +128,6 @@
                 try {
                     const resposta = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${API_KEY}&language=pt-BR&query=${encodeURIComponent(termo)}`);
                     const dados = await resposta.json();
-                    
-                    // Filtra apenas filmes e séries válidos que tenham poster
                     const resultadosValidos = dados.results.filter(item => (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path);
                     
                     if (resultadosValidos.length > 0) {
@@ -124,22 +147,19 @@
 
             itens.forEach(item => {
                 if (!item.poster_path) return;
-                
                 const tipoItem = modo === 'multi' ? item.media_type : modo;
                 const titulo = item.title || item.name;
                 const data = item.release_date || item.first_air_date || '2026';
                 const ano = data.split('-')[0];
                 const poster = IMG_BASE_URL + item.poster_path;
-                
-                // Monta a URL correta do player dependendo se é filme ou série
-                const urlEmbed = tipoItem === 'tv' 
-                    ? `https://vidsrc.xyz/embed/tv?tmdb=${item.id}` 
-                    : `https://vidsrc.xyz/embed/movie?tmdb=${item.id}`;
-
                 const labelTipo = tipoItem === 'tv' ? 'Série' : 'Filme';
 
+                let acaoClick = tipoItem === 'tv' 
+                    ? `abrirDetalhesSerie(${item.id})` 
+                    : `abrirPlayerFilme('${titulo.replace(/'/g, "\\'")}', 'https://vidsrc.xyz/embed/movie?tmdb=${item.id}')`;
+
                 catalogo.innerHTML += `
-                    <div onclick="abrirPlayer('${titulo.replace(/'/g, "\\'")}', '${urlEmbed}')" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
+                    <div onclick="${acaoClick}" class="card-item bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
                         <div class="aspect-[2/3] bg-zinc-800 relative overflow-hidden">
                             <img src="${poster}" alt="${titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             <span class="absolute top-2 right-2 bg-cyan-950/80 border border-cyan-500/50 text-cyan-400 text-[10px] font-bold px-2 py-0.5 rounded">DUBLADO</span>
@@ -156,23 +176,109 @@
             });
         }
 
-        function voltarHome() {
-            document.getElementById('painel-player').classList.add('hidden');
-            document.getElementById('catalogo').classList.remove('hidden');
-            document.getElementById('meu-player').src = '';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        async function abrirDetalhesSerie(id) {
+            serieAtualID = id;
+            try {
+                const resposta = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}&language=pt-BR`);
+                dadosSerieGlobal = await resposta.json();
+
+                document.getElementById('catalogo').classList.add('hidden');
+                document.getElementById('secao-filtros').classList.add('hidden');
+                document.getElementById('painel-player').classList.add('hidden');
+                document.getElementById('painel-serie').classList.remove('hidden');
+
+                document.getElementById('serie-titulo').innerText = dadosSerieGlobal.name;
+                document.getElementById('serie-sinopse').innerText = dadosSerieGlobal.overview || "Sem sinopse disponível.";
+                document.getElementById('serie-poster').src = dadosSerieGlobal.poster_path ? IMG_BASE_URL + dadosSerieGlobal.poster_path : '';
+
+                const selectTemp = document.getElementById('select-temporada');
+                selectTemp.innerHTML = '';
+
+                dadosSerieGlobal.seasons.forEach(season => {
+                    if (season.season_number > 0) {
+                        selectTemp.innerHTML += `<option value="${season.season_number}">Temporada ${season.season_number}</option>`;
+                    }
+                });
+
+                mudarTemporada();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (erro) {
+                console.error("Erro ao carregar detalhes da série:", erro);
+            }
         }
 
-        function abrirPlayer(nome, url) {
-            document.getElementById('catalogo').classList.add('hidden');
+        async function mudarTemporada() {
+            const temporadaNum = document.getElementById('select-temporada').value;
+            try {
+                const resposta = await fetch(`https://api.themoviedb.org/3/tv/${serieAtualID}/season/${temporadaNum}?api_key=${API_KEY}&language=pt-BR`);
+                const dadosTemporada = await resposta.json();
+
+                const listaEpisodios = document.getElementById('lista-episodios');
+                listaEpisodios.innerHTML = '';
+
+                if (!dadosTemporada.episodes || dadosTemporada.episodes.length === 0) {
+                    listaEpisodios.innerHTML = '<p class="text-zinc-500 text-sm">Nenhum episódio encontrado nesta temporada.</p>';
+                    return;
+                }
+
+                dadosTemporada.episodes.forEach(ep => {
+                    const thumb = ep.still_path ? BACKDROP_URL + ep.still_path : (dadosSerieGlobal.poster_path ? IMG_BASE_URL + dadosSerieGlobal.poster_path : 'https://via.placeholder.com/600x338?text=Sem+Capa');
+                    const sinopseEp = ep.overview ? ep.overview : 'Sem sinopse disponível para este episódio.';
+                    const urlEmbedEp = `https://vidsrc.xyz/embed/tv?tmdb=${serieAtualID}&season=${ep.season_number}&episode=${ep.episode_number}`;
+                    const nomeEpSeguro = `${dadosSerieGlobal.name} - T${ep.season_number}E${ep.episode_number}: ${ep.name}`.replace(/'/g, "\\'");
+
+                    // Layout estilo HBO Max: Imagem em cima, título e sinopse embaixo
+                    listaEpisodios.innerHTML += `
+                        <div onclick="abrirPlayerEpisodio('${nomeEpSeguro}', '${urlEmbedEp}')" class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden flex flex-col group cursor-pointer hover:border-cyan-500 transition-all">
+                            <div class="w-full aspect-video bg-zinc-800 relative overflow-hidden">
+                                <img src="${thumb}" alt="${ep.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                            </div>
+                            <div class="p-4 flex flex-col justify-between flex-1 gap-2">
+                                <h4 class="text-sm font-bold text-zinc-100 group-hover:text-cyan-400 transition-colors">${ep.episode_number}. ${ep.name}</h4>
+                                <p class="text-xs text-zinc-400 line-clamp-2 leading-relaxed">${sinopseEp}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (erro) {
+                console.error("Erro ao carregar episódios:", erro);
+            }
+        }
+
+        function abrirPlayerEpisodio(nome, url) {
+            document.getElementById('painel-serie').classList.add('hidden');
             document.getElementById('painel-player').classList.remove('hidden');
-            
             document.getElementById('titulo-player').innerText = 'Assistindo a: ' + nome;
             document.getElementById('meu-player').src = url;
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Inicializa abrindo os filmes populares
+        function abrirPlayerFilme(nome, url) {
+            document.getElementById('catalogo').classList.add('hidden');
+            document.getElementById('secao-filtros').classList.add('hidden');
+            document.getElementById('painel-player').classList.remove('hidden');
+            document.getElementById('titulo-player').innerText = 'Assistindo a: ' + nome;
+            document.getElementById('meu-player').src = url;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function voltarParaSerie() {
+            document.getElementById('painel-player').classList.add('hidden');
+            document.getElementById('meu-player').src = '';
+            document.getElementById('painel-serie').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function voltarHome() {
+            document.getElementById('painel-player').classList.add('hidden');
+            document.getElementById('painel-serie').classList.add('hidden');
+            document.getElementById('catalogo').classList.remove('hidden');
+            document.getElementById('secao-filtros').classList.remove('hidden');
+            document.getElementById('meu-player').src = '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         carregarConteudo('movie');
     </script>
 </body>
