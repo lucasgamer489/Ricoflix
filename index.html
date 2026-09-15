@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ricoflix</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
+    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
@@ -20,7 +23,9 @@
 </head>
 <body class="bg-[#0b0b0b] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-red-600 selection:text-white custom-scrollbar" x-data="ricoflixApp()" x-init="init()">
 
+    <!-- ========================================== -->
     <!-- HEADER -->
+    <!-- ========================================== -->
     <header class="fixed top-0 left-0 right-0 z-[100] transition-all duration-500 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
         <div class="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 pointer-events-auto">
             <div class="flex items-center gap-8">
@@ -52,7 +57,9 @@
         </div>
     </header>
 
+    <!-- ========================================== -->
     <!-- CONTEÚDO PRINCIPAL -->
+    <!-- ========================================== -->
     <main class="flex-grow pt-20">
         
         <!-- Loading Global -->
@@ -231,31 +238,34 @@
     >
         <div class="relative w-full max-w-5xl bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
             
-            <button @click="closePlayer()" class="absolute top-4 right-4 z-30 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors">
+            <button @click="closePlayer()" class="absolute top-4 right-4 z-50 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
-            <div class="absolute top-0 left-0 w-full p-4 bg-gradient-to-b from-black/90 to-transparent z-20 pointer-events-none">
+            <div class="absolute top-0 left-0 w-full p-4 bg-gradient-to-b from-black/90 to-transparent z-40 pointer-events-none">
                 <h2 class="text-white font-bold text-lg pl-2" x-text="currentMovie ? (currentMovie.title || currentMovie.name) : 'Carregando...'"></h2>
                 <p x-show="currentEpisode" class="text-zinc-400 text-sm pl-2" x-text="'T' + currentEpisode?.season_number + ' E' + currentEpisode?.episode_number + ' - ' + currentEpisode?.name"></p>
             </div>
 
-            <div class="relative w-full aspect-video bg-zinc-900 flex items-center justify-center">
+            <div class="relative w-full aspect-video bg-black">
                 <iframe 
                     id="video-player-iframe"
-                    class="w-full h-full border-0 absolute inset-0 z-0"
+                    class="absolute inset-0 w-full h-full border-0 z-10"
                     allowfullscreen
+                    allow="autoplay; encrypted-media; picture-in-picture"
                     @load="onIframeLoad()"
                 ></iframe>
 
-                <div x-show="playerStatus !== 'ready'" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 text-center p-6">
-                    
+                <div 
+                    x-show="playerStatus !== 'ready'" 
+                    x-transition.opacity
+                    class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black text-center p-6"
+                >
                     <template x-if="playerStatus === 'loading'">
                         <div class="flex flex-col items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
-                            <p class="text-zinc-400 text-sm">Conectando à RedeFlixApi...</p>
-                            <!-- ✅ DEBUG: Mostra a URL que está sendo carregada -->
-                            <p class="text-zinc-600 text-xs mt-2 max-w-full truncate" x-text="'URL: ' + currentServerUrl"></p>
+                            <p class="text-white text-base font-medium">Carregando player...</p>
+                            <p class="text-zinc-500 text-xs mt-2 max-w-md truncate" x-text="currentServerUrl ? 'URL: ' + currentServerUrl : ''"></p>
                         </div>
                     </template>
 
@@ -265,23 +275,26 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <h3 class="text-white font-bold text-lg mb-1">Conteúdo não encontrado</h3>
-                            <p class="text-zinc-400 text-sm">A API não respondeu. Verifique o console.</p>
+                            <p class="text-zinc-400 text-sm mb-4">A API demorou para responder. Tente novamente.</p>
+                            <button @click="loadServer(0)" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition-colors">
+                                Tentar Novamente
+                            </button>
                         </div>
                     </template>
 
                     <template x-if="playerStatus === 'fatal_error'">
                         <div class="flex flex-col items-center">
                             <h3 class="text-red-500 font-bold text-xl mb-2">Erro Crítico</h3>
-                            <p class="text-zinc-400 mb-4">A RedeFlixApi não respondeu. Tente novamente.</p>
-                            <button @click="loadServer(0)" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition-colors">
-                                Tentar Novamente
+                            <p class="text-zinc-400 mb-4">Todos os servidores falharam.</p>
+                            <button @click="closePlayer()" class="bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2 px-6 rounded transition-colors">
+                                Fechar
                             </button>
                         </div>
                     </template>
                 </div>
             </div>
             
-            <div class="bg-zinc-900 p-3 flex gap-2 justify-center border-t border-zinc-800">
+            <div class="bg-zinc-900 p-3 flex gap-2 justify-center border-t border-zinc-800 z-30 relative">
                 <template x-for="(server, index) in servers" :key="index">
                     <button 
                         @click="currentServerIndex = index; loadServer(index)"
@@ -324,7 +337,7 @@
                 currentMovie: null,
                 currentEpisode: null,
                 currentServerIndex: 0,
-                currentServerUrl: '', // ✅ Para debug
+                currentServerUrl: '',
                 playerStatus: 'loading', 
                 fallbackTimer: null,
                 
@@ -404,9 +417,6 @@
                     }
                 },
 
-                // ==========================================
-                // MODAL DE DETALHES DA SÉRIE
-                // ==========================================
                 async openSeriesDetails(series) {
                     this.selectedSeries = series;
                     this.isSeriesModalOpen = true;
@@ -459,15 +469,13 @@
                     this.openPlayer(this.selectedSeries, episode);
                 },
 
-                // ==========================================
-                // PLAYER (FILMES E EPISÓDIOS)
-                // ==========================================
                 openPlayer(media, episode = null) {
                     this.currentMovie = media;
                     this.currentEpisode = episode;
                     this.isPlayerOpen = true;
                     this.currentServerIndex = 0;
                     this.playerStatus = 'loading';
+                    this.currentServerUrl = '';
                     this.loadServer(0);
                 },
 
@@ -479,34 +487,40 @@
                     this.currentServerUrl = '';
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     const iframe = document.getElementById('video-player-iframe');
-                    if (iframe) iframe.src = "";
+                    if (iframe) iframe.src = "about:blank";
                 },
 
-                // ==========================================
-                // ✅ MONTAGEM DA URL (REDEFLIX API) - CORRIGIDA
-                // ==========================================
-                getServerUrl(server, media, episode = null) {
-                    if (!media || !media.id) {
-                        console.warn("[Ricoflix] Media ou ID não encontrado:", media);
-                        return server.baseUrl;
+                async getImdbId(tmdbId, mediaType) {
+                    try {
+                        const res = await fetch(`https://api.themoviedb.org/3/${mediaType}/${tmdbId}/external_ids?api_key=${this.tmdbApiKey}`);
+                        const data = await res.json();
+                        return data.imdb_id || null;
+                    } catch (error) {
+                        console.error("[Ricoflix] Erro ao buscar IMDB ID:", error);
+                        return null;
                     }
+                },
 
-                    // ✅ Para SÉRIES: /serie/{id}/{temporada}/{episodio}
+                async buildServerUrl(server, media, episode) {
+                    if (!media || !media.id) return server.baseUrl;
+
+                    const imdbId = await this.getImdbId(media.id, media.media_type || 'movie');
+                    const finalId = imdbId || media.id;
+
                     if (episode) {
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
-                        const url = `${server.baseUrl}/serie/${media.id}/${season}/${epNum}`;
-                        console.log(`[Ricoflix] URL da Série: ${url}`);
+                        const url = `${server.baseUrl}/serie/${finalId}/${season}/${epNum}`;
+                        console.log(`[Ricoflix] URL da Série: ${url} (ID usado: ${finalId})`);
                         return url;
                     }
                     
-                    // ✅ Para FILMES: /filme/{id}
-                    const url = `${server.baseUrl}/filme/${media.id}`;
-                    console.log(`[Ricoflix] URL do Filme: ${url} (ID TMDB: ${media.id})`);
+                    const url = `${server.baseUrl}/filme/${finalId}`;
+                    console.log(`[Ricoflix] URL do Filme: ${url} (TMDB: ${media.id} | IMDB: ${imdbId})`);
                     return url;
                 },
 
-                loadServer(index) {
+                loadServer: async function(index) {
                     const server = this.servers[index];
                     if (!server) {
                         this.playerStatus = 'fatal_error';
@@ -516,46 +530,31 @@
                     this.playerStatus = 'loading';
                     const iframe = document.getElementById('video-player-iframe');
                     
-                    // ✅ Monta a URL e salva para debug
-                    this.currentServerUrl = this.getServerUrl(server, this.currentMovie, this.currentEpisode);
+                    const finalUrl = await this.buildServerUrl(server, this.currentMovie, this.currentEpisode);
+                    this.currentServerUrl = finalUrl;
                     
-                    console.log(`[Ricoflix] Carregando: ${server.name} -> ${this.currentServerUrl}`);
-                    iframe.src = this.currentServerUrl; 
+                    console.log(`[Ricoflix] Carregando iframe: ${finalUrl}`);
+                    iframe.src = finalUrl;
 
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
-                    
-                    // ⚠️ Aumentei para 12 segundos, porque a RedeFlixApi pode demorar
                     this.fallbackTimer = setTimeout(() => {
-                        console.log(`[ERRO] ${server.name} não respondeu em 12s.`);
-                        this.playerStatus = 'error';
-                        
-                        const nextIndex = index + 1;
-                        if (nextIndex < this.servers.length) {
-                            setTimeout(() => {
-                                this.currentServerIndex = nextIndex;
-                                this.loadServer(nextIndex);
-                            }, 1500);
-                        } else {
-                            this.playerStatus = 'fatal_error';
+                        if (this.playerStatus === 'loading') {
+                            console.warn(`[Ricoflix] Timeout: ${server.name} não respondeu em 15s`);
+                            this.playerStatus = 'error';
                         }
-                    }, 12000);
+                    }, 15000);
                 },
 
                 onIframeLoad() {
-                    // ⚠️ IMPORTANTE: O iframe dispara onload mesmo se a página de erro carregar.
-                    // Por isso, NÃO cancelamos o timeout aqui. Deixamos ele verificar se o player
-                    // realmente carregou. Se a URL estiver correta, o iframe mostra o player.
-                    // Se estiver errada, o timeout vai disparar.
-                    console.log("[Ricoflix] iframe carregou (onload disparado)");
+                    console.log("[Ricoflix] Iframe disparou onload. Verificando conteúdo...");
                     
-                    // Pequeno delay para garantir que o conteúdo carregou de verdade
                     setTimeout(() => {
                         if (this.playerStatus === 'loading') {
-                            // Assume que carregou se depois de 3s ainda está em loading
-                            // Isso evita o falso positivo de "Conteúdo não encontrado"
+                            console.log("[Ricoflix] Player carregado com sucesso!");
                             this.playerStatus = 'ready';
+                            if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                         }
-                    }, 3000);
+                    }, 4000);
                 }
             }
         }
