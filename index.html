@@ -228,7 +228,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- MODAL DO PLAYER -->
+    <!-- MODAL DO PLAYER (COM FALLBACK) -->
     <!-- ========================================== -->
     <div 
         x-show="isPlayerOpen" 
@@ -252,7 +252,8 @@
                     id="video-player-iframe"
                     class="absolute inset-0 w-full h-full border-0 z-10"
                     allowfullscreen
-                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                    referrerpolicy="no-referrer"
                     @load="onIframeLoad()"
                 ></iframe>
 
@@ -269,23 +270,43 @@
                         </div>
                     </template>
 
-                    <template x-if="playerStatus === 'error'">
-                        <div class="flex flex-col items-center">
-                            <svg class="h-12 w-12 text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <template x-if="playerStatus === 'blocked' || playerStatus === 'error'">
+                        <div class="flex flex-col items-center max-w-lg">
+                            <svg class="h-12 w-12 text-yellow-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
-                            <h3 class="text-white font-bold text-lg mb-1">Conteúdo não encontrado</h3>
-                            <p class="text-zinc-400 text-sm mb-4">A API demorou para responder. Tente novamente.</p>
-                            <button @click="loadServer(0)" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition-colors">
-                                Tentar Novamente
-                            </button>
+                            <h3 class="text-white font-bold text-lg mb-1">O player não carregou aqui</h3>
+                            <p class="text-zinc-400 text-sm mb-4">O servidor pode estar bloqueando a exibição dentro do site.</p>
+                            
+                            <div class="bg-zinc-900 border border-zinc-700 rounded p-3 mb-4 w-full">
+                                <p class="text-zinc-500 text-xs mb-1">URL gerada:</p>
+                                <p class="text-yellow-400 text-xs break-all font-mono" x-text="currentServerUrl"></p>
+                            </div>
+
+                            <a 
+                                :href="currentServerUrl" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded transition-colors inline-flex items-center gap-2 mb-3"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                Abrir player em nova aba
+                            </a>
+
+                            <button 
+                                @click="copyUrl()" 
+                                class="bg-zinc-700 hover:bg-zinc-600 text-white text-sm font-bold py-2 px-4 rounded transition-colors"
+                                x-text="copied ? '✅ Copiado!' : '📋 Copiar URL'"
+                            ></button>
                         </div>
                     </template>
 
                     <template x-if="playerStatus === 'fatal_error'">
                         <div class="flex flex-col items-center">
                             <h3 class="text-red-500 font-bold text-xl mb-2">Erro Crítico</h3>
-                            <p class="text-zinc-400 mb-4">Todos os servidores falharam.</p>
+                            <p class="text-zinc-400 mb-4">Nenhum servidor conseguiu carregar.</p>
                             <button @click="closePlayer()" class="bg-zinc-700 hover:bg-zinc-600 text-white font-bold py-2 px-6 rounded transition-colors">
                                 Fechar
                             </button>
@@ -294,15 +315,31 @@
                 </div>
             </div>
             
-            <div class="bg-zinc-900 p-3 flex gap-2 justify-center border-t border-zinc-800 z-30 relative">
-                <template x-for="(server, index) in servers" :key="index">
-                    <button 
-                        @click="currentServerIndex = index; loadServer(index)"
-                        class="px-4 py-1.5 rounded text-xs font-bold transition-colors"
-                        :class="currentServerIndex === index ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'"
-                        x-text="server.name"
-                    ></button>
-                </template>
+            <div class="bg-zinc-900 p-3 flex flex-col gap-2 border-t border-zinc-800 z-30 relative">
+                <div class="flex gap-2 justify-center flex-wrap">
+                    <template x-for="(server, index) in servers" :key="index">
+                        <button 
+                            @click="currentServerIndex = index; loadServer(index)"
+                            class="px-4 py-1.5 rounded text-xs font-bold transition-colors"
+                            :class="currentServerIndex === index ? 'bg-red-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'"
+                            x-text="server.name"
+                        ></button>
+                    </template>
+                </div>
+
+                <div class="text-center pt-2 border-t border-zinc-800">
+                    <a 
+                        :href="currentServerUrl" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        class="text-zinc-500 hover:text-red-500 text-xs transition-colors inline-flex items-center gap-1"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Se o vídeo não carregar, clique aqui para abrir direto
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -338,8 +375,9 @@
                 currentEpisode: null,
                 currentServerIndex: 0,
                 currentServerUrl: '',
-                playerStatus: 'loading', 
+                playerStatus: 'loading',
                 fallbackTimer: null,
+                copied: false,
                 
                 servers: [
                     { name: "Servidor 1 (RedeFlix)", baseUrl: "https://redeflixapi.store" }
@@ -534,19 +572,29 @@
                     this.currentServerUrl = finalUrl;
                     
                     console.log(`[Ricoflix] Carregando iframe: ${finalUrl}`);
+                    
+                    iframe.src = "about:blank";
+                    await new Promise(r => setTimeout(r, 100));
                     iframe.src = finalUrl;
 
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     this.fallbackTimer = setTimeout(() => {
                         if (this.playerStatus === 'loading') {
-                            console.warn(`[Ricoflix] Timeout: ${server.name} não respondeu em 15s`);
-                            this.playerStatus = 'error';
+                            console.warn(`[Ricoflix] Timeout: player não carregou em 10s. Marcando como bloqueado.`);
+                            this.playerStatus = 'blocked';
                         }
-                    }, 15000);
+                    }, 10000);
+                },
+
+                copyUrl() {
+                    navigator.clipboard.writeText(this.currentServerUrl).then(() => {
+                        this.copied = true;
+                        setTimeout(() => { this.copied = false; }, 2000);
+                    });
                 },
 
                 onIframeLoad() {
-                    console.log("[Ricoflix] Iframe disparou onload. Verificando conteúdo...");
+                    console.log("[Ricoflix] Iframe disparou onload. Aguardando 3s para confirmar...");
                     
                     setTimeout(() => {
                         if (this.playerStatus === 'loading') {
@@ -554,7 +602,7 @@
                             this.playerStatus = 'ready';
                             if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                         }
-                    }, 4000);
+                    }, 3000);
                 }
             }
         }
