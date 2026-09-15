@@ -214,7 +214,7 @@
         </div>
     </div>
 
-    <!-- MODAL DO PLAYER (SEM SANDBOX - PLAYER FUNCIONA) -->
+    <!-- MODAL DO PLAYER -->
     <div 
         x-show="isPlayerOpen" 
         x-transition.opacity
@@ -233,14 +233,6 @@
             </div>
 
             <div class="relative w-full aspect-video bg-black">
-                <!-- 
-                    ✅ IFRAME SEM SANDBOX (player funciona):
-                    - allow: apenas o essencial para vídeo
-                    - referrerpolicy="no-referrer": esconde origem (ajuda contra tracking)
-                    
-                    ⚠️ ATENÇÃO: pop-ups internos do player PODEM aparecer. 
-                    A única forma 100% de bloquear é usar um proxy reverso no Vercel.
-                -->
                 <iframe 
                     id="video-player-iframe"
                     class="absolute inset-0 w-full h-full border-0 z-10"
@@ -269,7 +261,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <h3 class="text-white font-bold text-lg mb-1">O player não carregou</h3>
-                            <p class="text-zinc-400 text-sm mb-4">A API pode estar bloqueando o iframe. Tente abrir em nova aba.</p>
+                            <p class="text-zinc-400 text-sm mb-4">Tente abrir em nova aba ou trocar o servidor.</p>
                             
                             <div class="bg-zinc-900 border border-zinc-700 rounded p-3 mb-4 w-full">
                                 <p class="text-zinc-500 text-xs mb-1">URL gerada:</p>
@@ -388,15 +380,6 @@
                 async init() {
                     await this.fetchTMDBData();
                     this.isLoading = false;
-                    
-                    // ✅ Bloqueia tentativas de redirecionar o usuário para fora do site
-                    window.addEventListener('beforeunload', (e) => {
-                        if (this.isPlayerOpen) {
-                            // Se o player estiver aberto e a página tentar redirecionar, bloqueia
-                            e.preventDefault();
-                            e.returnValue = '';
-                        }
-                    });
                 },
 
                 async fetchTMDBData() {
@@ -550,6 +533,7 @@
                     }
                 },
 
+                // ✅ FUNÇÃO ATUALIZADA: Usa o proxy /api/player para limpar anúncios
                 async buildServerUrl(server, media, episode) {
                     if (!media || !media.id) return server.baseUrl;
 
@@ -557,22 +541,24 @@
 
                     if (this.useImdb) {
                         const imdbId = await this.getImdbId(media.id, media.media_type || 'movie');
-                        if (imdbId) {
-                            finalId = imdbId;
-                        }
+                        if (imdbId) finalId = imdbId;
                     }
 
+                    // Monta a URL de destino da RedeFlixApi
+                    let targetUrl = '';
                     if (episode) {
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
-                        const url = `${server.baseUrl}/serie/${finalId}/${season}/${epNum}`;
-                        console.log(`[Ricoflix] URL da Série: ${url} (ID: ${finalId} | Tipo: ${this.useImdb ? 'IMDB' : 'TMDB'})`);
-                        return url;
+                        targetUrl = `${server.baseUrl}/serie/${finalId}/${season}/${epNum}`;
+                    } else {
+                        targetUrl = `${server.baseUrl}/filme/${finalId}`;
                     }
-                    
-                    const url = `${server.baseUrl}/filme/${finalId}`;
-                    console.log(`[Ricoflix] URL do Filme: ${url} (ID: ${finalId} | Tipo: ${this.useImdb ? 'IMDB' : 'TMDB'})`);
-                    return url;
+
+                    // ✅ Aponta para o proxy /api/player que limpa os anúncios
+                    const proxyUrl = `/api/player?url=${encodeURIComponent(targetUrl)}`;
+                    console.log(`[Ricoflix] Carregando via proxy: ${proxyUrl}`);
+                    console.log(`[Ricoflix] URL de destino: ${targetUrl}`);
+                    return proxyUrl;
                 },
 
                 loadServer: async function(index) {
@@ -587,8 +573,6 @@
                     
                     const finalUrl = await this.buildServerUrl(server, this.currentMovie, this.currentEpisode);
                     this.currentServerUrl = finalUrl;
-                    
-                    console.log(`[Ricoflix] Carregando iframe: ${finalUrl}`);
                     
                     iframe.src = "about:blank";
                     await new Promise(r => setTimeout(r, 100));
