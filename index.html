@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ricoflix</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
-    <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
@@ -23,27 +20,35 @@
 </head>
 <body class="bg-[#0b0b0b] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-red-600 selection:text-white custom-scrollbar" x-data="ricoflixApp()" x-init="init()">
 
-    <!-- HEADER -->
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
-        <div class="flex items-center justify-between px-4 md:px-8 py-4">
+    <!-- ========================================== -->
+    <!-- HEADER CORRIGIDO -->
+    <!-- ========================================== -->
+    <!-- ✅ CORREÇÃO 1: Adicionado z-[100] no header para garantir que fique acima de tudo -->
+    <header class="fixed top-0 left-0 right-0 z-[100] transition-all duration-500 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
+        <!-- ✅ CORREÇÃO 2: Adicionado relative e z-10 no container interno -->
+        <div class="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 pointer-events-auto">
             <div class="flex items-center gap-8">
-                <h1 class="text-2xl md:text-3xl font-black text-red-600 tracking-wider cursor-pointer hover:scale-105 transition-transform" @click="currentPage = 'home'">
+                <h1 class="text-2xl md:text-3xl font-black text-red-600 tracking-wider cursor-pointer hover:scale-105 transition-transform" @click="resetHome()">
                     RICOFLIX
                 </h1>
-                <nav class="hidden md:flex items-center gap-6 text-sm font-medium tracking-wide text-zinc-300">
-                    <a href="#" class="hover:text-white transition-colors">Início</a>
-                    <a href="#" class="hover:text-white transition-colors">Filmes</a>
-                    <a href="#" class="hover:text-white transition-colors">Séries</a>
-                    <a href="#" class="hover:text-white transition-colors">Minha Lista</a>
+                
+                <!-- ✅ CORREÇÃO 3: Adicionado pointer-events-auto no nav e cursor-pointer nos links -->
+                <nav class="hidden md:flex items-center gap-6 text-sm font-medium tracking-wide text-zinc-300 pointer-events-auto">
+                    <a href="#" @click.prevent="resetHome()" class="cursor-pointer hover:text-white transition-colors">Início</a>
+                    <a href="#" @click.prevent="setCategory('movie')" class="cursor-pointer hover:text-white transition-colors" :class="currentCategory === 'movie' ? 'text-white font-bold' : ''">Filmes</a>
+                    <a href="#" @click.prevent="setCategory('tv')" class="cursor-pointer hover:text-white transition-colors" :class="currentCategory === 'tv' ? 'text-white font-bold' : ''">Séries</a>
+                    <a href="#" class="cursor-pointer hover:text-white transition-colors">Minha Lista</a>
                 </nav>
             </div>
             
-            <div class="flex items-center gap-4">
+            <!-- ✅ CORREÇÃO 4: Input de busca agora dispara a função searchTMDB() com debounce -->
+            <div class="flex items-center gap-4 pointer-events-auto">
                 <input 
                     type="text" 
                     placeholder="Títulos, gente e gêneros..." 
                     class="bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm text-white placeholder-zinc-400 outline-none focus:border-red-500 focus:bg-white/15 transition-all w-40 md:w-64"
                     x-model="searchQuery"
+                    @input.debounce.500ms="searchTMDB()"
                 >
                 <div class="w-8 h-8 rounded bg-zinc-800 flex items-center justify-center cursor-pointer hover:bg-zinc-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,7 +60,8 @@
     </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main class="flex-grow">
+    <!-- ✅ CORREÇÃO 5: Adicionado pt-20 para o conteúdo não ficar embaixo do header fixo -->
+    <main class="flex-grow pt-20">
         
         <!-- Loading Global -->
         <div x-show="isLoading" class="fixed inset-0 z-[200] bg-[#0b0b0b] flex items-center justify-center">
@@ -65,9 +71,9 @@
             </div>
         </div>
 
-        <!-- DESTAQUE (HERO) -->
-        <section class="relative h-[75vh] w-full" x-show="!isLoading">
-            <div class="absolute inset-0 bg-[url('https://image.tmdb.org/t/p/original/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg')] bg-cover bg-center"></div>
+        <!-- DESTAQUE (HERO) - Só aparece na Home -->
+        <section class="relative h-[75vh] w-full" x-show="!isLoading && currentCategory === 'home' && !searchQuery">
+            <div class="absolute inset-0 bg-[url('https://image.tmdb.org/t/p/original/7WsyChQvtgOZ7qXwZ9Z2Wk1.jpg')] bg-cover bg-center" style="background-image: url('https://image.tmdb.org/t/p/original/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg');"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0b0b] via-[#0b0b0b]/60 to-transparent"></div>
             
             <div class="absolute bottom-0 left-0 right-0 p-4 md:p-12 z-10 max-w-2xl">
@@ -89,20 +95,35 @@
             </div>
         </section>
 
-        <!-- SEÇÃO: FILMES POPULARES -->
-        <section class="px-4 md:px-8 -mt-10 relative z-20 pb-10" x-show="!isLoading">
-            <h3 class="text-xl font-bold mb-4 text-white">Filmes Populares</h3>
+        <!-- SEÇÃO DE CONTEÚDO (Filmes Populares / Séries / Resultados de Busca) -->
+        <section class="px-4 md:px-8 relative z-20 pb-10" :class="currentCategory === 'home' && !searchQuery ? '-mt-10' : 'mt-8'" x-show="!isLoading">
             
-            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
-                <template x-for="movie in popularMovies" :key="movie.id">
-                    <div class="flex-none w-[140px] md:w-[160px] relative group cursor-pointer snap-start" @click="openPlayer(movie)">
+            <!-- Título Dinâmico -->
+            <h3 class="text-xl font-bold mb-4 text-white">
+                <span x-show="searchQuery">Resultados para: "<span x-text="searchQuery"></span>"</span>
+                <span x-show="!searchQuery && currentCategory === 'home'">Filmes Populares</span>
+                <span x-show="!searchQuery && currentCategory === 'movie'">Filmes Populares</span>
+                <span x-show="!searchQuery && currentCategory === 'tv'">Séries Populares</span>
+            </h3>
+            
+            <!-- Nenhum resultado -->
+            <div x-show="!isLoading && contentList.length === 0" class="text-center py-20">
+                <p class="text-zinc-400 text-lg">Nenhum resultado encontrado 😕</p>
+            </div>
+
+            <!-- Grid de Conteúdo -->
+            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x" x-show="contentList.length > 0">
+                <template x-for="item in contentList" :key="item.id">
+                    <div class="flex-none w-[140px] md:w-[160px] relative group cursor-pointer snap-start" @click="openPlayer(item)">
                         <div class="relative rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:z-10 shadow-lg">
-                            <img :src="getImageUrl(movie.poster_path)" :alt="movie.title" class="w-full h-[210px] md:h-[240px] object-cover bg-zinc-800">
+                            <img :src="getImageUrl(item.poster_path)" :alt="item.title || item.name" class="w-full h-[210px] md:h-[240px] object-cover bg-zinc-800">
                             <div class="absolute top-2 left-2 bg-black/60 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                                 </svg>
                             </div>
+                            <!-- Badge de tipo -->
+                            <div class="absolute bottom-2 right-2 bg-black/70 text-[10px] font-bold text-white px-2 py-0.5 rounded backdrop-blur-sm uppercase" x-text="item.media_type === 'tv' || item.first_air_date ? 'Série' : 'Filme'"></div>
                         </div>
                     </div>
                 </template>
@@ -114,7 +135,7 @@
     <div 
         x-show="isPlayerOpen" 
         x-transition.opacity
-        class="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
+        class="fixed inset-0 z-[300] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4"
         style="display: none;"
     >
         <div class="relative w-full max-w-5xl bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
@@ -124,7 +145,7 @@
             </button>
 
             <div class="absolute top-0 left-0 w-full p-4 bg-gradient-to-b from-black/90 to-transparent z-20 pointer-events-none">
-                <h2 class="text-white font-bold text-lg pl-2" x-text="currentMovie ? currentMovie.title : 'Carregando...'"></h2>
+                <h2 class="text-white font-bold text-lg pl-2" x-text="currentMovie ? (currentMovie.title || currentMovie.name) : 'Carregando...'"></h2>
             </div>
 
             <div class="relative w-full aspect-video bg-zinc-900 flex items-center justify-center">
@@ -135,7 +156,6 @@
                     @load="onIframeLoad()"
                 ></iframe>
 
-                <!-- Overlay de Status -->
                 <div x-show="playerStatus !== 'ready'" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/80 text-center p-6">
                     
                     <template x-if="playerStatus === 'loading'">
@@ -180,32 +200,43 @@
         </div>
     </div>
 
-    <!-- SCRIPT PRINCIPAL -->
+    <!-- ========================================== -->
+    <!-- SCRIPT PRINCIPAL (ALPINE.JS) -->
+    <!-- ========================================== -->
     <script>
         function ricoflixApp() {
             return {
+                // --- ESTADOS DO APP ---
                 currentPage: 'home',
+                currentCategory: 'home', // 'home', 'movie', 'tv'
                 searchQuery: '',
                 isLoading: true,
                 errorMsg: '',
                 
-                // SUA CHAVE API DO TMDB
+                // --- DADOS DO TMDB ---
                 tmdbApiKey: '3cbe2c38513cc9d3266f2dc134ce9b29', 
                 popularMovies: [],
+                tvShows: [],
+                searchResults: [],
                 
+                // --- ESTADOS DO PLAYER ---
                 isPlayerOpen: false,
                 currentMovie: null,
                 currentServerIndex: 0,
                 playerStatus: 'loading', 
                 fallbackTimer: null,
                 
-                // --- SERVIDORES DE PRODUÇÃO (REDEFLIX API) ---
-                // Para adicionar um servidor de backup, basta adicionar um novo objeto nesta lista.
-                // O sistema tentará o primeiro, se falhar, vai para o próximo.
                 servers: [
-                    { name: "Servidor 1 (RedeFlix)", baseUrl: "https://redeflixapi.store" },
-                    { name: "Servidor 2 (Backup)", baseUrl: "https://redeflixapi.store" } // Exemplo: se você tiver uma API de backup, troque a baseUrl
+                    { name: "Servidor 1 (RedeFlix)", baseUrl: "https://redeflixapi.store" }
                 ],
+
+                // ✅ CORREÇÃO 6: Propriedade computada que decide qual lista mostrar
+                get contentList() {
+                    if (this.searchQuery && this.searchResults.length > 0) return this.searchResults;
+                    if (this.searchQuery) return this.searchResults;
+                    if (this.currentCategory === 'tv') return this.tvShows;
+                    return this.popularMovies;
+                },
 
                 async init() {
                     await this.fetchTMDBData();
@@ -214,13 +245,18 @@
 
                 async fetchTMDBData() {
                     try {
-                        const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${this.tmdbApiKey}&language=pt-BR&page=1`);
-                        const data = await res.json();
-                        if (data.results) {
-                            this.popularMovies = data.results;
-                        } else {
-                            console.error("Erro na API TMDB:", data);
-                            this.errorMsg = "Chave de API inválida ou limite excedido.";
+                        // Busca Filmes Populares
+                        const movieRes = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${this.tmdbApiKey}&language=pt-BR&page=1`);
+                        const movieData = await movieRes.json();
+                        if (movieData.results) {
+                            this.popularMovies = movieData.results.map(m => ({ ...m, media_type: 'movie' }));
+                        }
+
+                        // ✅ CORREÇÃO 7: Busca Séries Populares
+                        const tvRes = await fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${this.tmdbApiKey}&language=pt-BR&page=1`);
+                        const tvData = await tvRes.json();
+                        if (tvData.results) {
+                            this.tvShows = tvData.results.map(t => ({ ...t, media_type: 'tv' }));
                         }
                     } catch (error) {
                         console.error("Erro de rede:", error);
@@ -228,32 +264,65 @@
                     }
                 },
 
+                // ✅ CORREÇÃO 8: Função de busca real no TMDB
+                async searchTMDB() {
+                    const query = this.searchQuery.trim();
+                    if (!query) {
+                        this.searchResults = [];
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${this.tmdbApiKey}&language=pt-BR&query=${encodeURIComponent(query)}&page=1`);
+                        const data = await res.json();
+                        if (data.results) {
+                            // Filtra apenas filmes e séries (remove "person")
+                            this.searchResults = data.results.filter(item => item.media_type === 'movie' || item.media_type === 'tv');
+                        }
+                    } catch (error) {
+                        console.error("Erro na busca:", error);
+                    }
+                },
+
+                // ✅ CORREÇÃO 9: Funções para os botões do menu
+                resetHome() {
+                    this.currentCategory = 'home';
+                    this.searchQuery = '';
+                    this.searchResults = [];
+                },
+
+                setCategory(category) {
+                    this.currentCategory = category;
+                    this.searchQuery = '';
+                    this.searchResults = [];
+                },
+
                 getImageUrl(path, size = 'w500') {
                     if (!path) return 'https://via.placeholder.com/300x450/333/fff?text=Sem+Imagem';
                     return `https://image.tmdb.org/t/p/${size}${path}`;
                 },
 
-                // --- FUNÇÃO INTELIGENTE QUE MONTA A URL DA REDEFLIX API ---
-                getServerUrl(server, movie) {
-                    if (!movie || !movie.id) return server.baseUrl;
+                // --- FUNÇÃO QUE MONTA A URL DA REDEFLIX API ---
+                getServerUrl(server, media) {
+                    if (!media || !media.id) return server.baseUrl;
 
-                    // Se for um Filme
-                    if (movie.type === 'movie' || !movie.type) {
-                        return `${server.baseUrl}/filme/${movie.id}`;
+                    const type = media.media_type || media.type || 'movie';
+
+                    if (type === 'movie') {
+                        return `${server.baseUrl}/filme/${media.id}`;
                     }
                     
-                    // Se for uma Série (com temporada e episódio)
-                    if (movie.type === 'tv') {
-                        const season = movie.season || 1;
-                        const episode = movie.episode || 1;
-                        return `${server.baseUrl}/serie/${movie.id}/${season}/${episode}`;
+                    if (type === 'tv') {
+                        const season = media.season || 1;
+                        const episode = media.episode || 1;
+                        return `${server.baseUrl}/serie/${media.id}/${season}/${episode}`;
                     }
 
                     return server.baseUrl;
                 },
 
-                openPlayer(movie) {
-                    this.currentMovie = movie;
+                openPlayer(media) {
+                    this.currentMovie = media;
                     this.isPlayerOpen = true;
                     this.currentServerIndex = 0;
                     this.playerStatus = 'loading';
@@ -279,20 +348,15 @@
                     this.playerStatus = 'loading';
                     const iframe = document.getElementById('video-player-iframe');
                     
-                    // Monta a URL real da RedeFlixApi
                     const finalUrl = this.getServerUrl(server, this.currentMovie);
                     console.log(`[Ricoflix] Carregando: ${server.name} -> ${finalUrl}`);
                     
                     iframe.src = finalUrl; 
 
-                    // ==========================================
-                    // O BUGFIX: TIMEOUT DE FALLBACK
-                    // ==========================================
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     
-                    // Aumentei para 8 segundos, pois APIs reais podem demorar um pouco mais
                     this.fallbackTimer = setTimeout(() => {
-                        console.log(`[ERRO] ${server.name} não respondeu a tempo. Tentando próximo...`);
+                        console.log(`[ERRO] ${server.name} não respondeu. Tentando próximo...`);
                         this.playerStatus = 'error';
                         
                         const nextIndex = index + 1;
@@ -304,11 +368,10 @@
                         } else {
                             this.playerStatus = 'fatal_error';
                         }
-                    }, 8000); // 8 segundos
+                    }, 8000);
                 },
 
                 onIframeLoad() {
-                    // Se o iframe carregou, cancela o timeout de erro
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     this.playerStatus = 'ready';
                 }
