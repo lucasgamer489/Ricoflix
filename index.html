@@ -16,10 +16,6 @@
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         body { background-color: #0b0b0b; }
-        
-        /* Animação de fade do modal */
-        .modal-fade-enter { opacity: 0; }
-        .modal-fade-enter-active { transition: opacity 0.3s; opacity: 1; }
     </style>
 </head>
 <body class="bg-[#0b0b0b] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-red-600 selection:text-white custom-scrollbar" x-data="ricoflixApp()" x-init="init()">
@@ -107,7 +103,6 @@
 
             <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x" x-show="contentList.length > 0">
                 <template x-for="item in contentList" :key="item.id">
-                    <!-- ✅ CORREÇÃO: Ação de clique agora chama openContent() que decide se abre o player ou o modal de série -->
                     <div class="flex-none w-[140px] md:w-[160px] relative group cursor-pointer snap-start" @click="openContent(item)">
                         <div class="relative rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:z-10 shadow-lg">
                             <img :src="getImageUrl(item.poster_path)" :alt="item.title || item.name" class="w-full h-[210px] md:h-[240px] object-cover bg-zinc-800">
@@ -135,7 +130,6 @@
     >
         <div class="relative w-full max-w-4xl bg-zinc-950 rounded-xl overflow-hidden shadow-2xl border border-zinc-800 my-8">
             
-            <!-- Botão Fechar -->
             <button @click="closeSeriesModal()" class="absolute top-4 right-4 z-40 bg-black/70 hover:bg-black text-white rounded-full p-2 transition-colors backdrop-blur-md">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
@@ -145,7 +139,6 @@
                 <img :src="getImageUrl(selectedSeries?.backdrop_path, 'original')" :alt="selectedSeries?.name" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/60 to-transparent"></div>
                 
-                <!-- Informações sobrepostas -->
                 <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10">
                     <h2 class="text-3xl md:text-5xl font-extrabold text-white mb-2" x-text="selectedSeries?.name"></h2>
                     <div class="flex items-center gap-3 text-sm text-zinc-300 mb-3">
@@ -164,7 +157,6 @@
             <!-- Seletor de Temporada e Lista de Episódios -->
             <div class="p-6 md:p-10 bg-zinc-950">
                 
-                <!-- Seletor de Temporada (Estilo Netflix) -->
                 <div class="flex items-center justify-between mb-6 border-b border-zinc-800 pb-4">
                     <div class="relative">
                         <select 
@@ -183,7 +175,6 @@
                     <span class="text-zinc-400 text-sm" x-text="episodes.length + ' episódios'"></span>
                 </div>
 
-                <!-- Loading dos Episódios -->
                 <div x-show="isLoadingEpisodes" class="flex justify-center py-10">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
                 </div>
@@ -193,13 +184,10 @@
                     <template x-for="(episode, index) in episodes" :key="episode.id">
                         <div class="flex flex-col md:flex-row gap-4 py-4 group hover:bg-zinc-900/50 transition-colors rounded-lg px-2">
                             
-                            <!-- Número do Episódio -->
                             <div class="hidden md:flex items-center justify-center w-10 text-2xl font-bold text-zinc-500 group-hover:text-white transition-colors" x-text="episode.episode_number"></div>
                             
-                            <!-- Thumbnail -->
                             <div class="relative flex-none w-full md:w-[180px] h-[100px] rounded-md overflow-hidden bg-zinc-800 cursor-pointer" @click="playEpisode(episode)">
                                 <img :src="getImageUrl(episode.still_path, 'w300')" :alt="episode.name" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
-                                <!-- Ícone de Play sobreposto -->
                                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
                                     <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/50">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white ml-0.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
@@ -207,7 +195,6 @@
                                 </div>
                             </div>
 
-                            <!-- Informações do Episódio -->
                             <div class="flex-grow flex flex-col justify-center">
                                 <div class="flex justify-between items-start mb-1">
                                     <h4 class="text-white font-bold text-base md:text-lg" x-text="episode.name"></h4>
@@ -216,7 +203,6 @@
                                 <p class="text-zinc-400 text-sm line-clamp-2 leading-relaxed" x-text="episode.overview || 'Sinopse não disponível.'"></p>
                             </div>
 
-                            <!-- Botão de Play (Mobile e Desktop) -->
                             <div class="flex items-center justify-end md:justify-center">
                                 <button @click="playEpisode(episode)" class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-4 py-2 rounded transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
@@ -227,7 +213,6 @@
                     </template>
                 </div>
 
-                <!-- Nenhum episódio -->
                 <div x-show="!isLoadingEpisodes && episodes.length === 0" class="text-center py-10 text-zinc-500">
                     Nenhum episódio encontrado para esta temporada.
                 </div>
@@ -269,6 +254,8 @@
                         <div class="flex flex-col items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
                             <p class="text-zinc-400 text-sm">Conectando à RedeFlixApi...</p>
+                            <!-- ✅ DEBUG: Mostra a URL que está sendo carregada -->
+                            <p class="text-zinc-600 text-xs mt-2 max-w-full truncate" x-text="'URL: ' + currentServerUrl"></p>
                         </div>
                     </template>
 
@@ -278,7 +265,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <h3 class="text-white font-bold text-lg mb-1">Conteúdo não encontrado</h3>
-                            <p class="text-zinc-400 text-sm">Trocando para o próximo servidor...</p>
+                            <p class="text-zinc-400 text-sm">A API não respondeu. Verifique o console.</p>
                         </div>
                     </template>
 
@@ -337,6 +324,7 @@
                 currentMovie: null,
                 currentEpisode: null,
                 currentServerIndex: 0,
+                currentServerUrl: '', // ✅ Para debug
                 playerStatus: 'loading', 
                 fallbackTimer: null,
                 
@@ -408,9 +396,6 @@
                     return `https://image.tmdb.org/t/p/${size}${path}`;
                 },
 
-                // ==========================================
-                // ✅ NOVA LÓGICA: ABRIR CONTEÚDO
-                // ==========================================
                 openContent(item) {
                     if (item.media_type === 'tv') {
                         this.openSeriesDetails(item);
@@ -420,7 +405,7 @@
                 },
 
                 // ==========================================
-                // ✅ MODAL DE DETALHES DA SÉRIE
+                // MODAL DE DETALHES DA SÉRIE
                 // ==========================================
                 async openSeriesDetails(series) {
                     this.selectedSeries = series;
@@ -429,15 +414,12 @@
                     this.episodes = [];
                     this.availableSeasons = [];
                     
-                    // Busca os detalhes completos da série para pegar as temporadas
                     try {
                         const res = await fetch(`https://api.themoviedb.org/3/tv/${series.id}?api_key=${this.tmdbApiKey}&language=pt-BR`);
                         const data = await res.json();
                         if (data.seasons) {
-                            // Filtra temporadas especiais (season 0)
                             this.availableSeasons = data.seasons.filter(s => s.season_number > 0);
                         }
-                        // Busca os episódios da temporada 1
                         await this.fetchSeasonDetails(series.id, 1);
                     } catch (error) {
                         console.error("Erro ao buscar detalhes da série:", error);
@@ -471,17 +453,9 @@
                     }
                 },
 
-                // ==========================================
-                // ✅ PLAYER: REPRODUZIR EPISÓDIO
-                // ==========================================
                 playEpisode(episode) {
-                    // Fecha o modal de detalhes
                     this.isSeriesModalOpen = false;
-                    
-                    // Define o episódio atual
                     this.currentEpisode = episode;
-                    
-                    // Abre o player passando a série como "movie" e o episódio
                     this.openPlayer(this.selectedSeries, episode);
                 },
 
@@ -502,26 +476,34 @@
                     this.currentMovie = null;
                     this.currentEpisode = null;
                     this.playerStatus = 'loading';
+                    this.currentServerUrl = '';
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     const iframe = document.getElementById('video-player-iframe');
                     if (iframe) iframe.src = "";
                 },
 
                 // ==========================================
-                // ✅ MONTAGEM DA URL (REDEFLIX API)
+                // ✅ MONTAGEM DA URL (REDEFLIX API) - CORRIGIDA
                 // ==========================================
                 getServerUrl(server, media, episode = null) {
-                    if (!media || !media.id) return server.baseUrl;
+                    if (!media || !media.id) {
+                        console.warn("[Ricoflix] Media ou ID não encontrado:", media);
+                        return server.baseUrl;
+                    }
 
-                    // Se for uma Série (tem episódio)
+                    // ✅ Para SÉRIES: /serie/{id}/{temporada}/{episodio}
                     if (episode) {
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
-                        return `${server.baseUrl}/serie/${media.id}/${season}/${epNum}`;
+                        const url = `${server.baseUrl}/serie/${media.id}/${season}/${epNum}`;
+                        console.log(`[Ricoflix] URL da Série: ${url}`);
+                        return url;
                     }
                     
-                    // Se for um Filme
-                    return `${server.baseUrl}/filme/${media.id}`;
+                    // ✅ Para FILMES: /filme/{id}
+                    const url = `${server.baseUrl}/filme/${media.id}`;
+                    console.log(`[Ricoflix] URL do Filme: ${url} (ID TMDB: ${media.id})`);
+                    return url;
                 },
 
                 loadServer(index) {
@@ -534,15 +516,17 @@
                     this.playerStatus = 'loading';
                     const iframe = document.getElementById('video-player-iframe');
                     
-                    const finalUrl = this.getServerUrl(server, this.currentMovie, this.currentEpisode);
-                    console.log(`[Ricoflix] Carregando: ${server.name} -> ${finalUrl}`);
+                    // ✅ Monta a URL e salva para debug
+                    this.currentServerUrl = this.getServerUrl(server, this.currentMovie, this.currentEpisode);
                     
-                    iframe.src = finalUrl; 
+                    console.log(`[Ricoflix] Carregando: ${server.name} -> ${this.currentServerUrl}`);
+                    iframe.src = this.currentServerUrl; 
 
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     
+                    // ⚠️ Aumentei para 12 segundos, porque a RedeFlixApi pode demorar
                     this.fallbackTimer = setTimeout(() => {
-                        console.log(`[ERRO] ${server.name} não respondeu. Tentando próximo...`);
+                        console.log(`[ERRO] ${server.name} não respondeu em 12s.`);
                         this.playerStatus = 'error';
                         
                         const nextIndex = index + 1;
@@ -554,12 +538,24 @@
                         } else {
                             this.playerStatus = 'fatal_error';
                         }
-                    }, 8000);
+                    }, 12000);
                 },
 
                 onIframeLoad() {
-                    if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
-                    this.playerStatus = 'ready';
+                    // ⚠️ IMPORTANTE: O iframe dispara onload mesmo se a página de erro carregar.
+                    // Por isso, NÃO cancelamos o timeout aqui. Deixamos ele verificar se o player
+                    // realmente carregou. Se a URL estiver correta, o iframe mostra o player.
+                    // Se estiver errada, o timeout vai disparar.
+                    console.log("[Ricoflix] iframe carregou (onload disparado)");
+                    
+                    // Pequeno delay para garantir que o conteúdo carregou de verdade
+                    setTimeout(() => {
+                        if (this.playerStatus === 'loading') {
+                            // Assume que carregou se depois de 3s ainda está em loading
+                            // Isso evita o falso positivo de "Conteúdo não encontrado"
+                            this.playerStatus = 'ready';
+                        }
+                    }, 3000);
                 }
             }
         }
