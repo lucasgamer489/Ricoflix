@@ -12,34 +12,24 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
-        /* Scrollbar customizada */
         .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
-        
-        /* Esconder scrollbar horizontal mas manter scroll */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        body {
-            background-color: #0b0b0b;
-        }
+        body { background-color: #0b0b0b; }
     </style>
 </head>
 <body class="bg-[#0b0b0b] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-red-600 selection:text-white custom-scrollbar" x-data="ricoflixApp()" x-init="init()">
 
-    <!-- ========================================== -->
-    <!-- HEADER / BARRA SUPERIOR -->
-    <!-- ========================================== -->
+    <!-- HEADER -->
     <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
         <div class="flex items-center justify-between px-4 md:px-8 py-4">
             <div class="flex items-center gap-8">
-                <!-- Logo -->
                 <h1 class="text-2xl md:text-3xl font-black text-red-600 tracking-wider cursor-pointer hover:scale-105 transition-transform" @click="currentPage = 'home'">
                     RICOFLIX
                 </h1>
-                <!-- Navegação (Desktop) -->
                 <nav class="hidden md:flex items-center gap-6 text-sm font-medium tracking-wide text-zinc-300">
                     <a href="#" class="hover:text-white transition-colors">Início</a>
                     <a href="#" class="hover:text-white transition-colors">Filmes</a>
@@ -48,7 +38,6 @@
                 </nav>
             </div>
             
-            <!-- Barra de Busca -->
             <div class="flex items-center gap-4">
                 <input 
                     type="text" 
@@ -65,9 +54,7 @@
         </div>
     </header>
 
-    <!-- ========================================== -->
     <!-- CONTEÚDO PRINCIPAL -->
-    <!-- ========================================== -->
     <main class="flex-grow">
         
         <!-- Loading Global -->
@@ -90,7 +77,7 @@
                     Diante de uma série de contratempos em seu primeiro filme, Andréa pede ajuda à antiga equipe da agência ASK. Mas a turma acaba piorando ainda mais a situação.
                 </p>
                 <div class="flex gap-3">
-                    <button @click="openPlayer({ id: 1, title: 'Dix pour cent: O Filme', poster_path: '' })" class="bg-white text-black font-bold py-2.5 px-6 rounded hover:bg-zinc-200 transition-colors flex items-center gap-2">
+                    <button @click="openPlayer({ id: 1, title: 'Dix pour cent: O Filme', type: 'movie' })" class="bg-white text-black font-bold py-2.5 px-6 rounded hover:bg-zinc-200 transition-colors flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
                         Assistir
                     </button>
@@ -106,14 +93,11 @@
         <section class="px-4 md:px-8 -mt-10 relative z-20 pb-10" x-show="!isLoading">
             <h3 class="text-xl font-bold mb-4 text-white">Filmes Populares</h3>
             
-            <!-- Grid de Filmes -->
             <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
                 <template x-for="movie in popularMovies" :key="movie.id">
                     <div class="flex-none w-[140px] md:w-[160px] relative group cursor-pointer snap-start" @click="openPlayer(movie)">
                         <div class="relative rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:z-10 shadow-lg">
                             <img :src="getImageUrl(movie.poster_path)" :alt="movie.title" class="w-full h-[210px] md:h-[240px] object-cover bg-zinc-800">
-                            
-                            <!-- Ícone de Coração -->
                             <div class="absolute top-2 left-2 bg-black/60 rounded-full w-8 h-8 flex items-center justify-center backdrop-blur-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -126,9 +110,7 @@
         </section>
     </main>
 
-    <!-- ========================================== -->
-    <!-- MODAL DO PLAYER (COM O BUGFIX DE FALLBACK) -->
-    <!-- ========================================== -->
+    <!-- MODAL DO PLAYER -->
     <div 
         x-show="isPlayerOpen" 
         x-transition.opacity
@@ -137,17 +119,14 @@
     >
         <div class="relative w-full max-w-5xl bg-black rounded-xl overflow-hidden shadow-2xl border border-zinc-800">
             
-            <!-- Botão Fechar -->
             <button @click="closePlayer()" class="absolute top-4 right-4 z-30 bg-red-600 hover:bg-red-700 text-white rounded-full p-2 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
 
-            <!-- Título do Filme -->
             <div class="absolute top-0 left-0 w-full p-4 bg-gradient-to-b from-black/90 to-transparent z-20 pointer-events-none">
                 <h2 class="text-white font-bold text-lg pl-2" x-text="currentMovie ? currentMovie.title : 'Carregando...'"></h2>
             </div>
 
-            <!-- Área do Vídeo -->
             <div class="relative w-full aspect-video bg-zinc-900 flex items-center justify-center">
                 <iframe 
                     id="video-player-iframe"
@@ -162,7 +141,7 @@
                     <template x-if="playerStatus === 'loading'">
                         <div class="flex flex-col items-center">
                             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mb-4"></div>
-                            <p class="text-zinc-400 text-sm">Conectando ao servidor...</p>
+                            <p class="text-zinc-400 text-sm">Conectando à RedeFlixApi...</p>
                         </div>
                     </template>
 
@@ -179,13 +158,15 @@
                     <template x-if="playerStatus === 'fatal_error'">
                         <div class="flex flex-col items-center">
                             <h3 class="text-red-500 font-bold text-xl mb-2">Erro Crítico</h3>
-                            <p class="text-zinc-400">Todos os servidores estão offline no momento.</p>
+                            <p class="text-zinc-400 mb-4">A RedeFlixApi não respondeu. Tente novamente.</p>
+                            <button @click="loadServer(0)" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition-colors">
+                                Tentar Novamente
+                            </button>
                         </div>
                     </template>
                 </div>
             </div>
             
-            <!-- Rodapé do Player -->
             <div class="bg-zinc-900 p-3 flex gap-2 justify-center border-t border-zinc-800">
                 <template x-for="(server, index) in servers" :key="index">
                     <button 
@@ -199,9 +180,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- SCRIPT PRINCIPAL (ALPINE.JS) -->
-    <!-- ========================================== -->
+    <!-- SCRIPT PRINCIPAL -->
     <script>
         function ricoflixApp() {
             return {
@@ -220,11 +199,12 @@
                 playerStatus: 'loading', 
                 fallbackTimer: null,
                 
-                // Servidores de exemplo. Substitua pelas URLs reais da sua API de embed.
+                // --- SERVIDORES DE PRODUÇÃO (REDEFLIX API) ---
+                // Para adicionar um servidor de backup, basta adicionar um novo objeto nesta lista.
+                // O sistema tentará o primeiro, se falhar, vai para o próximo.
                 servers: [
-                    { name: "Servidor 1 (Rede)", url: "https://api.servidor-falso.com/embed/" }, 
-                    { name: "Servidor 2 (Backup)", url: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" }, 
-                    { name: "Servidor 3 (Alternativo)", url: "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" }
+                    { name: "Servidor 1 (RedeFlix)", baseUrl: "https://redeflixapi.store" },
+                    { name: "Servidor 2 (Backup)", baseUrl: "https://redeflixapi.store" } // Exemplo: se você tiver uma API de backup, troque a baseUrl
                 ],
 
                 async init() {
@@ -251,6 +231,25 @@
                 getImageUrl(path, size = 'w500') {
                     if (!path) return 'https://via.placeholder.com/300x450/333/fff?text=Sem+Imagem';
                     return `https://image.tmdb.org/t/p/${size}${path}`;
+                },
+
+                // --- FUNÇÃO INTELIGENTE QUE MONTA A URL DA REDEFLIX API ---
+                getServerUrl(server, movie) {
+                    if (!movie || !movie.id) return server.baseUrl;
+
+                    // Se for um Filme
+                    if (movie.type === 'movie' || !movie.type) {
+                        return `${server.baseUrl}/filme/${movie.id}`;
+                    }
+                    
+                    // Se for uma Série (com temporada e episódio)
+                    if (movie.type === 'tv') {
+                        const season = movie.season || 1;
+                        const episode = movie.episode || 1;
+                        return `${server.baseUrl}/serie/${movie.id}/${season}/${episode}`;
+                    }
+
+                    return server.baseUrl;
                 },
 
                 openPlayer(movie) {
@@ -280,16 +279,20 @@
                     this.playerStatus = 'loading';
                     const iframe = document.getElementById('video-player-iframe');
                     
-                    // Aqui você deve concatenar o ID do filme na URL real da sua API.
-                    iframe.src = server.url; 
+                    // Monta a URL real da RedeFlixApi
+                    const finalUrl = this.getServerUrl(server, this.currentMovie);
+                    console.log(`[Ricoflix] Carregando: ${server.name} -> ${finalUrl}`);
+                    
+                    iframe.src = finalUrl; 
 
                     // ==========================================
                     // O BUGFIX: TIMEOUT DE FALLBACK
                     // ==========================================
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     
+                    // Aumentei para 8 segundos, pois APIs reais podem demorar um pouco mais
                     this.fallbackTimer = setTimeout(() => {
-                        console.log(`[ERRO] ${server.name} falhou. Tentando próximo...`);
+                        console.log(`[ERRO] ${server.name} não respondeu a tempo. Tentando próximo...`);
                         this.playerStatus = 'error';
                         
                         const nextIndex = index + 1;
@@ -301,10 +304,11 @@
                         } else {
                             this.playerStatus = 'fatal_error';
                         }
-                    }, 5000); 
+                    }, 8000); // 8 segundos
                 },
 
                 onIframeLoad() {
+                    // Se o iframe carregou, cancela o timeout de erro
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     this.playerStatus = 'ready';
                 }
