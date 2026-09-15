@@ -261,7 +261,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <h3 class="text-white font-bold text-lg mb-1">O player não carregou</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Tente abrir em nova aba ou trocar o servidor.</p>
+                            <p class="text-zinc-400 text-sm mb-4">Tente abrir em nova aba.</p>
                             
                             <div class="bg-zinc-900 border border-zinc-700 rounded p-3 mb-4 w-full">
                                 <p class="text-zinc-500 text-xs mb-1">URL gerada:</p>
@@ -287,12 +287,6 @@
                                     x-text="copied ? '✅ Copiado!' : '📋 Copiar URL'"
                                 ></button>
                             </div>
-
-                            <button 
-                                @click="toggleIdType()" 
-                                class="bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold py-2 px-4 rounded transition-colors border border-zinc-600"
-                                x-text="'Tentar com ID: ' + (useImdb ? 'TMDB' : 'IMDB')"
-                            ></button>
                         </div>
                     </template>
 
@@ -365,7 +359,6 @@
                 playerStatus: 'loading',
                 fallbackTimer: null,
                 copied: false,
-                useImdb: false,
                 
                 servers: [
                     { name: "Servidor 1 (RedeFlix)", baseUrl: "https://redeflixapi.store" }
@@ -516,52 +509,25 @@
                     if (iframe) iframe.src = "about:blank";
                 },
 
-                toggleIdType() {
-                    this.useImdb = !this.useImdb;
-                    console.log(`[Ricoflix] Mudando para: ${this.useImdb ? 'IMDB' : 'TMDB'}`);
-                    this.loadServer(this.currentServerIndex);
-                },
-
-                async getImdbId(tmdbId, mediaType) {
-                    try {
-                        const res = await fetch(`https://api.themoviedb.org/3/${mediaType}/${tmdbId}/external_ids?api_key=${this.tmdbApiKey}`);
-                        const data = await res.json();
-                        return data.imdb_id || null;
-                    } catch (error) {
-                        console.error("[Ricoflix] Erro ao buscar IMDB ID:", error);
-                        return null;
-                    }
-                },
-
-                // ✅ FUNÇÃO ATUALIZADA: Usa o proxy /api/player para limpar anúncios
-                async buildServerUrl(server, media, episode) {
+                // ✅ FUNÇÃO SIMPLIFICADA: Aponta DIRETO pra RedeFlix (sem proxy)
+                // Assim o botão "Servidor 1" funciona normalmente dentro do iframe
+                buildServerUrl(server, media, episode) {
                     if (!media || !media.id) return server.baseUrl;
 
-                    let finalId = media.id;
-
-                    if (this.useImdb) {
-                        const imdbId = await this.getImdbId(media.id, media.media_type || 'movie');
-                        if (imdbId) finalId = imdbId;
-                    }
-
-                    // Monta a URL de destino da RedeFlixApi
-                    let targetUrl = '';
                     if (episode) {
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
-                        targetUrl = `${server.baseUrl}/serie/${finalId}/${season}/${epNum}`;
-                    } else {
-                        targetUrl = `${server.baseUrl}/filme/${finalId}`;
+                        const url = `${server.baseUrl}/serie/${media.id}/${season}/${epNum}`;
+                        console.log(`[Ricoflix] URL da Série: ${url}`);
+                        return url;
                     }
-
-                    // ✅ Aponta para o proxy /api/player que limpa os anúncios
-                    const proxyUrl = `/api/player?url=${encodeURIComponent(targetUrl)}`;
-                    console.log(`[Ricoflix] Carregando via proxy: ${proxyUrl}`);
-                    console.log(`[Ricoflix] URL de destino: ${targetUrl}`);
-                    return proxyUrl;
+                    
+                    const url = `${server.baseUrl}/filme/${media.id}`;
+                    console.log(`[Ricoflix] URL do Filme: ${url}`);
+                    return url;
                 },
 
-                loadServer: async function(index) {
+                loadServer: function(index) {
                     const server = this.servers[index];
                     if (!server) {
                         this.playerStatus = 'fatal_error';
@@ -571,20 +537,24 @@
                     this.playerStatus = 'loading';
                     const iframe = document.getElementById('video-player-iframe');
                     
-                    const finalUrl = await this.buildServerUrl(server, this.currentMovie, this.currentEpisode);
+                    const finalUrl = this.buildServerUrl(server, this.currentMovie, this.currentEpisode);
                     this.currentServerUrl = finalUrl;
                     
+                    console.log(`[Ricoflix] Carregando iframe: ${finalUrl}`);
+                    
                     iframe.src = "about:blank";
-                    await new Promise(r => setTimeout(r, 100));
-                    iframe.src = finalUrl;
+                    setTimeout(() => {
+                        iframe.src = finalUrl;
+                    }, 100);
 
+                    // Timeout de segurança (só pra mostrar erro se travar)
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     this.fallbackTimer = setTimeout(() => {
                         if (this.playerStatus === 'loading') {
-                            console.warn(`[Ricoflix] Timeout: player não carregou em 10s.`);
+                            console.warn(`[Ricoflix] Timeout: player não respondeu em 15s.`);
                             this.playerStatus = 'blocked';
                         }
-                    }, 10000);
+                    }, 15000);
                 },
 
                 copyUrl() {
@@ -595,15 +565,12 @@
                 },
 
                 onIframeLoad() {
-                    console.log("[Ricoflix] Iframe disparou onload. Aguardando 4s para confirmar...");
-                    
-                    setTimeout(() => {
-                        if (this.playerStatus === 'loading') {
-                            console.log("[Ricoflix] Player carregado com sucesso!");
-                            this.playerStatus = 'ready';
-                            if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
-                        }
-                    }, 4000);
+                    console.log("[Ricoflix] Iframe carregou!");
+                    // Não marca como 'ready' automaticamente porque a tela de seleção
+                    // de servidor aparece primeiro. O usuário vai clicar em "Servidor 1"
+                    // dentro do iframe e o vídeo vai rodar.
+                    this.playerStatus = 'ready';
+                    if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                 }
             }
         }
