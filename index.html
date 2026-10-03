@@ -17,7 +17,6 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         body { background-color: #0b0b0b; }
         
-        /* Foco visível para TV (D-pad) */
         *:focus {
             outline: 3px solid #e50914 !important;
             outline-offset: 3px;
@@ -80,7 +79,6 @@
             </div>
         </div>
 
-        <!-- HERO -->
         <section class="relative h-[75vh] w-full" x-show="!isLoading && currentCategory === 'home' && !searchQuery">
             <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://image.tmdb.org/t/p/original/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg');"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0b0b] via-[#0b0b0b]/60 to-transparent"></div>
@@ -104,7 +102,6 @@
             </div>
         </section>
 
-        <!-- GRID -->
         <section class="px-4 md:px-8 relative z-20 pb-10" :class="currentCategory === 'home' && !searchQuery ? '-mt-10' : 'mt-8'" x-show="!isLoading">
             
             <h3 class="text-xl font-bold mb-4 text-white">
@@ -427,33 +424,33 @@
                 fallbackTimer: null,
                 copied: false,
                 
-                // ✅ SERVIDORES GRATUITOS (foco em conteúdo dublado)
-                // Todos usam o ID do TMDB diretamente
+                // ✅ SERVIDORES GRATUITOS COM DUBLAGEM PT-BR FORÇADA
+                // Ordem otimizada: SmashyStream e VidLink primeiro (melhor suporte dublado)
                 servers: [
                     { 
-                        name: "Servidor 1 (Embed.su)", 
-                        movieUrl: (id) => `https://embed.su/embed/movie/${id}`,
-                        tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}`
+                        name: "Servidor 1 (SmashyStream)", 
+                        movieUrl: (id) => `https://player.smashy.stream/movie/${id}?autoplay=true&dub=true&lang=pt`,
+                        tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}?s=${s}&e=${e}&autoplay=true&dub=true&lang=pt`
                     },
                     { 
                         name: "Servidor 2 (VidLink)", 
-                        movieUrl: (id) => `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true`,
-                        tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true`
+                        movieUrl: (id) => `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt`,
+                        tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt`
                     },
                     { 
                         name: "Servidor 3 (Vidsrc)", 
-                        movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
-                        tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`
+                        movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}?ds_lang=pt`,
+                        tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}?ds_lang=pt`
                     },
                     { 
-                        name: "Servidor 4 (SmashyStream)", 
-                        movieUrl: (id) => `https://player.smashy.stream/movie/${id}?autoplay=true&dub=true`,
-                        tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}?s=${s}&e=${e}&autoplay=true&dub=true`
+                        name: "Servidor 4 (Embed.su)", 
+                        movieUrl: (id) => `https://embed.su/embed/movie/${id}?lang=pt-BR`,
+                        tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}?lang=pt-BR`
                     },
                     { 
                         name: "Servidor 5 (2Embed)", 
-                        movieUrl: (id) => `https://www.2embed.cc/embed/${id}`,
-                        tvUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}`
+                        movieUrl: (id) => `https://www.2embed.cc/embed/${id}?lang=pt`,
+                        tvUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}&lang=pt`
                     }
                 ],
 
@@ -602,7 +599,6 @@
                     if (iframe) iframe.src = "about:blank";
                 },
 
-                // ✅ MONTAGEM DA URL: usa o ID do TMDB direto nos embeds gratuitos
                 buildServerUrl(server, media, episode) {
                     if (!media || !media.id) return '';
 
@@ -610,12 +606,12 @@
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
                         const url = server.tvUrl(media.id, season, epNum);
-                        console.log(`[Ricoflix] ${server.name} (Série): ${url}`);
+                        console.log(`[Ricoflix] ${server.name} (Série PT-BR): ${url}`);
                         return url;
                     }
                     
                     const url = server.movieUrl(media.id);
-                    console.log(`[Ricoflix] ${server.name} (Filme): ${url}`);
+                    console.log(`[Ricoflix] ${server.name} (Filme PT-BR): ${url}`);
                     return url;
                 },
 
