@@ -297,13 +297,6 @@
                                     </svg>
                                     Abrir em nova aba
                                 </a>
-
-                                <button 
-                                    tabindex="0"
-                                    @click="copyUrl()" 
-                                    class="tv-focusable bg-zinc-700 hover:bg-zinc-600 text-white text-sm font-bold py-2.5 px-4 rounded transition-colors"
-                                    x-text="copied ? '✅ Copiado!' : '📋 Copiar URL'"
-                                ></button>
                             </div>
                         </div>
                     </template>
@@ -424,33 +417,38 @@
                 fallbackTimer: null,
                 copied: false,
                 
-                // ✅ SERVIDORES COM FOCO EM DUBLADO PT-BR
-                // Ordem otimizada: SmashyStream (melhor dublado grátis) primeiro
+                // ✅ SERVIDORES: EmbedMovies é o principal (usa TMDB ID)
+                // Os backups usam IMDB ID (conversão automática)
                 servers: [
                     { 
-                        name: "Servidor 1 (SmashyStream 🇧🇷)", 
+                        name: "Servidor 1 (EmbedMovies 🇧🇷)", 
+                        idType: "tmdb", // ✅ Usa TMDB ID direto
+                        movieUrl: (id) => `https://myembed.biz/filme/${id}`,
+                        tvUrl: (id, s, e) => `https://myembed.biz/serie/${id}/${s}/${e}`
+                    },
+                    { 
+                        name: "Servidor 2 (VidLink 🇧🇷)", 
+                        idType: "imdb",
+                        movieUrl: (id) => `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt-BR`,
+                        tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt-BR`
+                    },
+                    { 
+                        name: "Servidor 3 (SmashyStream 🇧🇷)", 
+                        idType: "imdb",
                         movieUrl: (id) => `https://player.smashy.stream/movie/${id}?autoplay=true&dub=true&lang=pt-BR`,
                         tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}?s=${s}&e=${e}&autoplay=true&dub=true&lang=pt-BR`
                     },
                     { 
-                        name: "Servidor 2 (VidLink 🇧🇷)", 
-                        movieUrl: (id) => `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt-BR&sub=pt-BR`,
-                        tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt-BR&sub=pt-BR`
+                        name: "Servidor 4 (Vidsrc 🇧🇷)", 
+                        idType: "imdb",
+                        movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}?ds_lang=pt-BR`,
+                        tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}?ds_lang=pt-BR`
                     },
                     { 
-                        name: "Servidor 3 (Vidsrc 🇧🇷)", 
-                        movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}?ds_lang=pt-BR&lang=pt-BR`,
-                        tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}?ds_lang=pt-BR&lang=pt-BR`
-                    },
-                    { 
-                        name: "Servidor 4 (Embed.su)", 
-                        movieUrl: (id) => `https://embed.su/embed/movie/${id}?lang=pt-BR&sub=pt`,
-                        tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}?lang=pt-BR&sub=pt`
-                    },
-                    { 
-                        name: "Servidor 5 (2Embed)", 
-                        movieUrl: (id) => `https://www.2embed.cc/embed/${id}?lang=pt`,
-                        tvUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}&lang=pt`
+                        name: "Servidor 5 (Embed.su)", 
+                        idType: "imdb",
+                        movieUrl: (id) => `https://embed.su/embed/movie/${id}?lang=pt-BR`,
+                        tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}?lang=pt-BR`
                     }
                 ],
 
@@ -599,23 +597,49 @@
                     if (iframe) iframe.src = "about:blank";
                 },
 
-                buildServerUrl(server, media, episode) {
+                // ✅ BUSCA O IMDB ID A PARTIR DO TMDB ID
+                async getImdbId(tmdbId, mediaType) {
+                    try {
+                        const type = mediaType === 'tv' ? 'tv' : 'movie';
+                        const res = await fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}/external_ids?api_key=${this.tmdbApiKey}`);
+                        const data = await res.json();
+                        return data.imdb_id || null;
+                    } catch (error) {
+                        console.error("[Ricoflix] Erro ao buscar IMDB ID:", error);
+                        return null;
+                    }
+                },
+
+                // ✅ MONTA A URL FINAL
+                async buildServerUrl(server, media, episode) {
                     if (!media || !media.id) return '';
+
+                    let finalId = media.id;
+
+                    // ✅ Se o servidor usa IMDB ID, converte
+                    if (server.idType === 'imdb') {
+                        const imdbId = await this.getImdbId(media.id, media.media_type || 'movie');
+                        if (imdbId) {
+                            finalId = imdbId;
+                        } else {
+                            console.warn(`[Ricoflix] IMDB ID não encontrado para ${server.name}, usando TMDB ID`);
+                        }
+                    }
 
                     if (episode) {
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
-                        const url = server.tvUrl(media.id, season, epNum);
-                        console.log(`[Ricoflix] ${server.name} (Série): ${url}`);
+                        const url = server.tvUrl(finalId, season, epNum);
+                        console.log(`[Ricoflix] ${server.name} (Série): ${url} | ID: ${finalId} (${server.idType})`);
                         return url;
                     }
                     
-                    const url = server.movieUrl(media.id);
-                    console.log(`[Ricoflix] ${server.name} (Filme): ${url}`);
+                    const url = server.movieUrl(finalId);
+                    console.log(`[Ricoflix] ${server.name} (Filme): ${url} | ID: ${finalId} (${server.idType})`);
                     return url;
                 },
 
-                loadServer: function(index) {
+                loadServer: async function(index) {
                     const server = this.servers[index];
                     if (!server) {
                         this.playerStatus = 'fatal_error';
@@ -625,7 +649,7 @@
                     this.playerStatus = 'loading';
                     const iframe = document.getElementById('video-player-iframe');
                     
-                    const finalUrl = this.buildServerUrl(server, this.currentMovie, this.currentEpisode);
+                    const finalUrl = await this.buildServerUrl(server, this.currentMovie, this.currentEpisode);
                     this.currentServerUrl = finalUrl;
                     
                     iframe.src = "about:blank";
