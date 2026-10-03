@@ -424,28 +424,28 @@
                 fallbackTimer: null,
                 copied: false,
                 
-                // ✅ SERVIDORES GRATUITOS COM DUBLAGEM PT-BR FORÇADA
-                // Ordem otimizada: SmashyStream e VidLink primeiro (melhor suporte dublado)
+                // ✅ SERVIDORES COM FOCO EM DUBLADO PT-BR
+                // Ordem otimizada: SmashyStream (melhor dublado grátis) primeiro
                 servers: [
                     { 
-                        name: "Servidor 1 (SmashyStream)", 
-                        movieUrl: (id) => `https://player.smashy.stream/movie/${id}?autoplay=true&dub=true&lang=pt`,
-                        tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}?s=${s}&e=${e}&autoplay=true&dub=true&lang=pt`
+                        name: "Servidor 1 (SmashyStream 🇧🇷)", 
+                        movieUrl: (id) => `https://player.smashy.stream/movie/${id}?autoplay=true&dub=true&lang=pt-BR`,
+                        tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}?s=${s}&e=${e}&autoplay=true&dub=true&lang=pt-BR`
                     },
                     { 
-                        name: "Servidor 2 (VidLink)", 
-                        movieUrl: (id) => `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt`,
-                        tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt`
+                        name: "Servidor 2 (VidLink 🇧🇷)", 
+                        movieUrl: (id) => `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt-BR&sub=pt-BR`,
+                        tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true&lang=pt-BR&sub=pt-BR`
                     },
                     { 
-                        name: "Servidor 3 (Vidsrc)", 
-                        movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}?ds_lang=pt`,
-                        tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}?ds_lang=pt`
+                        name: "Servidor 3 (Vidsrc 🇧🇷)", 
+                        movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}?ds_lang=pt-BR&lang=pt-BR`,
+                        tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}?ds_lang=pt-BR&lang=pt-BR`
                     },
                     { 
                         name: "Servidor 4 (Embed.su)", 
-                        movieUrl: (id) => `https://embed.su/embed/movie/${id}?lang=pt-BR`,
-                        tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}?lang=pt-BR`
+                        movieUrl: (id) => `https://embed.su/embed/movie/${id}?lang=pt-BR&sub=pt`,
+                        tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}?lang=pt-BR&sub=pt`
                     },
                     { 
                         name: "Servidor 5 (2Embed)", 
@@ -606,12 +606,12 @@
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
                         const url = server.tvUrl(media.id, season, epNum);
-                        console.log(`[Ricoflix] ${server.name} (Série PT-BR): ${url}`);
+                        console.log(`[Ricoflix] ${server.name} (Série): ${url}`);
                         return url;
                     }
                     
                     const url = server.movieUrl(media.id);
-                    console.log(`[Ricoflix] ${server.name} (Filme PT-BR): ${url}`);
+                    console.log(`[Ricoflix] ${server.name} (Filme): ${url}`);
                     return url;
                 },
 
