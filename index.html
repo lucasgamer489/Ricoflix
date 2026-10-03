@@ -17,19 +17,17 @@
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         body { background-color: #0b0b0b; }
         
-        /* ✅ Foco visível para TV (D-pad) */
+        /* Foco visível para TV (D-pad) */
         *:focus {
             outline: 3px solid #e50914 !important;
             outline-offset: 3px;
             border-radius: 4px;
         }
         
-        /* ✅ Esconde o outline em cliques do mouse (só mostra com teclado/D-pad) */
         *:focus:not(:focus-visible) {
             outline: none !important;
         }
         
-        /* ✅ Escala no foco para TV */
         .tv-focusable:focus {
             transform: scale(1.08);
             transition: transform 0.2s ease;
@@ -39,9 +37,7 @@
 </head>
 <body class="bg-[#0b0b0b] text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-red-600 selection:text-white custom-scrollbar" x-data="ricoflixApp()" x-init="init()">
 
-    <!-- ========================================== -->
     <!-- HEADER -->
-    <!-- ========================================== -->
     <header class="fixed top-0 left-0 right-0 z-[100] transition-all duration-500 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
         <div class="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 pointer-events-auto">
             <div class="flex items-center gap-8">
@@ -74,9 +70,7 @@
         </div>
     </header>
 
-    <!-- ========================================== -->
     <!-- CONTEÚDO PRINCIPAL -->
-    <!-- ========================================== -->
     <main class="flex-grow pt-20">
         
         <div x-show="isLoading" class="fixed inset-0 z-[200] bg-[#0b0b0b] flex items-center justify-center">
@@ -286,7 +280,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <h3 class="text-white font-bold text-lg mb-1">O player não carregou</h3>
-                            <p class="text-zinc-400 text-sm mb-4">Tente abrir em nova aba.</p>
+                            <p class="text-zinc-400 text-sm mb-4">Tente outro servidor ou abra em nova aba.</p>
                             
                             <div class="bg-zinc-900 border border-zinc-700 rounded p-3 mb-4 w-full">
                                 <p class="text-zinc-500 text-xs mb-1">URL gerada:</p>
@@ -360,71 +354,30 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
     <!-- SCRIPT: COMPATIBILIDADE COM CONTROLE DE TV -->
-    <!-- ========================================== -->
     <script>
         (function() {
-            // ✅ Lista de códigos de tecla que representam "Enter/OK" em controles remotos
-            const ENTER_KEYS = [
-                13,      // Enter padrão (PC, maioria dos controles)
-                29443,   // Fire TV / Android TV
-                65385,   // Samsung Tizen
-                461,     // LG WebOS
-                415,     // Philips
-                19,      // Alguns controles Android (KEYCODE_DPAD_CENTER)
-                23,      // Android TV (KEYCODE_DPAD_CENTER)
-                66,      // Android TV (KEYCODE_ENTER)
-                10       // Alguns Fire TV
-            ];
-
+            const ENTER_KEYS = [13, 29443, 65385, 461, 415, 19, 23, 66, 10];
             const ENTER_KEY_NAMES = ['Enter', 'OK', 'Select', 'Accept', 'Space'];
             const ENTER_KEY_CODES = ['Enter', 'NumpadEnter', 'Space'];
 
-            // ✅ Função que verifica se a tecla é "Enter/OK"
             function isEnterKey(event) {
                 const keyCode = event.keyCode || event.which || event.charCode;
                 const key = event.key || '';
                 const code = event.code || '';
-
                 if (ENTER_KEYS.includes(keyCode)) return true;
                 if (ENTER_KEY_NAMES.some(name => key.toLowerCase().includes(name.toLowerCase()))) return true;
                 if (ENTER_KEY_CODES.includes(code)) return true;
-
                 return false;
             }
 
-            // ✅ Função que dispara o clique no elemento focado
             function handleEnterKey(event) {
                 if (!isEnterKey(event)) return;
-
                 const activeElement = document.activeElement;
-                
                 if (!activeElement) return;
-                
-                // Log de debug
-                console.log('[TV Remote] Enter detectado:', {
-                    key: event.key,
-                    code: event.code,
-                    keyCode: event.keyCode,
-                    which: event.which,
-                    elemento: activeElement.tagName + (activeElement.className ? '.' + activeElement.className.split(' ')[0] : '')
-                });
-
-                // Ignora se o elemento focado é o body ou html
-                if (activeElement.tagName === 'BODY' || activeElement.tagName === 'HTML') {
-                    return;
-                }
-
-                // ✅ Se for um input de texto, deixa o comportamento padrão (digitar)
-                if (activeElement.tagName === 'INPUT' && activeElement.type === 'text') {
-                    return;
-                }
-
-                // ✅ Se for um select, deixa o comportamento padrão
-                if (activeElement.tagName === 'SELECT') {
-                    return;
-                }
+                if (activeElement.tagName === 'BODY' || activeElement.tagName === 'HTML') return;
+                if (activeElement.tagName === 'INPUT' && activeElement.type === 'text') return;
+                if (activeElement.tagName === 'SELECT') return;
 
                 event.preventDefault();
                 event.stopPropagation();
@@ -432,34 +385,20 @@
                 try {
                     activeElement.click();
                 } catch (e) {
-                    // Fallback: dispara um evento de clique manual
-                    const clickEvent = new MouseEvent('click', {
-                        view: window,
-                        bubbles: true,
-                        cancelable: true
-                    });
+                    const clickEvent = new MouseEvent('click', { view: window, bubbles: true, cancelable: true });
                     activeElement.dispatchEvent(clickEvent);
                 }
-
-                // Se for um link <a>, navega
-                if (activeElement.tagName === 'A' && activeElement.href) {
-                    window.location.href = activeElement.href;
-                }
+                if (activeElement.tagName === 'A' && activeElement.href) window.location.href = activeElement.href;
             }
 
-            // ✅ Adiciona os ouvintes para todos os eventos
             document.addEventListener('keydown', handleEnterKey, true);
             document.addEventListener('keypress', handleEnterKey, true);
             document.addEventListener('keyup', handleEnterKey, true);
-
             console.log('[TV Remote] Compatibilidade com controles de TV ativada!');
-            console.log('[TV Remote] Teclas reconhecidas:', ENTER_KEYS.join(', '));
         })();
     </script>
 
-    <!-- ========================================== -->
     <!-- SCRIPT PRINCIPAL (ALPINE.JS) -->
-    <!-- ========================================== -->
     <script>
         function ricoflixApp() {
             return {
@@ -488,8 +427,34 @@
                 fallbackTimer: null,
                 copied: false,
                 
+                // ✅ SERVIDORES GRATUITOS (foco em conteúdo dublado)
+                // Todos usam o ID do TMDB diretamente
                 servers: [
-                    { name: "Servidor 1 (RedeFlix)", baseUrl: "https://redeflixapi.store" }
+                    { 
+                        name: "Servidor 1 (Embed.su)", 
+                        movieUrl: (id) => `https://embed.su/embed/movie/${id}`,
+                        tvUrl: (id, s, e) => `https://embed.su/embed/tv/${id}/${s}/${e}`
+                    },
+                    { 
+                        name: "Servidor 2 (VidLink)", 
+                        movieUrl: (id) => `https://vidlink.pro/movie/${id}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true`,
+                        tvUrl: (id, s, e) => `https://vidlink.pro/tv/${id}/${s}/${e}?primaryColor=e50914&secondaryColor=0b0b0b&autoplay=true`
+                    },
+                    { 
+                        name: "Servidor 3 (Vidsrc)", 
+                        movieUrl: (id) => `https://vidsrc.xyz/embed/movie/${id}`,
+                        tvUrl: (id, s, e) => `https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`
+                    },
+                    { 
+                        name: "Servidor 4 (SmashyStream)", 
+                        movieUrl: (id) => `https://player.smashy.stream/movie/${id}?autoplay=true&dub=true`,
+                        tvUrl: (id, s, e) => `https://player.smashy.stream/tv/${id}?s=${s}&e=${e}&autoplay=true&dub=true`
+                    },
+                    { 
+                        name: "Servidor 5 (2Embed)", 
+                        movieUrl: (id) => `https://www.2embed.cc/embed/${id}`,
+                        tvUrl: (id, s, e) => `https://www.2embed.cc/embedtv/${id}&s=${s}&e=${e}`
+                    }
                 ],
 
                 get contentList() {
@@ -637,19 +602,20 @@
                     if (iframe) iframe.src = "about:blank";
                 },
 
+                // ✅ MONTAGEM DA URL: usa o ID do TMDB direto nos embeds gratuitos
                 buildServerUrl(server, media, episode) {
-                    if (!media || !media.id) return server.baseUrl;
+                    if (!media || !media.id) return '';
 
                     if (episode) {
                         const season = episode.season_number || 1;
                         const epNum = episode.episode_number || 1;
-                        const url = `${server.baseUrl}/serie/${media.id}/${season}/${epNum}`;
-                        console.log(`[Ricoflix] URL da Série: ${url}`);
+                        const url = server.tvUrl(media.id, season, epNum);
+                        console.log(`[Ricoflix] ${server.name} (Série): ${url}`);
                         return url;
                     }
                     
-                    const url = `${server.baseUrl}/filme/${media.id}`;
-                    console.log(`[Ricoflix] URL do Filme: ${url}`);
+                    const url = server.movieUrl(media.id);
+                    console.log(`[Ricoflix] ${server.name} (Filme): ${url}`);
                     return url;
                 },
 
@@ -666,8 +632,6 @@
                     const finalUrl = this.buildServerUrl(server, this.currentMovie, this.currentEpisode);
                     this.currentServerUrl = finalUrl;
                     
-                    console.log(`[Ricoflix] Carregando iframe: ${finalUrl}`);
-                    
                     iframe.src = "about:blank";
                     setTimeout(() => {
                         iframe.src = finalUrl;
@@ -676,7 +640,7 @@
                     if (this.fallbackTimer) clearTimeout(this.fallbackTimer);
                     this.fallbackTimer = setTimeout(() => {
                         if (this.playerStatus === 'loading') {
-                            console.warn(`[Ricoflix] Timeout: player não respondeu em 15s.`);
+                            console.warn(`[Ricoflix] ${server.name} não respondeu em 15s.`);
                             this.playerStatus = 'blocked';
                         }
                     }, 15000);
