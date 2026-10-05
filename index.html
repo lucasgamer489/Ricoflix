@@ -33,12 +33,6 @@
             z-index: 50;
         }
         
-        /* ✅ Barra de progresso do "Continuar Assistindo" */
-        .progress-bar {
-            background: linear-gradient(to right, #e50914 0%, #e50914 var(--progress), #52525b var(--progress), #52525b 100%);
-        }
-        
-        /* ✅ Animação do card ao aparecer */
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -54,8 +48,8 @@
     <!-- HEADER -->
     <header class="fixed top-0 left-0 right-0 z-[100] transition-all duration-500 bg-gradient-to-b from-black/90 via-black/50 to-transparent">
         <div class="relative z-10 flex items-center justify-between px-4 md:px-8 py-4 pointer-events-auto">
-            <div class="flex items-center gap-8">
-                <h1 tabindex="0" class="tv-focusable text-2xl md:text-3xl font-black text-red-600 tracking-wider cursor-pointer hover:scale-105 transition-transform" @click="resetHome()">
+            <div class="flex items-center gap-4 md:gap-8">
+                <h1 tabindex="0" class="tv-focusable text-xl md:text-3xl font-black text-red-600 tracking-wider cursor-pointer hover:scale-105 transition-transform" @click="resetHome()">
                     RICOFLIX
                 </h1>
                 <nav class="hidden md:flex items-center gap-6 text-sm font-medium tracking-wide text-zinc-300 pointer-events-auto">
@@ -69,13 +63,13 @@
                 </nav>
             </div>
             
-            <div class="relative flex items-center gap-4 pointer-events-auto">
+            <div class="relative flex items-center gap-3 md:gap-4 pointer-events-auto">
                 <div class="relative">
                     <input 
                         type="text" 
                         tabindex="0"
-                        placeholder="Títulos, gente e gêneros..." 
-                        class="tv-focusable bg-white/10 border border-white/20 rounded-full px-4 py-2 text-sm text-white placeholder-zinc-400 outline-none focus:border-red-500 focus:bg-white/15 transition-all w-40 md:w-64"
+                        placeholder="Buscar..." 
+                        class="tv-focusable bg-white/10 border border-white/20 rounded-full px-3 md:px-4 py-2 text-sm text-white placeholder-zinc-400 outline-none focus:border-red-500 focus:bg-white/15 transition-all w-32 md:w-64"
                         x-model="searchQuery"
                         @input.debounce.300ms="liveSearch()"
                         @focus="showSearchDropdown = searchResults.length > 0"
@@ -86,7 +80,7 @@
                         x-show="showSearchDropdown && searchResults.length > 0" 
                         x-transition.opacity
                         @click.outside="showSearchDropdown = false"
-                        class="search-dropdown absolute top-full right-0 mt-2 w-80 md:w-96 bg-zinc-900/98 backdrop-blur-md border border-zinc-700 rounded-xl shadow-2xl overflow-hidden z-[110] max-h-[70vh] overflow-y-auto custom-scrollbar"
+                        class="absolute top-full right-0 mt-2 w-80 md:w-96 bg-zinc-900/98 backdrop-blur-md border border-zinc-700 rounded-xl shadow-2xl overflow-hidden z-[110] max-h-[70vh] overflow-y-auto custom-scrollbar"
                         style="display: none;"
                     >
                         <div class="p-2">
@@ -106,7 +100,7 @@
                                         <p class="text-white text-sm font-bold truncate" x-text="item.title || item.name"></p>
                                         <p class="text-zinc-500 text-xs" x-text="(item.release_date || item.first_air_date || '').split('-')[0] + ' • ' + (item.media_type === 'tv' ? 'Série' : 'Filme')"></p>
                                     </div>
-                                </button>
+                                </div>
                             </template>
                         </div>
                     </div>
@@ -131,8 +125,8 @@
             </div>
         </div>
 
-        <!-- HERO -->
-        <section class="relative h-[60vh] md:h-[75vh] w-full" x-show="!isLoading && currentCategory === 'home' && !searchQuery">
+        <!-- HERO (com pt-16 para não cortar) -->
+        <section class="relative h-[60vh] md:h-[75vh] w-full pt-16" x-show="!isLoading && currentCategory === 'home' && !searchQuery">
             <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://image.tmdb.org/t/p/original/7WsyChQLEftFiDOVTGkv3hFpyyt.jpg');"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0b0b] via-[#0b0b0b]/60 to-transparent"></div>
             
@@ -155,60 +149,56 @@
             </div>
         </section>
 
-        <!-- ✅ CONTINUAR ASSISTINDO (NOVA SEÇÃO) -->
+        <!-- ✅ CONTINUAR ASSISTINDO (MELHORADO) -->
         <section 
-            class="px-4 md:px-8 relative z-20 pb-6" 
-            :class="currentCategory === 'home' && !searchQuery ? '-mt-10' : 'mt-8'" 
+            class="px-4 md:px-8 relative z-20 pb-8 pt-8" 
             x-show="!isLoading && currentCategory === 'home' && !searchQuery && continueWatching.length > 0"
         >
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                    </svg>
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
+                    <div class="w-1 h-6 bg-red-600 rounded-full"></div>
                     Continuar Assistindo
                 </h3>
                 <button 
                     tabindex="0"
                     @click="clearAllContinueWatching()" 
-                    class="tv-focusable text-zinc-500 hover:text-red-500 text-xs transition-colors"
+                    class="tv-focusable text-zinc-500 hover:text-red-500 text-xs md:text-sm transition-colors flex items-center gap-1"
                 >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                     Limpar tudo
                 </button>
             </div>
             
-            <div class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x">
+            <div class="flex gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
                 <template x-for="item in continueWatching" :key="item.id + '-' + item.media_type + '-' + (item.season || '') + '-' + (item.episode || '')">
-                    <div tabindex="0" class="tv-focusable continue-card flex-none w-[220px] md:w-[300px] relative group cursor-pointer snap-start">
-                        
-                        <!-- Card -->
-                        <div @click="openPlayer(item)" class="relative rounded-lg overflow-hidden shadow-lg bg-zinc-900">
-                            
-                            <!-- Imagem de fundo -->
-                            <div class="relative h-[130px] md:h-[170px]">
+                    <div 
+                        tabindex="0" 
+                        class="tv-focusable flex-none w-[260px] md:w-[320px] relative group cursor-pointer snap-start"
+                    >
+                        <div 
+                            @click="openPlayer(item)" 
+                            class="relative rounded-lg overflow-hidden shadow-xl bg-zinc-900 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]"
+                        >
+                            <div class="relative aspect-video">
                                 <img 
                                     :src="getImageUrl(item.backdrop_path || item.poster_path, 'w500')" 
                                     :alt="item.title || item.name" 
                                     class="w-full h-full object-cover"
+                                    loading="lazy"
                                 >
                                 
-                                <!-- Overlay escuro -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
                                 
-                                <!-- Ícone de play central -->
-                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/70">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
+                                <div class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-lg tracking-wider">
+                                    <span x-text="item.media_type === 'tv' ? 'SÉRIE' : 'FILME'"></span>
                                 </div>
                                 
-                                <!-- Botão de remover (X) -->
                                 <button 
                                     tabindex="0"
                                     @click.stop="removeFromContinueWatching(item)"
-                                    class="absolute top-2 right-2 z-20 bg-black/70 hover:bg-red-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
+                                    class="absolute top-3 right-3 z-20 bg-black/70 hover:bg-red-600 rounded-full w-7 h-7 flex items-center justify-center transition-colors opacity-0 group-hover:opacity-100"
                                     title="Remover da lista"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -216,24 +206,33 @@
                                     </svg>
                                 </button>
                                 
-                                <!-- Badge de tipo -->
-                                <div class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">
-                                    <span x-text="item.media_type === 'tv' ? 'Série' : 'Filme'"></span>
-                                </div>
-                                
-                                <!-- Info na parte de baixo -->
-                                <div class="absolute bottom-0 left-0 right-0 p-3">
-                                    <p class="text-white font-bold text-sm truncate" x-text="item.title || item.name"></p>
-                                    <p x-show="item.season" class="text-zinc-400 text-xs" x-text="'T' + item.season + ' E' + item.episode"></p>
+                                <div class="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+                                    <p class="text-white font-bold text-sm md:text-base truncate mb-1" x-text="item.title || item.name"></p>
+                                    <p x-show="item.season" class="text-zinc-400 text-xs mb-1" x-text="'Temporada ' + item.season + ' • Episódio ' + item.episode"></p>
                                     
-                                    <!-- Barra de progresso -->
-                                    <div class="mt-2 w-full h-1 bg-zinc-700 rounded-full overflow-hidden">
-                                        <div class="h-full bg-red-600 rounded-full" :style="'width: ' + (item.progress || 5) + '%'"></div>
+                                    <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 mt-2">
+                                        <div class="inline-flex items-center gap-2 bg-white text-black text-xs font-bold px-3 py-1.5 rounded hover:bg-zinc-200 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                            </svg>
+                                            Retomar
+                                        </div>
                                     </div>
-                                    
-                                    <!-- Tempo restante -->
-                                    <p class="text-zinc-500 text-[10px] mt-1" x-text="item.progress + '% assistido'"></p>
                                 </div>
+                            </div>
+                            
+                            <div class="h-1 bg-zinc-800 w-full">
+                                <div 
+                                    class="h-full bg-red-600 transition-all duration-300"
+                                    :style="'width: ' + (item.progress || 5) + '%'"
+                                ></div>
+                            </div>
+                            
+                            <div class="px-3 py-2 bg-zinc-900 flex items-center justify-between">
+                                <p class="text-zinc-500 text-[10px] uppercase font-bold tracking-wider">
+                                    <span x-text="item.progress || 5"></span>% assistido
+                                </p>
+                                <p class="text-zinc-600 text-[10px]" x-text="timeAgo(item.lastWatched)"></p>
                             </div>
                         </div>
                     </div>
@@ -242,7 +241,7 @@
         </section>
 
         <!-- GRID DE CONTEÚDO -->
-        <section class="px-4 md:px-8 relative z-20 pb-10" :class="currentCategory === 'home' && !searchQuery ? '-mt-6' : 'mt-8'" x-show="!isLoading">
+        <section class="px-4 md:px-8 relative z-20 pb-10 pt-4" x-show="!isLoading">
             
             <h3 class="text-xl font-bold mb-4 text-white">
                 <span x-show="searchQuery">Resultados para: "<span x-text="searchQuery"></span>"</span>
@@ -286,7 +285,7 @@
                         </button>
                         
                         <div @click="openContent(item)" class="relative rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-105 group-hover:z-10 shadow-lg">
-                            <img :src="getImageUrl(item.poster_path)" :alt="item.title || item.name" class="w-full h-[180px] md:h-[240px] object-cover bg-zinc-800">
+                            <img :src="getImageUrl(item.poster_path)" :alt="item.title || item.name" class="w-full h-[180px] md:h-[240px] object-cover bg-zinc-800" loading="lazy">
                             <div class="absolute bottom-2 right-2 bg-black/70 text-[10px] font-bold text-white px-2 py-0.5 rounded backdrop-blur-sm uppercase" x-text="item.media_type === 'tv' ? 'Série' : 'Filme'"></div>
                         </div>
                     </div>
@@ -656,9 +655,7 @@
                 loadContinueWatching() {
                     try {
                         const saved = localStorage.getItem('ricoflix_continue');
-                        if (saved) {
-                            this.continueWatching = JSON.parse(saved);
-                        }
+                        if (saved) this.continueWatching = JSON.parse(saved);
                     } catch (e) {
                         console.error('[Ricoflix] Erro ao carregar continue:', e);
                     }
@@ -673,7 +670,6 @@
                 },
 
                 addToContinueWatching(item, episode = null) {
-                    // Remove se já existe
                     const existingIndex = this.continueWatching.findIndex(
                         c => c.id === item.id && 
                         c.media_type === item.media_type && 
@@ -682,14 +678,12 @@
                     );
                     
                     if (existingIndex >= 0) {
-                        // Atualiza o progresso e a data
                         this.continueWatching[existingIndex].lastWatched = Date.now();
                         this.continueWatching[existingIndex].progress = Math.min(
                             95, 
                             (this.continueWatching[existingIndex].progress || 5) + 10
                         );
                     } else {
-                        // Adiciona novo
                         this.continueWatching.unshift({
                             id: item.id,
                             title: item.title,
@@ -709,12 +703,8 @@
                         });
                     }
                     
-                    // Limita a 10 itens
                     this.continueWatching = this.continueWatching.slice(0, 10);
-                    
-                    // Ordena por mais recente
                     this.continueWatching.sort((a, b) => (b.lastWatched || 0) - (a.lastWatched || 0));
-                    
                     this.saveContinueWatching();
                 },
 
@@ -733,6 +723,19 @@
                         this.continueWatching = [];
                         this.saveContinueWatching();
                     }
+                },
+
+                timeAgo(timestamp) {
+                    if (!timestamp) return '';
+                    
+                    const seconds = Math.floor((Date.now() - timestamp) / 1000);
+                    
+                    if (seconds < 60) return 'agora mesmo';
+                    if (seconds < 3600) return `há ${Math.floor(seconds / 60)} min`;
+                    if (seconds < 86400) return `há ${Math.floor(seconds / 3600)}h`;
+                    if (seconds < 604800) return `há ${Math.floor(seconds / 86400)}d`;
+                    
+                    return '';
                 },
 
                 resetHome() {
@@ -822,7 +825,6 @@
                     this.playerStatus = 'loading';
                     this.currentServerUrl = '';
                     
-                    // ✅ Adiciona ao "Continuar Assistindo"
                     this.addToContinueWatching(media, episode);
                     
                     this.loadServer(0);
